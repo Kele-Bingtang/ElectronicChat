@@ -1,7 +1,6 @@
 package ChatClient.Chat;
 
 
-import ChatServer.Channel;
 import Utils.SxUtils;
 
 import java.io.DataInputStream;
@@ -32,7 +31,6 @@ public class Receive implements Runnable{
             this.release();
         }
     }
-
 
     /**
      * 获取消息

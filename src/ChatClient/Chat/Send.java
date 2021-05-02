@@ -62,11 +62,11 @@ public class Send{
             //解析信息
             message = message.substring(index1 + 1);
             System.out.println(message);
-            //如果没有打开窗口，则自动打开窗口
-            //未完善
-            if(!ChatFrame.isCreate){
-                System.out.println(nickName + "发消息给你了");
-            }
+
+            //弄一个界面，五秒自动关闭
+            System.out.println(nickName + "发消息给你了");
+
+
             //获取聊天窗口的聊天对象
             Set<String> set = ChatFrame.TextPaneMap.keySet();
             for (String key: set) {
@@ -76,7 +76,8 @@ public class Send{
                     //将发来的消息显示在聊天对象的聊天窗口
                     ChatFrame.TextPaneMap.get(key).setText(ChatFrame.messageToFrame.get(key).toString());
                     hit.put(nickName,ChatFrame.messageToFrame.get(key));
-                    setSendHistory(message,nickName);
+                    //存储发来的消息
+                    setSendHistory(nickName);
                     break;
                 }
 
@@ -86,15 +87,14 @@ public class Send{
 
     /**
      * 存储聊天历史记录
-     * @param message 消息
      * @param nickName 发送者
      */
-    public void setSendHistory(String message,String nickName){
+    public void setSendHistory(String nickName){
         History.buffs.delete(0,History.buffs.length());
         Set<String> keySet = History.historyMap.keySet();
         for (String key : keySet) {
             //别人发过给你，则存储别人的数据，比如可乐发给冰糖，则冰糖存储可乐发来的消息，存放与  可乐(nickName) 聊天的记录中
-            //ChatFrame.history存储的是和  别人(可乐) 的聊天记录
+            //History.historyMap存储的是和  别人(可乐) 的聊天记录
             if (key.equals(nickName)) {
                 History.buffs.append(hit.get(key).toString());
             }

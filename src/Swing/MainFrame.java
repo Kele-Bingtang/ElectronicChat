@@ -93,15 +93,7 @@ public class MainFrame extends JFrame {
                 if(e.getValueIsAdjusting()){
                     for(int i = 0;i < model.size();i++){
                         if(model.get(i).equals(list.getSelectedValue())){
-                            new ChatFrame(socket,list.getSelectedValue()).addWindowListener(new WindowAdapter() {
-                                @Override
-                                public void windowClosing(WindowEvent e) {
-                                    sum = sum - 1;
-                                    if(sum == 0){
-                                        ChatFrame.isCreate = false;
-                                    }
-                                }
-                            });
+                            new ChatFrame(socket,list.getSelectedValue());
                             //清空
                             ChatFrame.messageToFrame.get(list.getSelectedValue()).delete(0,ChatFrame.messageToFrame.get(list.getSelectedValue()).length());
                             System.out.println("创建了第" + ++sum + "个聊天窗口");

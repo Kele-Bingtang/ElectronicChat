@@ -30,8 +30,6 @@ public class ChatFrame extends JFrame{
     String chatName;
     //客户端昵称
     String nickName;
-    //是否打开窗口，没有则自动打开
-    public static boolean isCreate = false;
     //历史记录，一个聊天对象对应一个聊天记录
     //public static Map<String,StringBuilder> history = new HashMap<>();
     //一个聊天对象对应一个聊天窗口(实现多窗口聊天)
@@ -39,12 +37,11 @@ public class ChatFrame extends JFrame{
     //发送消息到聊天窗口，一个聊天对象对应一个消息缓冲区(StringBuilder)
     //与jTextPaneMap对应，key相同，根据key将消息放到指定聊天窗口
     public static Map<String,StringBuilder> messageToFrame = new HashMap<>();
-
+    //历史记录类
     History history;
 
     Send send;
     public ChatFrame(Socket socket,String chatName){
-        isCreate = true;
         this.socket = socket;
         this.chatName = chatName;
         history = new History();
@@ -108,7 +105,6 @@ public class ChatFrame extends JFrame{
                 }
             }
             //存储聊天记录
-            //存储别人发来的历史记录
             history.setHitory(message,chatName);
 
             //发送你要聊天的对象
@@ -125,9 +121,11 @@ public class ChatFrame extends JFrame{
         JButton historyButtuon = new JButton("历史记录");
         historyButtuon.setFont(new Font("微软雅黑",Font.PLAIN,18));
         historyButtuon.addActionListener(e -> {
+            //获取key值
             Set<String> set = History.historyMap.keySet();
             for (String key : set) {
                 if (key.equals(chatName)) {
+                    //先清空，再放历史记录
                     displayTextPanel.setText("");
                     displayTextPanel.setText(History.historyMap.get(chatName).toString());
                 }
@@ -160,6 +158,5 @@ public class ChatFrame extends JFrame{
     public void sendMsg(String message){
         send.sendMsg(message);
     }
-
 
 }
