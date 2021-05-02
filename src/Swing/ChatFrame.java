@@ -12,28 +12,39 @@ import java.util.*;
 public class ChatFrame extends JFrame{
     //背景
     JLabel label;
-    public static JTextPane displayTextPanel;
+    //显示消息的窗口，进行Map包装，一个聊天对象对应一个窗口(displayTextPanel)
+    public JTextPane displayTextPanel;
 
     //暂时存放消息，防止覆盖
-    //加static是因为之加载一次
-    public static StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
+    //先获取历史记录，然后在历史记录后面存储发来的消息，并且重新覆盖历史记录(对外界)
+    public static StringBuilder buff = new StringBuilder();
+    //先获取历史记录，然后在历史记录后面存储发来的消息，并且重新覆盖历史记录(本类使用)
     public StringBuilder historyBui;
-
     //时间的格式
     SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+    //通信
     Socket socket;
     //聊天对象昵称
     String chatName;
-    //是否打开窗口，没有则自动
+    //客户端昵称
+    String nickName;
+    //是否打开窗口，没有则自动打开
     public static boolean isCreate = false;
-
+    //历史记录，一个聊天对象对应一个聊天记录
     public static Map<String,StringBuilder> history = new HashMap<>();
+    //一个聊天对象对应一个聊天窗口(实现多窗口聊天)
+    public static Map<String ,JTextPane> TextPaneMap = new HashMap<>();
+    //发送消息到聊天窗口，一个聊天对象对应一个消息缓冲区(StringBuilder)
+    //与jTextPaneMap对应，key相同，根据key将消息放到指定聊天窗口
+    public static Map<String,StringBuilder> messageToFrame = new HashMap<>();
 
     public ChatFrame(Socket socket,String chatName){
         isCreate = true;
         this.socket = socket;
         this.chatName = chatName;
+        //从登录窗口获取昵称
+        nickName = new LoadDatas().getNickName(LoginFrame.userField.getText());
         init();
     }
 
@@ -45,12 +56,16 @@ public class ChatFrame extends JFrame{
         setResizable(false);
         //设置聊天窗口总是前置
         setAlwaysOnTop(true);
-        setTitle(new LoadDatas().getNickName(LoginFrame.userField.getText()) + "与" + chatName + "聊天");
+        setTitle(nickName + "与" + chatName + "聊天");
         //聊天信息框不可编辑
         displayTextPanel = new JTextPane();
         displayTextPanel.setEditable(false);
         //聊天内容显示文本面板
         JScrollPane displayPanel = new JScrollPane(displayTextPanel);
+        //存入打开聊天对象的聊天窗口，聊天对象不可覆盖，聊天窗口可覆盖
+        TextPaneMap.put(chatName,displayTextPanel);
+        //每个聊天对象有自己的输入环境(消息缓冲区)
+        messageToFrame.put(chatName,sb);
 
         //聊天信息框设置为透明
         displayPanel.getViewport().setOpaque(false);
@@ -67,7 +82,6 @@ public class ChatFrame extends JFrame{
         inputTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,15));
         inputTextPanel.setOpaque(false);
 
-
         //发送按钮初始化
         //按钮
         JButton sendButton = new JButton("发送");
@@ -76,19 +90,22 @@ public class ChatFrame extends JFrame{
         sendButton.setOpaque(false);
 
         sendButton.addActionListener(e -> {
-            String nickName = new LoadDatas().getNickName(LoginFrame.userField.getText());
             String msg = inputTextPanel.getText();
             inputTextPanel.setText("");
-            String message = nickName + "  " + sf.format(new Date()) + "\n" + "    " + msg;  //开头
-            sb.append(message).append("\n");
-            displayTextPanel.setText(sb.toString());  //输入的信息，无法输入历史信息
-            historyBui = new StringBuilder();
+            String message = nickName + "  " + sf.format(new Date()) + "\n" + "    " + msg;  //消息格式
+            //获取聊天窗口的key(聊天对象)
+            Set<String> set = TextPaneMap.keySet();
+            for (String key: set) {
+                if(key.equals(chatName)){
+                    messageToFrame.get(key).append(message).append("\n");
+                    TextPaneMap.get(key).setText(messageToFrame.get(key).toString());
+                }
+            }
             //存储聊天记录
             setHitory(message);
             //发送你要聊天的对象
-            sendMsg(chatName);
             //发送消息出去
-            sendMsg(message);
+            sendMsg(chatName+ ":" + message);
         });
 
         //表情按钮初始化
@@ -103,22 +120,24 @@ public class ChatFrame extends JFrame{
             getHitory();
         });
 
-        JPanel paneLeftSouth = new JPanel();
-        paneLeftSouth.setLayout(new BorderLayout());
+        //聊天窗口底部Panel
+        JPanel SouthPanel = new JPanel();
+        SouthPanel.setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
         toolBar.add(sendButton);
         toolBar.add(emjioButton);
         toolBar.addSeparator(new Dimension(300,20));
         toolBar.add(historyButtuon);
-        paneLeftSouth.add(toolBar,BorderLayout.NORTH);
-        paneLeftSouth.add(inputPanel,BorderLayout.CENTER);
-        paneLeftSouth.setOpaque(false);
+        //工具栏位于底部Panel的顶部
+        SouthPanel.add(toolBar,BorderLayout.NORTH);
+        SouthPanel.add(inputPanel,BorderLayout.CENTER);
+        SouthPanel.setOpaque(false);
 
         label = new JLabel(/*new ImageIcon("src/ChatClient/Image/聊天背景1.png")*/);
         label.setLayout(new BorderLayout());
         label.setOpaque(false);
         label.add(displayPanel,BorderLayout.CENTER);
-        label.add(paneLeftSouth,BorderLayout.SOUTH);
+        label.add(SouthPanel,BorderLayout.SOUTH);
         add(label,BorderLayout.CENTER);
         setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
         setVisible(true);
@@ -128,39 +147,50 @@ public class ChatFrame extends JFrame{
        new Send(socket).sendMsg(message);
     }
 
-    public void ceateNew(String meesage){
-        sb.append(meesage).append("\n");
-        displayTextPanel.setText(sb.toString());;
+    /**
+     * 创建聊天窗口，别人发来的消息
+     * 如果没有先打开聊天窗口
+     * @param meesage
+     */
+    public void ceateNew(String meesage,String nickName){
+        isCreate = true;
+        messageToFrame.get(nickName).append(meesage).append("\n");
+        //存储聊天记录
+        setHitory(meesage);
+        TextPaneMap.get(nickName).setText(messageToFrame.get(nickName).toString());
     }
 
     /**
-     * 存储历史记录
+     * 存储聊天记录
+     * 历史记录
+     * @param message 消息
      */
     public void setHitory(String message){
+        historyBui = new StringBuilder();
+        //刚开始keySet为空，所以不执行for循环
         Set<String> keySet = history.keySet();
         for (String key : keySet) {
             if (key.equals(chatName)) {
+                //1、先获取历史记录
                 historyBui.append(history.get(key).toString());
             }
         }
+        //2、后获取聊天记录
         historyBui.append(message).append("\n");
+        //3、覆盖原来的聊天历史记录
         history.put(chatName,historyBui);
-        System.out.println("存储" + chatName + "的聊天记录");
     }
     /**
-     * 获取历史记录
+     * 获取聊天历史记录
      */
     public void getHitory(){
-        //获取历史记录先清空记录
-        System.out.println("进入历史记录");
+        //先清空记录，再获取历史记录
         displayTextPanel.setText("");
         Set<String> set = history.keySet();
         for (String key : set) {
             if (key.equals(chatName)) {
-                System.out.println("查询与" + key + "的聊天记录");
                 displayTextPanel.setText(history.get(key).toString());
             }
-            System.out.println(key + "的历史记录：" + history.get(key).toString());
         }
     }
 }

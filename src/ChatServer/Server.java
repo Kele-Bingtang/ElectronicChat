@@ -1,6 +1,5 @@
 package ChatServer;
 
-import ChatClient.load.LoadDatas;
 import Utils.SxUtils;
 
 import java.io.IOException;

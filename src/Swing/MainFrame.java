@@ -10,6 +10,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.Socket;
 
 /**
@@ -26,24 +28,21 @@ public class MainFrame extends JFrame {
     public static JList<String> list;
     //好友列表数组
     private String[] fd;
-    //列表
+    //列表s
     public static DefaultListModel<String> model;
+    //通信
+    Socket socket;
+    //打开窗口的个数
+    int sum = 0;
 
-    static Socket socket;
+    LoadDatas loadDatas;
 
-
-    int i = 0;
-
-    public static void main(String[] args) {
-        MainFrame qq = new MainFrame(socket);
-        qq.init();
-        System.out.println("------" + new LoadDatas().getNickName(LoginFrame.userField.getText()) + "客户端------");
-    }
 
     public MainFrame(Socket socket){
         this.socket = socket;
-        System.out.println("------" + new LoadDatas().getNickName(LoginFrame.userField.getText()) + "客户端------");
-        new Send(socket).sendMsg(new LoadDatas().getNickName(LoginFrame.userField.getText()));
+        loadDatas = new LoadDatas();
+        System.out.println("------" + loadDatas.getNickName(LoginFrame.userField.getText()) + "客户端------");
+        new Send(socket).sendMsg(loadDatas.getNickName(LoginFrame.userField.getText()));
     }
 
     public void init(){
@@ -90,13 +89,21 @@ public class MainFrame extends JFrame {
                 if(e.getValueIsAdjusting()){
                     for(int i = 0;i < model.size();i++){
                         if(model.get(i).equals(list.getSelectedValue())){
-                            new ChatFrame(socket,list.getSelectedValue());
+
+                            new ChatFrame(socket,list.getSelectedValue()).addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    sum = sum - 1;
+                                    if(sum == 0){
+                                        ChatFrame.isCreate = false;
+                                    }
+                                }
+                            });
                             //清空
-                            ChatFrame.sb.delete(0,ChatFrame.sb.length());
-                            System.out.println("创建了第" + ++i + "个聊天窗口");
+                            ChatFrame.messageToFrame.get(list.getSelectedValue()).delete(0,ChatFrame.messageToFrame.get(list.getSelectedValue()).length());
+                            System.out.println("创建了第" + ++sum + "个聊天窗口");
                         }
                     }
-
                 }
             }
         });
@@ -187,7 +194,7 @@ public class MainFrame extends JFrame {
 
         buttomPanel.add(box_2);
         //加载数据库的昵称和个性签名
-        new LoadDatas().loadData(LoginFrame.userField.getText());
+        loadDatas.loadData(LoginFrame.userField.getText());
 
 
         //容器
@@ -215,14 +222,14 @@ public class MainFrame extends JFrame {
         frame.add(buttomPanel);
     }
     public void addModelRow(){
-        fd = new LoadDatas().getFriends(LoginFrame.userField.getText());
+        fd = loadDatas.getFriends(LoginFrame.userField.getText());
         for (String s : fd) {
             model.addElement(s);
         }
     }
     public void onsearchID(String msg){
         for (String s : fd) {
-            if(msg.indexOf(s) >= 0){
+            if(msg.contains(s)){
                 model.addElement(s);
             }
         }

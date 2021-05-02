@@ -7,6 +7,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * 管道
+ * 获取客户端发给另一个客户端的消息
+ * 处理客户端发给另一个客户端的消息
+ * 返回客户端发给另一个客户端的消息
+ */
 public class Channel implements Runnable{
     Socket server;
     DataInputStream dis = null;
@@ -28,19 +34,21 @@ public class Channel implements Runnable{
 
     /**
      * 获取客户端发来的信息，并发回去
+     * 格式：聊天对象:自己昵称 消息
      * @return 消息
      */
     public String getMsg(){
         String msg = "";
         try {
             msg = dis.readUTF();
+            //登录的时候先将昵称发来获取
             if(null == nickName){
                 nickName = msg;
                 System.out.println(nickName + " 登录了客户端");
                 msg = "";
-            }else if(!msg.startsWith(nickName)){
-                chatName = msg;
-                msg = "";
+            }else {
+                int index = msg.indexOf(":");
+                chatName = msg.substring(0,index);
             }
         } catch (IOException e) {  //无法消息会报错
             this.release();     //不打印e.printStackTrace，因为可以直接在服务端打印xxx离开聊天室而不报错
@@ -61,9 +69,8 @@ public class Channel implements Runnable{
         }
     }
     /**
-     * 群聊：获取自己的消息，发给其他人
-     * 私聊：约定数据格式：@xxx：msg
      * @param msg 消息
+     * @param isSys 识别是否是系统发的消息
      */
     public void sendOthers(String msg,boolean isSys){
 

@@ -16,7 +16,6 @@ public class Receive implements Runnable{
     DataInputStream dis = null;
     boolean isRunning;  //判断是否继续多线程
     Send send;
-    String nickName;
 
     /**
      * 构造函数
