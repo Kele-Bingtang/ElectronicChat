@@ -1,12 +1,13 @@
 package ChatClient.Chat;
 
+import ChatServer.History;
 import Swing.ChatFrame;
-import Swing.MainFrame;
 import Utils.SxUtils;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class Send{
@@ -14,6 +15,8 @@ public class Send{
     DataOutputStream dos = null;
     boolean isRunning;
     BufferedReader br = null;
+
+    public static Map<String,StringBuilder> hit = new HashMap<>();
 
     public Send(Socket socket){
         this.socket = socket;
@@ -57,51 +60,46 @@ public class Send{
             //解析发送的名称
             String nickName = message.substring(index1+1,index2);
             //解析信息
-            int index = message.indexOf(":");
-            message = message.substring(index+1);
+            message = message.substring(index1 + 1);
             System.out.println(message);
             //如果没有打开窗口，则自动打开窗口
             //未完善
             if(!ChatFrame.isCreate){
-                int select = JOptionPane.showConfirmDialog(null,nickName + "发来了消息，你是否进行查看，如果不，请去历史记录查看","确定",JOptionPane.OK_CANCEL_OPTION);
-                if(select == 0){
-                    new ChatFrame(socket, nickName).ceateNew(message,nickName);
-                }
-            }else {
-                //获取聊天窗口的聊天对象
-                Set<String> set = ChatFrame.TextPaneMap.keySet();
-                for (String key: set) {
-                    if(key.equals(nickName)){
-                        //获得聊天消息
-                        ChatFrame.messageToFrame.get(key).append(message).append("\n");
-                        //将发来的消息显示在聊天对象的聊天窗口
-                        ChatFrame.TextPaneMap.get(key).setText(ChatFrame.messageToFrame.get(key).toString());
-                    }
-                }
+                System.out.println(nickName + "发消息给你了");
             }
-            //存储别人发来的历史记录
-            setOtherSendHistory(message,nickName);
-            System.out.println("存储了");
+            //获取聊天窗口的聊天对象
+            Set<String> set = ChatFrame.TextPaneMap.keySet();
+            for (String key: set) {
+                if(key.equals(nickName)){
+                    //获得聊天消息
+                    ChatFrame.messageToFrame.get(key).append(message).append("\n");
+                    //将发来的消息显示在聊天对象的聊天窗口
+                    ChatFrame.TextPaneMap.get(key).setText(ChatFrame.messageToFrame.get(key).toString());
+                    hit.put(nickName,ChatFrame.messageToFrame.get(key));
+                    setSendHistory(message,nickName);
+                    break;
+                }
+
+            }
         }
     }
 
     /**
-     * 存储别人发来的历史记录
+     * 存储聊天历史记录
      * @param message 消息
      * @param nickName 发送者
      */
-    public void setOtherSendHistory(String message,String nickName){
-        ChatFrame.buff.delete(0,ChatFrame.buff.length());
-        Set<String> keySet = ChatFrame.history.keySet();
+    public void setSendHistory(String message,String nickName){
+        History.buffs.delete(0,History.buffs.length());
+        Set<String> keySet = History.historyMap.keySet();
         for (String key : keySet) {
             //别人发过给你，则存储别人的数据，比如可乐发给冰糖，则冰糖存储可乐发来的消息，存放与  可乐(nickName) 聊天的记录中
             //ChatFrame.history存储的是和  别人(可乐) 的聊天记录
             if (key.equals(nickName)) {
-                ChatFrame.buff.append(ChatFrame.history.get(key).toString());
+                History.buffs.append(hit.get(key).toString());
             }
         }
-        ChatFrame.buff.append(message).append("\n");
-        ChatFrame.history.put(nickName,ChatFrame.buff);
+        History.historyMap.put(nickName,History.buffs);
     }
 
     /**

@@ -3,6 +3,7 @@ package Swing;
 
 import ChatClient.Chat.Send;
 import ChatClient.load.LoadDatas;
+import ChatServer.History;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -30,6 +31,8 @@ public class MainFrame extends JFrame {
     private String[] fd;
     //列表s
     public static DefaultListModel<String> model;
+
+    History history;
     //通信
     Socket socket;
     //打开窗口的个数
@@ -40,6 +43,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame(Socket socket){
         this.socket = socket;
+        history = new History();
         loadDatas = new LoadDatas();
         System.out.println("------" + loadDatas.getNickName(LoginFrame.userField.getText()) + "客户端------");
         new Send(socket).sendMsg(loadDatas.getNickName(LoginFrame.userField.getText()));
@@ -89,7 +93,6 @@ public class MainFrame extends JFrame {
                 if(e.getValueIsAdjusting()){
                     for(int i = 0;i < model.size();i++){
                         if(model.get(i).equals(list.getSelectedValue())){
-
                             new ChatFrame(socket,list.getSelectedValue()).addWindowListener(new WindowAdapter() {
                                 @Override
                                 public void windowClosing(WindowEvent e) {

@@ -20,9 +20,11 @@ public class Channel implements Runnable{
     boolean isRunning;
     String nickName;
     String chatName;
+    History history;
     public Channel(Socket server){
         this.server = server;
         this.isRunning = true;
+        history = new History();
         try {
             dis = new DataInputStream(server.getInputStream());
             dos = new DataOutputStream(server.getOutputStream());
@@ -73,7 +75,6 @@ public class Channel implements Runnable{
      * @param isSys 识别是否是系统发的消息
      */
     public void sendOthers(String msg,boolean isSys){
-
         for(Channel other : Server.all){
             if(other == this){
                 continue;
@@ -81,6 +82,7 @@ public class Channel implements Runnable{
             else if(other.nickName.equals(chatName)){
                 System.out.println(nickName + "的目标：" + chatName);
                 other.sendMsg(msg);
+
                 break;
             }
         }
@@ -91,8 +93,7 @@ public class Channel implements Runnable{
         while(isRunning){
             String msg = getMsg();
             if(!msg.equals("")){
-                //sendMsg(msg);
-                System.out.println(msg);
+
                 sendOthers(msg,false);
             }
         }
