@@ -5,9 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class History {
-    //第一个String为用户
-    //第二个String为聊天对象
-
     public static Map<String,StringBuilder> historyMap = new HashMap<>();
     StringBuilder  historyBui;
     public static StringBuilder buffs = new StringBuilder();
@@ -24,6 +21,11 @@ public class History {
         return hit;
     }
 
+    /**
+     * 存储聊天记录
+     * @param message 聊天消息
+     * @param chatName 聊天对象
+     */
     public void setHitory(String message,String chatName){
         historyBui = new StringBuilder();
         //刚开始keySet为空，所以不执行for循环
@@ -40,6 +42,12 @@ public class History {
         historyMap.put(chatName,historyBui);
     }
 
+    /**
+     * 解析信息
+     * 格式：聊天对象:自己昵称 消息
+     * @param message 信息
+     * @return 解析后的的信息
+     */
     public String getRealMessage(String message){
         //格式：聊天对象:自己昵称 消息
         int index1 = message.indexOf(":");
