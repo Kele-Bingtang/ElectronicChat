@@ -122,7 +122,10 @@ public class InformationDaoImpl implements InformationDao {
         }
     }
 
-
+    /**
+     * 获取全部用户信息
+     * @return 存储用户信息的集合
+     */
     public List<Information> getAllImformation() {
         Information information;
         List<Information> informationList = new ArrayList<>();
@@ -146,7 +149,6 @@ public class InformationDaoImpl implements InformationDao {
         }finally {
             SxUtils.close(rs,pstt,conn);
         }
-
         return informationList;
     }
 

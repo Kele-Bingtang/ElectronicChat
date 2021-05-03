@@ -24,6 +24,10 @@ public class GetDataFromDao {
         friendDaompl = new FriendDaompl();
     }
 
+    /**
+     * 获取全部用户信息
+     * @return 存储用户信息的集合
+     */
     public List<Information> getAllData(){
         List<Information> informationList = informationDaompl.getAllImformation();
         return informationList;
@@ -89,6 +93,11 @@ public class GetDataFromDao {
         return isRight;
     }
 
+    /**
+     * 修改密码
+     * @param userid 用户id
+     * @param password 密码
+     */
     public void modifyPassword(String userid, String password){
         userDaompl.modifyPassword(userid,password);
     }

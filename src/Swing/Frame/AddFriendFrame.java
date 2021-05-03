@@ -48,6 +48,9 @@ public class AddFriendFrame extends JFrame {
 
     }
 
+    /**
+     * 初始化表格
+     */
     public void initTable(){
         table = new JTable(tableModel){
             @Override
@@ -65,6 +68,9 @@ public class AddFriendFrame extends JFrame {
 
     }
 
+    /**
+     * 初始化工具栏
+     */
     public void initToolBar() {
         JToolBar toolBar = new JToolBar();
         container.add(toolBar,BorderLayout.PAGE_START);
@@ -104,7 +110,10 @@ public class AddFriendFrame extends JFrame {
         });
     }
 
-
+    /**
+     * 查询功能
+     * 根据userid和昵称查询
+     */
     public void onRearch(){
         //获取用户输入的过滤条件
         String fieldInfo = searchField.getText().trim();
@@ -125,6 +134,9 @@ public class AddFriendFrame extends JFrame {
         }
     }
 
+    /**
+     * 初始化表格列名
+     */
     public void initTableModel(){
         tableModel.addColumn("用户id");
         tableModel.addColumn("昵称");
@@ -132,8 +144,11 @@ public class AddFriendFrame extends JFrame {
         tableModel.addColumn("状态");
     }
 
+    /**
+     * 获取查询的用户
+     * @param in 用户类
+     */
     public void addTableRow(Information in) {
-
         Vector<Object> rowData = new Vector<>();
         rowData.add(in.getUid());
         rowData.add(in.getNickName());
@@ -142,6 +157,9 @@ public class AddFriendFrame extends JFrame {
         tableModel.addRow(rowData);
     }
 
+    /**
+     * 初始加载全部用户信息
+     */
     public void loadData() {
         for (int i = 0;i < dataList.size();i++){
             Vector<Object> rowData = new Vector<>();
