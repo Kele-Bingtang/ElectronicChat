@@ -1,20 +1,14 @@
-/*
- * Created by JFormDesigner on Thu Apr 22 22:42:36 CST 2021
- */
 
-package Swing;
+package Swing.Frame;
 
-import ChatClient.load.LoadDatas;
-import ChatServer.Server;
 import dao.UserDaoImpl;
-import javafx.scene.input.InputMethodTextRun;
 
 import java.awt.*;
 import java.net.Socket;
 import javax.swing.*;
 
 /**
- * @author unknown
+ * 登陆窗口
  */
 public class LoginFrame extends JFrame {
     private static Socket socket;
@@ -37,9 +31,9 @@ public class LoginFrame extends JFrame {
 
     private void initComponents() {
         label1 = new JLabel();
-        userField = new JTextField("kele");      //用户名
+        userField = new JTextField();      //用户名
         label2 = new JLabel();
-        passField = new JTextField("kele1234");  //密码
+        passField = new JTextField();  //密码
         button1 = new JButton();
         button2 = new JButton();
 

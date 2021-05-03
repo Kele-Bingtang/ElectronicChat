@@ -1,7 +1,7 @@
-package Swing;
+package Swing.Frame;
 
 import ChatClient.Chat.Send;
-import ChatClient.load.LoadDatas;
+import ChatClient.load.GetDataFromDao;
 import ChatServer.History;
 
 import javax.swing.*;
@@ -10,6 +10,9 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * 聊天窗口
+ */
 public class ChatFrame extends JFrame{
     //背景
     JLabel label;
@@ -18,10 +21,6 @@ public class ChatFrame extends JFrame{
 
     //暂时存放消息，防止覆盖
     StringBuilder sb = new StringBuilder();
-    //先获取历史记录，然后在历史记录后面存储发来的消息，并且重新覆盖历史记录(对外界)
-    public static StringBuilder buff = new StringBuilder();
-    //先获取历史记录，然后在历史记录后面存储发来的消息，并且重新覆盖历史记录(本类使用)
-    public StringBuilder historyBui;
     //时间的格式
     SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     //通信
@@ -46,7 +45,7 @@ public class ChatFrame extends JFrame{
         this.chatName = chatName;
         history = new History();
         //从登录窗口获取昵称
-        nickName = new LoadDatas().getNickName(LoginFrame.userField.getText());
+        nickName = new GetDataFromDao().getNickName(LoginFrame.userField.getText());
         send  = new Send(socket);
         init();
     }

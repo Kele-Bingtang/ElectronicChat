@@ -1,6 +1,6 @@
 package bean;
 
-public class Imformation {
+public class Information {
     private String uid;
     private String nickName;
     private String signNature;

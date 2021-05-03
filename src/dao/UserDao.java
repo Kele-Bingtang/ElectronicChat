@@ -7,10 +7,10 @@ public interface UserDao {
     boolean getInformation(String userid,String password);
 
     //验证密码
-    boolean verifyPassword(String oldPassword);
+    boolean verifyPassword(String userid,String oldPassword);
 
     //修改密码
-    void modifyPassword(String password,String userid);
+    void modifyPassword(String userid,String password);
 
 
 }

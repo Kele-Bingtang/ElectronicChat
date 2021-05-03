@@ -1,7 +1,8 @@
 package ChatClient.Chat;
 
 import ChatServer.History;
-import Swing.ChatFrame;
+import Swing.Frame.ChatFrame;
+import Swing.Frame.TipMessageFrame;
 import Utils.SxUtils;
 
 import java.io.*;
@@ -10,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 发送消息到另一个客户端
+ */
 public class Send{
     Socket socket;
     DataOutputStream dos = null;
@@ -64,8 +68,7 @@ public class Send{
             System.out.println(message);
 
             //弄一个界面，五秒自动关闭
-            System.out.println(nickName + "发消息给你了");
-
+            new TipMessageFrame().sendMessageTip(nickName);
 
             //获取聊天窗口的聊天对象
             Set<String> set = ChatFrame.TextPaneMap.keySet();

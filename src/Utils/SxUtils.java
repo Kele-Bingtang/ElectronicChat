@@ -6,10 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * 释放资源
+ */
 public class SxUtils {
-    /**
-     * 释放资源
-     */
+
     public static void close(Closeable... targets){
         for (Closeable target : targets) {
             try {

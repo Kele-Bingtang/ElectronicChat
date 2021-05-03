@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 聊天记录存储区
+ */
 public class History {
     public static Map<String,StringBuilder> historyMap = new HashMap<>();
     StringBuilder  historyBui;

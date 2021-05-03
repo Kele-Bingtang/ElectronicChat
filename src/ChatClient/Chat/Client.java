@@ -1,7 +1,7 @@
 package ChatClient.Chat;
 
 
-import Swing.LoginFrame;
+import Swing.Frame.LoginFrame;
 
 import java.io.IOException;
 import java.net.Socket;

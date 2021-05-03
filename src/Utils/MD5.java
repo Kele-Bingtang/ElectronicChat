@@ -6,6 +6,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * 密码加密
+ */
 public class MD5 {
 
     public static void main(String[] args) {

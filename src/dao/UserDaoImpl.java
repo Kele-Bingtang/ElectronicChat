@@ -38,15 +38,37 @@ public class UserDaoImpl implements UserDao{
 
     //验证密码
     @Override
-    public boolean verifyPassword(String oldPassword) {
-        return false;
+    public boolean verifyPassword(String userid, String oldPassword) {
+        boolean isReal = false;
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "SELECT * FROM users WHERE userid = ? AND password = ?";
+        PreparedStatement pstt = null;
+        ResultSet rs = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            pstt.setString(1,userid);
+            pstt.setString(2,oldPassword);
+
+            rs = pstt.executeQuery();
+
+            while(rs.next()){
+                //密码正确
+                isReal = true;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            //关闭资源
+            SxUtils.close(rs,pstt,conn);
+        }
+        return isReal;
     }
 
     //修改密码
     @Override
-    public void modifyPassword(String password, String userid) {
+    public void modifyPassword(String userid, String password) {
         Connection conn = JDBCUtils.getConnection();
-        String sql = "UPDATE USER Set password = ? WHERE userid = ?";
+        String sql = "UPDATE users SET password = ? WHERE userid = ?";
         PreparedStatement pstt = null;
         try {
             pstt = conn.prepareStatement(sql);

@@ -2,11 +2,10 @@
  * Created by JFormDesigner on Wed Apr 28 20:18:47 CST 2021
  */
 
-package Swing;
+package Swing.Frame;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
 
 /**
  * @author 1
