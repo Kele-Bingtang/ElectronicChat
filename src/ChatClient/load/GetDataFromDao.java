@@ -24,6 +24,11 @@ public class GetDataFromDao {
         friendDaompl = new FriendDaompl();
     }
 
+    public List<Information> getAllData(){
+        List<Information> informationList = informationDaompl.getAllImformation();
+        return informationList;
+    }
+
     /**
      * 获得朋友列表
      * @param userid 用户id

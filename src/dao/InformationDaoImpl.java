@@ -9,8 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class InformationDaoImpl implements ImformationDao {
+public class InformationDaoImpl implements InformationDao {
 
     /**
      * 查询昵称和个性签名
@@ -120,5 +122,32 @@ public class InformationDaoImpl implements ImformationDao {
         }
     }
 
+
+    public List<Information> getAllImformation() {
+        Information information;
+        List<Information> informationList = new ArrayList<>();
+        String sql = "SELECT * FROM imformation";
+        Connection conn = JDBCUtils.getConnection();
+        PreparedStatement pstt = null;
+        ResultSet rs = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            rs = pstt.executeQuery();
+            while(rs.next()){
+                information = new Information();
+                information.setUid(rs.getString("userid"));
+                information.setNickName(rs.getString("nickName"));
+                information.setSignNature(rs.getString("signature"));
+                information.setStatus(rs.getString("status"));
+                informationList.add(information);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            SxUtils.close(rs,pstt,conn);
+        }
+
+        return informationList;
+    }
 
 }

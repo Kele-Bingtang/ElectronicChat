@@ -2,7 +2,7 @@ package dao;
 
 import bean.Information;
 
-public interface ImformationDao {
+public interface InformationDao {
     //获取用户信息
     Information getImformation(String userid);
 
