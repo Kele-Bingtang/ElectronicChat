@@ -82,7 +82,7 @@ public class MainFrame extends JFrame {
         //设置label_2(头像)
         //标签
         JLabel label_2 = new JLabel(new ImageIcon("src/ChatClient/Image/tx1.png"));
-        label_2.setBounds(15,15,80,80);
+        label_2.setBounds(15,30,80,80);
         topPanel.add(label_2);
 
         //初始化model

@@ -25,6 +25,7 @@ public class ChangeNickName extends JDialog {
         oldNameField.setBounds(85,50,200,40);
         oldNameField.setFont(new Font("黑体",Font.PLAIN,18));
         oldNameField.setText(NickName);
+        oldNameField.setEditable(false);
         container.add(oldNameField);
 
         JLabel label2 = new JLabel("修改的昵称：");

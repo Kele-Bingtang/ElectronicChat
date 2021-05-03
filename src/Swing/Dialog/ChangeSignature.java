@@ -27,6 +27,7 @@ public class ChangeSignature extends JDialog{
         oldSignatrueField.setText(signature);
         oldSignatrueField.setLineWrap(true);
         oldSignatrueField.setWrapStyleWord(true);
+        oldSignatrueField.setEditable(false);
         container.add(oldSignatrueField);
 
         JLabel label2 = new JLabel("修改的签名：");
