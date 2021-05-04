@@ -1,6 +1,8 @@
 package Swing.Frame;
 
-import ChatClient.load.GetDataFromDao;
+import ChatClient.Client.Send;
+import ChatServer.load.EnMsgType;
+import ChatServer.load.GetDataFromDao;
 import bean.Information;
 
 import javax.swing.*;
@@ -10,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.Socket;
 import java.util.List;
 import java.util.Vector;
 
@@ -18,14 +21,21 @@ public class AddFriendFrame extends JFrame {
     DefaultTableModel tableModel = new DefaultTableModel();
     JTable table;
     JButton searchButton,addButton;
-    JTextField searchField = new JTextField();
+    JTextField searchField = new JTextField(50);
     List<Information> dataList;
+    GetDataFromDao getDataFromDao;
+
+    String userid;
+    Socket socket;
 
     public static void main(String[] args) {
-        new AddFriendFrame();
+        new AddFriendFrame(null,"kele");
     }
 
-    public AddFriendFrame(){
+    public AddFriendFrame(Socket socket,String userid){
+        this.socket = socket;
+        this.userid = userid;
+        getDataFromDao = new GetDataFromDao();
         setTitle("查找");
         container = getContentPane();
         container.setLayout(new BorderLayout());
@@ -106,6 +116,25 @@ public class AddFriendFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 onRearch();
+            }
+        });
+
+        addButton = new JButton("添加");
+        toolBar.addSeparator(new Dimension(240,30));
+        toolBar.add(addButton);
+
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row[] = table.getSelectedRows();
+                for (int i = 0; i < row.length; i++) {
+                    String addUserid = (String) tableModel.getValueAt(row[i],0);
+                    //发送到服务端
+                    new Send(socket).sendMsg(EnMsgType.EN_MSG_ADD_FRIEND.toString() + " " + userid + ":" + addUserid);
+                    //getDataFromDao.addFriend(nickName,addUserid);
+                }
+
+
             }
         });
     }

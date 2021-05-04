@@ -1,5 +1,7 @@
-package ChatServer;
+package ChatServer.server;
 
+import ChatServer.controller.Process;
+import ChatServer.load.EnMsgType;
 import Utils.SxUtils;
 
 import java.io.DataInputStream;
@@ -21,10 +23,14 @@ public class Channel implements Runnable{
     String nickName;
     String chatName;
     History history;
+
+    Process process;
+
     public Channel(Socket server){
         this.server = server;
         this.isRunning = true;
         history = new History();
+        process = new Process();
         try {
             dis = new DataInputStream(server.getInputStream());
             dos = new DataOutputStream(server.getOutputStream());
@@ -74,7 +80,7 @@ public class Channel implements Runnable{
      * @param msg 消息
      * @param isSys 识别是否是系统发的消息
      */
-    public void sendOthers(String msg,boolean isSys){
+    public void sendMsgToOthers(String msg,boolean isSys){
         for(Channel other : Server.all){
             if(other == this){
                 continue;
@@ -88,13 +94,33 @@ public class Channel implements Runnable{
         }
     }
 
+    public void sendMsgToMy(String msg) {
+        for (Channel other : Server.all) {
+            if (other == this) {
+                sendMsg(msg);
+            }
+        }
+    }
+
     @Override
     public void run() {
         while(isRunning){
             String msg = getMsg();
             if(!msg.equals("")){
+                //是按钮响应消息，则发送给自己
+                if(msg.startsWith("EN_MSG")){
+                    //处理响应按钮 发送的消息
+                    String result = process.Processing(msg);
+                    if(null != result){
+                        sendMsgToMy(result);
+                    }else {
+                        sendMsgToOthers(msg,false);
+                    }
+                } else {
+                    System.out.println("消息：" + msg);
+                    sendMsgToOthers(msg,false);
+                }
 
-                sendOthers(msg,false);
             }
         }
     }

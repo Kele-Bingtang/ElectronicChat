@@ -1,4 +1,4 @@
-package ChatClient.load;
+package ChatServer.load;
 
 import bean.Information;
 import dao.FriendDaompl;
@@ -47,6 +47,10 @@ public class GetDataFromDao {
         return fd;
     }
 
+    public void addFriend(String userid,String friendid){
+        friendDaompl.addFriend(userid,friendid);
+    }
+
     /**
      * 获得昵称
      * @return 昵称
@@ -69,7 +73,7 @@ public class GetDataFromDao {
      * @param nickName 昵称
      * @param userid id
      */
-    public void setNickName(String userid,String nickName){
+    public void modifyNickName(String userid,String nickName){
         informationDaompl.storeNickName(userid,nickName);
     }
 
@@ -78,7 +82,7 @@ public class GetDataFromDao {
      * @param signature 个性签名
      * @param userid 用户id
      */
-    public void setSignature(String userid,String signature){
+    public void modifySignature(String userid,String signature){
         informationDaompl.storeSignature(userid,signature);
     }
 
@@ -100,5 +104,9 @@ public class GetDataFromDao {
      */
     public void modifyPassword(String userid, String password){
         userDaompl.modifyPassword(userid,password);
+    }
+
+    public boolean verifyFriendID(String userid){
+        return userDaompl.verifyFriendID(userid);
     }
 }

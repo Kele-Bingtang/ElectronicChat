@@ -1,6 +1,6 @@
-package ChatClient.Chat;
+package ChatClient.Client;
 
-import ChatServer.History;
+import ChatServer.server.History;
 import Swing.Frame.ChatFrame;
 import Swing.Frame.TipMessageFrame;
 import Utils.SxUtils;

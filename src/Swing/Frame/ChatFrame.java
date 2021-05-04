@@ -1,8 +1,8 @@
 package Swing.Frame;
 
-import ChatClient.Chat.Send;
-import ChatClient.load.GetDataFromDao;
-import ChatServer.History;
+import ChatClient.Client.Send;
+import ChatServer.load.GetDataFromDao;
+import ChatServer.server.History;
 
 import javax.swing.*;
 import java.awt.*;

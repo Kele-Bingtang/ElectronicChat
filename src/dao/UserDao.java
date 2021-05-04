@@ -12,5 +12,7 @@ public interface UserDao {
     //修改密码
     void modifyPassword(String userid,String password);
 
+    //验证是否存在所添加好友的id
+    boolean verifyFriendID(String userid);
 
 }

@@ -1,6 +1,7 @@
-package ChatClient.Chat;
+package ChatClient.Client;
 
 
+import ChatClient.controller.Handle;
 import Utils.SxUtils;
 
 import java.io.DataInputStream;
@@ -15,6 +16,7 @@ public class Receive implements Runnable{
     DataInputStream dis = null;
     boolean isRunning;  //判断是否继续多线程
     Send send;
+    Handle handle;
 
     /**
      * 构造函数
@@ -23,6 +25,7 @@ public class Receive implements Runnable{
     public Receive(Socket socket){
         this.socket = socket;
         send = new Send(socket);
+        handle = new Handle();
         this.isRunning = true;
         try {
             dis = new DataInputStream(socket.getInputStream());
@@ -52,7 +55,15 @@ public class Receive implements Runnable{
         String msg = "";
         while(isRunning){
             msg = getMsg();  //获取消息
-            send.sendMsgToChat(msg);
+            if(msg.startsWith("EN_MSG")){
+                boolean isHandle = handle.handling(msg);
+                if(!isHandle){
+                    send.sendMsgToChat(msg);
+                }
+            }else {
+                send.sendMsgToChat(msg);
+            }
+
         }
     }
 

@@ -83,4 +83,31 @@ public class UserDaoImpl implements UserDao{
             SxUtils.close(pstt,conn);
         }
     }
+
+    /**
+     * 验证添加的id是否存在
+     * @param userid 添加id
+     * @return true false
+     */
+    @Override
+    public boolean verifyFriendID(String userid) {
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "SELECT * FROM users WHERE userid = ?";
+        boolean isExit = false;
+        PreparedStatement pstt = null;
+        ResultSet rs = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            rs = pstt.executeQuery();
+            while (rs.next()){
+                isExit = true;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            SxUtils.close(rs,pstt,conn);
+        }
+
+        return isExit;
+    }
 }

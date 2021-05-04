@@ -1,4 +1,4 @@
-package ChatClient.Chat;
+package ChatClient.Client;
 
 
 import Swing.Frame.LoginFrame;

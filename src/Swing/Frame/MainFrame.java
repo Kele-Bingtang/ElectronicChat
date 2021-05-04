@@ -1,8 +1,9 @@
 package Swing.Frame;
 
 
-import ChatClient.Chat.Send;
-import ChatClient.load.GetDataFromDao;
+import ChatClient.Client.Send;
+import ChatClient.cons.EnMsgType;
+import ChatServer.load.GetDataFromDao;
 import Swing.Dialog.ChangeNickName;
 import Swing.Dialog.ChangePassword;
 import Swing.Dialog.ChangeSignature;
@@ -238,14 +239,8 @@ public class MainFrame extends JFrame {
                     if(changePassword.isClick()){
                         String oldPassword = changePassword.getOldtValues();
                         String newPassword = changePassword.getNewValues();
-                        boolean isRight = getDataFromDao.verifyPassword(userid,oldPassword);
-                        if(isRight){
-                            //数据库更新密码
-                            getDataFromDao.modifyPassword(userid,newPassword);
-                            new TipMessageFrame().modifypasswordSucc();
-                        }else{
-                            new TipMessageFrame().modifypasswordFail();
-                        }
+                        //发送信息给服务端进行解析 修改密码
+                        new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_PASSWORD.toString() + " " + userid + ":" + oldPassword + ":" + newPassword);
                     }
                 }else if(box_1.getSelectedItem().equals(Item2)){
                     //修改昵称
@@ -253,8 +248,8 @@ public class MainFrame extends JFrame {
                     if(changeNickName.isClick()){
                         String newNickName = changeNickName.getValues();
                         nickNameLabel.setText(newNickName);
-                        //数据库更新昵称
-                        getDataFromDao.setNickName(userid,newNickName);
+                        //发送信息给服务端进行解析 更新昵称
+                        new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_NICKNAME.toString() + " " + userid + ":" + newNickName);
                     }
                 }else if(box_1.getSelectedItem().equals(Item3)){
                     //修改签名
@@ -263,7 +258,7 @@ public class MainFrame extends JFrame {
                         String newSignature = changeSignature.getValues();
                         signatureField.setText(newSignature);
                         //数据库更新签名
-                        getDataFromDao.setSignature(userid,newSignature);
+                        new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_SIGNATURE.toString() + " " + userid + ":" + newSignature);
                     }
                 }
             }

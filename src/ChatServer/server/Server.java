@@ -1,4 +1,4 @@
-package ChatServer;
+package ChatServer.server;
 
 import Utils.SxUtils;
 

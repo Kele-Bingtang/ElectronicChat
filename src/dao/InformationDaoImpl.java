@@ -22,7 +22,7 @@ public class InformationDaoImpl implements InformationDao {
     @Override
     public Information getImformation(String userid) {
         Information imformation = null;
-        String sql = "SELECT * FROM imformation WHERE userid = ?";
+        String sql = "SELECT * FROM information WHERE userid = ?";
         Connection conn = JDBCUtils.getConnection();
         PreparedStatement pstt = null;
         ResultSet rs = null;
@@ -54,7 +54,7 @@ public class InformationDaoImpl implements InformationDao {
     @Override
     public Information getUserID(String nickName) {
         Information information = null;
-        String sql = "SELECT * FROM imformation WHERE nickName = ?";
+        String sql = "SELECT * FROM information WHERE nickName = ?";
         Connection conn = JDBCUtils.getConnection();
         PreparedStatement pstt = null;
         ResultSet rs = null;
@@ -85,7 +85,7 @@ public class InformationDaoImpl implements InformationDao {
     @Override
     public void storeNickName(String userid,String nickName) {
         Connection conn = JDBCUtils.getConnection();
-        String sql = "UPDATE imformation SET nickName = ? WHERE userid = ?";
+        String sql = "UPDATE information SET nickName = ? WHERE userid = ?";
         PreparedStatement pstt = null;
 
         try {
@@ -108,7 +108,7 @@ public class InformationDaoImpl implements InformationDao {
     @Override
     public void storeSignature(String userid,String signature) {
         Connection conn = JDBCUtils.getConnection();
-        String sql = "UPDATE imformation SET signature = ? WHERE userid = ?";
+        String sql = "UPDATE information SET signature = ? WHERE userid = ?";
         PreparedStatement pstt = null;
         try {
             pstt = conn.prepareStatement(sql);
@@ -129,7 +129,7 @@ public class InformationDaoImpl implements InformationDao {
     public List<Information> getAllImformation() {
         Information information;
         List<Information> informationList = new ArrayList<>();
-        String sql = "SELECT * FROM imformation";
+        String sql = "SELECT * FROM information";
         Connection conn = JDBCUtils.getConnection();
         PreparedStatement pstt = null;
         ResultSet rs = null;
