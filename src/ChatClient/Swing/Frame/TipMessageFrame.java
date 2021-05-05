@@ -1,4 +1,4 @@
-package Swing.Frame;
+package ChatClient.Swing.Frame;
 
 import javax.swing.*;
 import java.awt.*;

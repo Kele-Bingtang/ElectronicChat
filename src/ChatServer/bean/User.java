@@ -1,4 +1,4 @@
-package bean;
+package ChatServer.bean;
 
 public class User {
     private String userid;

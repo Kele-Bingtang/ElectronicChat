@@ -1,7 +1,7 @@
 package ChatClient.controller;
 
 import ChatServer.load.EnMsgType;
-import Swing.Frame.TipMessageFrame;
+import ChatClient.Swing.Frame.TipMessageFrame;
 
 import java.util.concurrent.SynchronousQueue;
 

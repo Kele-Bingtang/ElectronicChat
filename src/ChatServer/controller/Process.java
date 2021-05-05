@@ -3,7 +3,7 @@ package ChatServer.controller;
 import ChatServer.load.EnMsgType;
 import ChatServer.load.GetDataFromDao;
 import ChatServer.server.Server;
-import bean.Information;
+import ChatServer.bean.Information;
 
 import java.util.ArrayList;
 import java.util.List;

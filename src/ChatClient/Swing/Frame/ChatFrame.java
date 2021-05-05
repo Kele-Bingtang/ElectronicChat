@@ -1,8 +1,6 @@
-package Swing.Frame;
+package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
-import ChatServer.load.EnMsgType;
-import ChatServer.load.GetDataFromDao;
 import ChatServer.server.History;
 
 import javax.swing.*;

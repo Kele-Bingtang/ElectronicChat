@@ -1,4 +1,4 @@
-package dao;
+package ChatServer.dao;
 
 
 public interface UserDao {

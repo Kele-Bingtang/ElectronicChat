@@ -1,13 +1,13 @@
-package Swing.Frame;
+package ChatClient.Swing.Frame;
 
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
 import ChatClient.controller.Handle;
 import ChatServer.load.GetDataFromDao;
-import Swing.Dialog.ChangeNickName;
-import Swing.Dialog.ChangePassword;
-import Swing.Dialog.ChangeSignature;
+import ChatClient.Swing.Dialog.ChangeNickName;
+import ChatClient.Swing.Dialog.ChangePassword;
+import ChatClient.Swing.Dialog.ChangeSignature;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

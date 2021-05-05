@@ -1,6 +1,6 @@
-package Swing.Dialog;
+package ChatClient.Swing.Dialog;
 
-import Swing.Frame.MainFrame;
+import ChatClient.Swing.Frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;

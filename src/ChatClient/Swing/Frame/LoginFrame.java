@@ -1,5 +1,5 @@
 
-package Swing.Frame;
+package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;

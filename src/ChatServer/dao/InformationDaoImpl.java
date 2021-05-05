@@ -1,9 +1,9 @@
-package dao;
+package ChatServer.dao;
 
 
 import Utils.JDBCUtils;
 import Utils.SxUtils;
-import bean.Information;
+import ChatServer.bean.Information;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

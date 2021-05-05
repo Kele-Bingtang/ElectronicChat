@@ -1,4 +1,4 @@
-package dao;
+package ChatServer.dao;
 
 import Utils.JDBCUtils;
 import Utils.SxUtils;

@@ -1,6 +1,6 @@
-package dao;
+package ChatServer.dao;
 
-import bean.Information;
+import ChatServer.bean.Information;
 
 public interface InformationDao {
 

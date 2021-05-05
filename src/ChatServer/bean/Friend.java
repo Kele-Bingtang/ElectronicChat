@@ -1,6 +1,6 @@
-package bean;
+package ChatServer.bean;
 
-public class Information {
+public class Friend {
     private String uid;
     private String nickName;
     private String signNature;

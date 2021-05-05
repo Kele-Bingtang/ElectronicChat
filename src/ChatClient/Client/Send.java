@@ -1,9 +1,8 @@
 package ChatClient.Client;
 
-import ChatServer.load.EnMsgType;
 import ChatServer.server.History;
-import Swing.Frame.ChatFrame;
-import Swing.Frame.TipMessageFrame;
+import ChatClient.Swing.Frame.ChatFrame;
+import ChatClient.Swing.Frame.TipMessageFrame;
 import Utils.SxUtils;
 
 import java.io.*;

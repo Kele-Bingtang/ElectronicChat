@@ -1,9 +1,9 @@
-package Swing.Frame;
+package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatServer.load.EnMsgType;
 import ChatServer.load.GetDataFromDao;
-import bean.Information;
+import ChatServer.bean.Information;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

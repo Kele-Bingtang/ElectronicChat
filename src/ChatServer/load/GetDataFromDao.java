@@ -1,9 +1,9 @@
 package ChatServer.load;
 
-import bean.Information;
-import dao.FriendDaompl;
-import dao.InformationDaoImpl;
-import dao.UserDaoImpl;
+import ChatServer.bean.Information;
+import ChatServer.dao.FriendDaompl;
+import ChatServer.dao.InformationDaoImpl;
+import ChatServer.dao.UserDaoImpl;
 
 import java.util.List;
 
