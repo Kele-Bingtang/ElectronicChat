@@ -2,6 +2,7 @@ package ChatClient.Client;
 
 
 import ChatClient.controller.Handle;
+import ChatServer.load.EnMsgType;
 import Utils.SxUtils;
 
 import java.io.DataInputStream;

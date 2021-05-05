@@ -1,6 +1,7 @@
 package Swing.Frame;
 
 import ChatClient.Client.Send;
+import ChatServer.load.EnMsgType;
 import ChatServer.load.GetDataFromDao;
 import ChatServer.server.History;
 
@@ -40,12 +41,12 @@ public class ChatFrame extends JFrame{
     History history;
 
     Send send;
-    public ChatFrame(Socket socket,String chatName){
+    public ChatFrame(Socket socket,String nickName,String chatName){
         this.socket = socket;
         this.chatName = chatName;
         history = new History();
         //从登录窗口获取昵称
-        nickName = new GetDataFromDao().getNickName(LoginFrame.userField.getText());
+        this.nickName = nickName;
         send  = new Send(socket);
         init();
     }
@@ -106,9 +107,8 @@ public class ChatFrame extends JFrame{
             //存储聊天记录
             history.setHitory(message,chatName);
 
-            //发送你要聊天的对象
             //发送消息出去
-            sendMsg(chatName+ ":" + message);
+            sendMsg(message);
         });
 
         //表情按钮初始化

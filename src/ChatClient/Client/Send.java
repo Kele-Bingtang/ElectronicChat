@@ -1,5 +1,6 @@
 package ChatClient.Client;
 
+import ChatServer.load.EnMsgType;
 import ChatServer.server.History;
 import Swing.Frame.ChatFrame;
 import Swing.Frame.TipMessageFrame;
@@ -34,6 +35,7 @@ public class Send{
         }
     }
 
+
     /**
      * 聊天窗口发送消息给服务端
      * @param msg 消息
@@ -55,35 +57,24 @@ public class Send{
      */
     public void sendMsgToChat(String message){
         if(!message.equals("")){
-            //格式：聊天对象:自己昵称 消息
-            int index1 = message.indexOf(":");
-            int index2 = message.indexOf(" ");
-            //获取聊天对象
-            String chatName = message.substring(0,index1);
-            //获取发送人昵称
-            //解析发送的名称
-            String nickName = message.substring(index1+1,index2);
-            //解析信息
-            message = message.substring(index1 + 1);
+            int index = message.indexOf(" ");
+            String chatName = message.substring(0,index);
             System.out.println(message);
-
-            //弄一个界面，五秒自动关闭
-            new TipMessageFrame().sendMessageTip(nickName);
-
             //获取聊天窗口的聊天对象
             Set<String> set = ChatFrame.TextPaneMap.keySet();
             for (String key: set) {
-                if(key.equals(nickName)){
+                if(key.equals(chatName)){
+                    //弄一个界面，五秒自动关闭
+                    new TipMessageFrame().sendMessageTip("消息提醒",chatName + "发消息给你了",false);
                     //获得聊天消息
                     ChatFrame.messageToFrame.get(key).append(message).append("\n");
                     //将发来的消息显示在聊天对象的聊天窗口
                     ChatFrame.TextPaneMap.get(key).setText(ChatFrame.messageToFrame.get(key).toString());
-                    hit.put(nickName,ChatFrame.messageToFrame.get(key));
+                    hit.put(chatName,ChatFrame.messageToFrame.get(key));
                     //存储发来的消息
-                    setSendHistory(nickName);
+                    setSendHistory(chatName);
                     break;
                 }
-
             }
         }
     }

@@ -6,13 +6,16 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 服务端
  */
 public class Server {
     public static List<Channel> all = new ArrayList<>();
+    public static Map<String,List<String>> useridMap = new HashMap<>();
 
     public static void main(String[] args) {
         new Server().startServer();

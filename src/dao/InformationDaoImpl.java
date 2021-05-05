@@ -33,11 +33,15 @@ public class InformationDaoImpl implements InformationDao {
             while(rs.next()){
                 imformation = new Information();
                 imformation.setNickName(rs.getString("nickName"));
-                imformation.setSignNature(rs.getString("signature"));
+                if(rs.getString("signature") == null){
+                    imformation.setSignNature("编辑个性签名");
+                }else {
+                    imformation.setSignNature(rs.getString("signature"));
+                }
             }
             if(null == imformation){
                 imformation = new Information();
-                imformation.setNickName("第八组");
+                imformation.setNickName("游客");
                 imformation.setSignNature("欢迎来到第八组简易聊天系统");
             }
         } catch (SQLException throwables) {
@@ -52,7 +56,7 @@ public class InformationDaoImpl implements InformationDao {
      * 昵称没有重复情况下
      */
     @Override
-    public Information getUserID(String nickName) {
+    public Information getUserIDByNickName(String nickName) {
         Information information = null;
         String sql = "SELECT * FROM information WHERE nickName = ?";
         Connection conn = JDBCUtils.getConnection();
@@ -113,6 +117,23 @@ public class InformationDaoImpl implements InformationDao {
         try {
             pstt = conn.prepareStatement(sql);
             pstt.setString(1,signature);
+            pstt.setString(2,userid);
+            pstt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            JDBCUtils.close(pstt,conn);
+        }
+    }
+
+    @Override
+    public void modifyStatus(String userid,String status) {
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "UPDATE information SET status = ? WHERE userid = ?";
+        PreparedStatement pstt = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            pstt.setString(1,status);
             pstt.setString(2,userid);
             pstt.executeUpdate();
         } catch (SQLException throwables) {

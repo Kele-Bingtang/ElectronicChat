@@ -4,6 +4,8 @@ import Swing.Frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class ChangePassword extends JDialog{
     boolean isExit = false;
@@ -36,9 +38,18 @@ public class ChangePassword extends JDialog{
         sureButton.setBounds(250,250,80,30);
         container.add(sureButton);
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                isExit = false;
+                dispose();
+            }
+        });
+
         sureButton.addActionListener(e -> {
             isExit = true;
             setVisible(false);
+            dispose();
         });
 
     }

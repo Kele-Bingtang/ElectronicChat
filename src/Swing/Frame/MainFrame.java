@@ -3,6 +3,7 @@ package Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
+import ChatClient.controller.Handle;
 import ChatServer.load.GetDataFromDao;
 import Swing.Dialog.ChangeNickName;
 import Swing.Dialog.ChangePassword;
@@ -19,6 +20,7 @@ import java.net.Socket;
  * 主界面
  */
 public class MainFrame extends JFrame {
+    JFrame frame = new JFrame();
     //昵称
     public static JLabel nickNameLabel;
     //个性签名
@@ -28,7 +30,7 @@ public class MainFrame extends JFrame {
     //列表
     public static JList<String> list;
     //好友列表数组
-    private String[] fd;
+    private String[] friendList;
     //列表s
     public static DefaultListModel<String> model;
 
@@ -43,17 +45,19 @@ public class MainFrame extends JFrame {
     String nickName;
     String signature;
 
-    public MainFrame(Socket socket){
+    public MainFrame(Socket socket,String userid,String nickName,String signature,String[] friendList){
         this.socket = socket;
         getDataFromDao = new GetDataFromDao();
         //获取用户名
-        userid = LoginFrame.userField.getText();
+        this.userid = userid;
         //获取昵称
-        nickName = getDataFromDao.getNickName(userid);
+        this.nickName = nickName;
         //获取个性签名
-        signature = getDataFromDao.getSignNature(userid);
+        this.signature = signature;
+        //回去好友列表
+        this.friendList = friendList;
         System.out.println("------" + nickName + "客户端------");
-        new Send(socket).sendMsg(nickName);
+        //new Send(socket).sendMsg(nickName);
     }
 
     public void init(){
@@ -86,9 +90,11 @@ public class MainFrame extends JFrame {
         label_2.setBounds(15,30,80,80);
         topPanel.add(label_2);
 
+        //初始化好友列表
         //初始化model
         model = new DefaultListModel<>();
-        addModelRow();
+        //初始化好友列表
+        flushFriendList();
         list = new JList<>(model);
         //背景透明
         list.setOpaque(false);
@@ -102,9 +108,13 @@ public class MainFrame extends JFrame {
                 if(e.getValueIsAdjusting()){
                     for(int i = 0;i < model.size();i++){
                         if(model.get(i).equals(list.getSelectedValue())){
-                            new ChatFrame(socket,list.getSelectedValue());
-                            //清空
-                            ChatFrame.messageToFrame.get(list.getSelectedValue()).delete(0,ChatFrame.messageToFrame.get(list.getSelectedValue()).length());
+                            int index = list.getSelectedValue().indexOf(" ");
+                            String chatName = list.getSelectedValue().substring(0,index);
+                            System.out.println(chatName);
+                            new ChatFrame(socket,nickName,chatName);
+                            new Send(socket).sendMsg(ChatServer.load.EnMsgType.EN_MSG_SINGLE_CHAT.toString() + " " + nickName + ":" + chatName);
+                            //清空窗口
+                            //ChatFrame.messageToFrame.get(chatName).delete(0,ChatFrame.messageToFrame.get(chatName).length());
                             System.out.println("创建了第" + ++sum + "个聊天窗口");
                             list.clearSelection();
                         }
@@ -129,7 +139,6 @@ public class MainFrame extends JFrame {
         CenterPanel.setSize(new Dimension(295,470));
         CenterPanel.getViewport().setOpaque(false);
         CenterPanel.setOpaque(false);
-
         CenterPanel.add(listPanel);
 
         //设置在线状态bBox();
@@ -195,7 +204,7 @@ public class MainFrame extends JFrame {
             String msg = searchField.getText().trim();
             if(msg.length() == 0){
                 model.clear();
-                addModelRow();
+                flushFriendList();
                 return;
             }
             model.clear();
@@ -208,7 +217,7 @@ public class MainFrame extends JFrame {
                 String msg = searchField.getText().trim();
                 if(msg.length() == 0){
                     model.clear();
-                    addModelRow();
+                    flushFriendList();
                     return;
                 }
                 model.clear();
@@ -239,26 +248,48 @@ public class MainFrame extends JFrame {
                     if(changePassword.isClick()){
                         String oldPassword = changePassword.getOldtValues();
                         String newPassword = changePassword.getNewValues();
-                        //发送信息给服务端进行解析 修改密码
-                        new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_PASSWORD.toString() + " " + userid + ":" + oldPassword + ":" + newPassword);
+
+                        if(newPassword.equals("") || newPassword.contains(" ")){
+                            new TipMessageFrame().modifypasswordSuccOrFail("失败","您输入的新密码为空");
+                        }else if(!oldPassword.equals(newPassword)){
+                            //发送信息给服务端进行解析 修改密码
+                            new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_PASSWORD.toString() + " " + userid + ":" + oldPassword + ":" + newPassword);
+                        }else {
+                            new TipMessageFrame().modifypasswordSuccOrFail("失败","您输入的新密码和旧密码相同");
+                        }
                     }
                 }else if(box_1.getSelectedItem().equals(Item2)){
                     //修改昵称
                     ChangeNickName changeNickName = new ChangeNickName(MainFrame.this,nickName);
                     if(changeNickName.isClick()){
                         String newNickName = changeNickName.getValues();
-                        nickNameLabel.setText(newNickName);
-                        //发送信息给服务端进行解析 更新昵称
-                        new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_NICKNAME.toString() + " " + userid + ":" + newNickName);
+                        if(newNickName.equals("") || newNickName.contains(" ")){
+                            new TipMessageFrame().sendMessageTip("失败","您的昵称非法",true);
+                        }else if(!nickName.equals(newNickName)){
+                            nickNameLabel.setText(newNickName);
+                            nickName = newNickName;
+                            //发送信息给服务端进行解析 更新昵称
+                            new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_NICKNAME.toString() + " " + userid + ":" + newNickName);
+                        }else {
+                            new TipMessageFrame().sendMessageTip("失败","您的昵称和原来的一样",true);
+                        }
                     }
+
                 }else if(box_1.getSelectedItem().equals(Item3)){
                     //修改签名
                     ChangeSignature changeSignature = new ChangeSignature(MainFrame.this,signature);
                     if(changeSignature.isClick()){
                         String newSignature = changeSignature.getValues();
-                        signatureField.setText(newSignature);
-                        //数据库更新签名
-                        new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_SIGNATURE.toString() + " " + userid + ":" + newSignature);
+                        if(newSignature.equals("") || newSignature.contains(" ")){
+                            new TipMessageFrame().sendMessageTip("失败","您的签名非法",true);
+                        }else if(!signature.equals(newSignature)){
+                            signatureField.setText(newSignature);
+                            signature = newSignature;
+                            //数据库更新签名
+                            new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_SIGNATURE.toString() + " " + userid + ":" + newSignature);
+                        }else {
+                            new TipMessageFrame().sendMessageTip("失败","您的签名和原来的一样",true);
+                        }
                     }
                 }
             }
@@ -268,7 +299,7 @@ public class MainFrame extends JFrame {
         JComboBox<String> box_2 = new JComboBox<>();
         String ItemIcon = "\uD83D\uDC65";
         String addFriend = "添加好友";
-        String deleteFriend = "删除还有";
+        String deleteFriend = "删除好友";
         box_2.addItem(ItemIcon);
         box_2.addItem(addFriend);
         box_2.addItem(deleteFriend);
@@ -280,17 +311,46 @@ public class MainFrame extends JFrame {
                 if(box_2.getSelectedItem().equals(ItemIcon)){
                     System.out.println("进行好友操作");
                 }else if(box_2.getSelectedItem().equals(addFriend)){
-
+                    //添加好友
+                    AddFriendFrame addFriendFrame = new AddFriendFrame(socket,userid);
                 }else if(box_2.getSelectedItem().equals(deleteFriend)){
-
+                    //删除好友
+                    new DeleteFriendFrame(socket,userid);
                 }
             }
         });
 
         buttomPanel.add(box_2);
 
+        //刷新JList列表
+        JLabel fluashLabel = new JLabel("刷新");
+        fluashLabel.setBounds(120,20,50,25);
+        buttomPanel.add(fluashLabel);
+        fluashLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            int code = 0;
+            list.removeAll();
+            model = new DefaultListModel<>();
+            new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_FRIEND.toString() + " " + userid);
+            try {
+                //阻塞线程，等待发送的消息接收并且处理后
+                code = (int) Handle.queue.take();
+                System.out.println("刷新的：" + code);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+            if(code == 300){
+                flushFriendList();
+            }
+            //高度自定义，防止点击空白处自动获取list的最后一行
+            listPanel.setSize(new Dimension(295, (model.size() + 1 )* list.getFixedCellHeight() + 3));
+            list.setModel(model);
+            }
+        });
+
         //容器
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         //设置窗体信息
         frame.setTitle("界面");
         //给窗体设置图片
@@ -330,17 +390,27 @@ public class MainFrame extends JFrame {
             }
         });
         frame.add(topPanel);
-        frame.add(CenterPanel);
         frame.add(buttomPanel);
+        frame.add(CenterPanel);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //告诉客户端，我已经离线
+                new Send(socket).sendMsg(EnMsgType.EN_MSG_EXIT.toString() + " " + userid + ":" + nickName);
+            }
+        });
+
     }
-    public void addModelRow(){
-        fd = getDataFromDao.getFriends(LoginFrame.userField.getText());
-        for (String s : fd) {
+
+    public void flushFriendList(){
+        friendList = Handle.friends;
+        for (String s : friendList) {
             model.addElement(s);
         }
     }
     public void onsearchID(String msg){
-        for (String s : fd) {
+        for (String s : friendList) {
             if(msg.contains(s)){
                 model.addElement(s);
             }

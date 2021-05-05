@@ -1,7 +1,9 @@
 
 package Swing.Frame;
 
-import dao.UserDaoImpl;
+import ChatClient.Client.Send;
+import ChatClient.cons.EnMsgType;
+import ChatClient.controller.Handle;
 
 import java.awt.*;
 import java.net.Socket;
@@ -18,7 +20,6 @@ public class LoginFrame extends JFrame {
     private JTextField passField;
     private JButton button1;
     private JButton button2;
-
 
     public static void main(String[] args) {
         new LoginFrame(socket);
@@ -64,14 +65,34 @@ public class LoginFrame extends JFrame {
         button1.addActionListener(e -> {
             String username = userField.getText().trim();
             String password = passField.getText().trim();
-            UserDaoImpl userDao = new UserDaoImpl();
-            boolean isLogin = userDao.getInformation(username,password);
-            if(isLogin){
-                setVisible(false);
-                MainFrame mainFrame = new MainFrame(socket);
-                mainFrame.init();
+            new Send(socket).sendMsg(EnMsgType.EN_MSG_LOGIN.toString() + " " +username + ":" + password);
+            int code = 0;
+            try {
+                //获取quenue，没有获取之前卡在这一步，别处必须offer或者put
+                code = (int) Handle.queue.take();
+                System.out.println("登陆成功的：" + code);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+
+            if(code == 200){
+                new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_INFORMATION.toString() + " " + username);
+                new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_FRIEND.toString() + " " + username);
+                try {
+                    //获取quenue，没有获取之前卡在这一步，别处必须offer或者put
+                    code = (int) Handle.queue.take();
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+                //关闭自己
+                if(code == 300){
+                    dispose();
+                    MainFrame mainFrame = new MainFrame(socket,username,Handle.nickName,Handle.signature,Handle.friends);
+                    mainFrame.init();
+                }
+
             }else {
-                System.out.println("用户名或密码错误，或者用户名不存在，请注册");
+                System.out.println("失败");
             }
         });
 

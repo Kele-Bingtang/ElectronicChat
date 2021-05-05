@@ -13,28 +13,25 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Vector;
 
-public class AddFriendFrame extends JFrame {
+public class DeleteFriendFrame extends JFrame {
     Container container;
     DefaultTableModel tableModel = new DefaultTableModel();
     JTable table;
-    JButton searchButton,addButton;
+    JButton searchButton,deleteButton;
     JTextField searchField = new JTextField(50);
     List<Information> dataList;
-    GetDataFromDao getDataFromDao;
 
-    boolean isAdd = false;
-
+    boolean isDelete = false;
     String userid;
     Socket socket;
 
     public static void main(String[] args) {
-        new AddFriendFrame(null,"kele");
+        new DeleteFriendFrame(null,"kele");
     }
 
-    public AddFriendFrame(Socket socket,String userid){
+    public DeleteFriendFrame(Socket socket, String userid){
         this.socket = socket;
         this.userid = userid;
-        getDataFromDao = new GetDataFromDao();
         setTitle("查找");
         container = getContentPane();
         container.setLayout(new BorderLayout());
@@ -46,7 +43,7 @@ public class AddFriendFrame extends JFrame {
         initToolBar();
 
         //获取数据
-        dataList = getDataFromDao.getAllData();
+        dataList = new GetDataFromDao().getFriends(userid);
 
         //加载数据
         loadData();
@@ -124,46 +121,23 @@ public class AddFriendFrame extends JFrame {
             }
         });
 
-        addButton = new JButton("添加");
+        deleteButton = new JButton("删除");
         toolBar.addSeparator(new Dimension(240,30));
-        toolBar.add(addButton);
+        toolBar.add(deleteButton);
 
-        //如果是好友，则禁用添加按钮
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                String relation = "";
-                int[] rows = table.getSelectedRows();
-                for(int row : rows){
-                    //第五行为关系，如果是好友则禁用添加
-                    relation = (String) table.getValueAt(row,4);
-
-                    if(relation.equals("好友")){
-                        addButton.setEnabled(false);
-                    }else {
-                        addButton.setEnabled(true);
-                    }
-                }
-            }
-        });
-
-        addButton.addActionListener(new ActionListener() {
+        deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                isAdd = true;
-
-                int[] row = table.getSelectedRows();
-                for (int i = 0; i < row.length; i++) {
-                    String addUserid = (String) tableModel.getValueAt(row[i],0);
-                    //添加完后 变成好友
-                    table.clearSelection();
-                    tableModel.setValueAt("好友",row[i],4);
+                isDelete = true;
+                int rows[] = table.getSelectedRows();
+                for (int i = 0; i < rows.length; i++) {
+                    String deleteUserid = (String) tableModel.getValueAt(rows[i],0);
                     //发送到服务端
-                    new Send(socket).sendMsg(EnMsgType.EN_MSG_ADD_FRIEND.toString() + " " + userid + ":" + addUserid);
+                    new Send(socket).sendMsg(EnMsgType.EN_MSG_DEL_FRIEND.toString() + " " + userid + ":" + deleteUserid);
                 }
+                onDelete(rows);
             }
         });
-
     }
 
     /**
@@ -190,6 +164,23 @@ public class AddFriendFrame extends JFrame {
         }
     }
 
+    public void onDelete(int []rows){
+        //在列表中删除
+        //技巧，从后往前面删除，因为删除前面索引会变化，后面往前移动一位
+        for(int i = rows.length - 1;i >= 0;i--){
+            int row = rows[i];
+            String id = (String) tableModel.getValueAt(row,0);
+            for (int j = 0; j < dataList.size(); j++) {
+                if(id .equals(dataList.get(j).getUid())){
+                    dataList.remove(j);
+                    break;
+                }
+            }
+            //从tableModel中删除记录
+            tableModel.removeRow(row);
+        }
+    }
+
     /**
      * 初始化表格列名
      */
@@ -198,7 +189,6 @@ public class AddFriendFrame extends JFrame {
         tableModel.addColumn("昵称");
         tableModel.addColumn("个性签名");
         tableModel.addColumn("状态");
-        tableModel.addColumn("关系");
     }
 
     /**
@@ -218,30 +208,13 @@ public class AddFriendFrame extends JFrame {
      * 初始加载全部用户信息
      */
     public void loadData() {
-
-        String []friendid = getDataFromDao.getFriendid(userid);
-
-        for (Information information : dataList) {
+        for (int i = 0;i < dataList.size();i++){
             Vector<Object> rowData = new Vector<>();
-            rowData.add(information.getUid());
-            rowData.add(information.getNickName());
-            rowData.add(information.getSignNature());
-            rowData.add(information.getStatus());
-            //判断是不是好友
-            for (String s : friendid) {
-                if (information.getUid().equals(s)) {
-                    rowData.remove("陌生人");
-                    rowData.add("好友");
-                    break;
-                }else {
-                    rowData.add("陌生人");
-                }
-            }
-            //如果是自己的id，则不添加进去
-            if(!userid.equals(information.getUid())){
-                tableModel.addRow(rowData);
-            }
-
+            rowData.add(dataList.get(i).getUid());
+            rowData.add(dataList.get(i).getNickName());
+            rowData.add(dataList.get(i).getSignNature());
+            rowData.add(dataList.get(i).getStatus());
+            tableModel.addRow(rowData);
         }
     }
 

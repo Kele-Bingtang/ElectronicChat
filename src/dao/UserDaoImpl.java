@@ -10,9 +10,14 @@ import java.sql.SQLException;
 
 public class UserDaoImpl implements UserDao{
 
-
+    /**
+     * 登陆判断用户名和密码师傅正确
+     * @param userid 用户id
+     * @param password 密码
+     * @return true false
+     */
     @Override
-    public boolean getInformation(String userid, String password) {
+    public boolean verifyUseridAndPassword(String userid, String password) {
         Connection conn = JDBCUtils.getConnection();
         String sql = "SELECT * FROM users WHERE userid = ? AND password = ?";
         //判断查询成功标记
@@ -36,35 +41,11 @@ public class UserDaoImpl implements UserDao{
         return flag;
     }
 
-    //验证密码
-    @Override
-    public boolean verifyPassword(String userid, String oldPassword) {
-        boolean isReal = false;
-        Connection conn = JDBCUtils.getConnection();
-        String sql = "SELECT * FROM users WHERE userid = ? AND password = ?";
-        PreparedStatement pstt = null;
-        ResultSet rs = null;
-        try {
-            pstt = conn.prepareStatement(sql);
-            pstt.setString(1,userid);
-            pstt.setString(2,oldPassword);
-
-            rs = pstt.executeQuery();
-
-            while(rs.next()){
-                //密码正确
-                isReal = true;
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }finally {
-            //关闭资源
-            SxUtils.close(rs,pstt,conn);
-        }
-        return isReal;
-    }
-
-    //修改密码
+    /**
+     * 修改密码
+     * @param userid 用户id
+     * @param password 密码
+     */
     @Override
     public void modifyPassword(String userid, String password) {
         Connection conn = JDBCUtils.getConnection();
@@ -98,6 +79,7 @@ public class UserDaoImpl implements UserDao{
         ResultSet rs = null;
         try {
             pstt = conn.prepareStatement(sql);
+            pstt.setString(1,userid);
             rs = pstt.executeQuery();
             while (rs.next()){
                 isExit = true;

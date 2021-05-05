@@ -25,6 +25,30 @@ public class GetDataFromDao {
     }
 
     /**
+     * 获得好友昵称和状态(可修改)
+     * @param userid 用户id
+     * @return 好友列表
+     */
+    public String[] getFriendNickNameAndStatus(String userid){
+        List<Information> list = getFriends(userid);
+        String []friendName = new String[list.size()];
+        for(int i =0;i < list.size();i++){
+            friendName[i] = list.get(i).getNickName() + "     (" + list.get(i).getStatus() + ")";
+        }
+        return friendName;
+    }
+
+    /**
+     * 判断用户名和密码是否正确
+     * @param userid 用户id
+     * @param password 密码
+     * @return true false
+     */
+    public boolean verifyUseridAndPassword(String userid,String password){
+        return userDaompl.verifyUseridAndPassword(userid,password);
+    }
+
+    /**
      * 获取全部用户信息
      * @return 存储用户信息的集合
      */
@@ -34,39 +58,57 @@ public class GetDataFromDao {
     }
 
     /**
-     * 获得朋友列表
+     * 获取全部好友
      * @param userid 用户id
-     * @return 好友列表
+     * @return 存储好友信息的集合
      */
-    public String[] getFriends(String userid){
-        List<String> list = friendDaompl.getFriends(userid);
-        String []fd = new String[list.size()];
-        for(int i =0;i < list.size();i++){
-            fd[i] = list.get(i);
-        }
-        return fd;
+    public List<Information> getFriends(String userid){
+        List<Information> friends = friendDaompl.getFriends(userid);
+        return friends;
     }
 
+
+    /**
+     * 获取好友id
+     * @param userid 用户id
+     * @return 好友id
+     */
+    public String[] getFriendid(String userid){
+        List<Information> list = getFriends(userid);
+        String []friendid = new String[list.size()];
+        for(int i =0;i < list.size();i++){
+            friendid[i] = list.get(i).getUid();
+        }
+        return friendid;
+    }
+
+    /**
+     * 添加好友
+     * @param userid 用户id
+     * @param friendid 好友id
+     */
     public void addFriend(String userid,String friendid){
         friendDaompl.addFriend(userid,friendid);
     }
 
-    /**
-     * 获得昵称
-     * @return 昵称
-     */
-    public String getNickName(String userid){
-        Information information = informationDaompl.getImformation(userid);
-        return information.getNickName();
+    public void modifyStatus(String userid,String status){
+        informationDaompl.modifyStatus(userid,status);
+    }
+
+
+    public void deleteFriend(String userid, String friendid){
+        friendDaompl.deleteFriend(userid,friendid);
     }
 
     /**
-     * 获得个性签名
+     * 获得用户的信息(昵称、签名、状态)
+     * @return 昵称
      */
-    public String getSignNature(String userid){
+    public Information getinformationByUserid(String userid){
         Information information = informationDaompl.getImformation(userid);
-        return information.getSignNature();
+        return information;
     }
+
 
     /**
      * 更新昵称
@@ -86,16 +128,6 @@ public class GetDataFromDao {
         informationDaompl.storeSignature(userid,signature);
     }
 
-    /**
-     * 验证密码是否正确
-     * @param userid 用户id
-     * @param oldPassword 密码
-     * @return 判断
-     */
-    public boolean verifyPassword(String userid,String oldPassword){
-        boolean isRight = userDaompl.verifyPassword(userid,oldPassword);
-        return isRight;
-    }
 
     /**
      * 修改密码
@@ -109,4 +141,9 @@ public class GetDataFromDao {
     public boolean verifyFriendID(String userid){
         return userDaompl.verifyFriendID(userid);
     }
+
+    public Information getUserIDByNickName(String nickName){
+        return informationDaompl.getUserIDByNickName(nickName);
+    }
+
 }
