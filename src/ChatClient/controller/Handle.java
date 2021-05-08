@@ -1,6 +1,6 @@
 package ChatClient.controller;
 
-import ChatServer.load.EnMsgType;
+import ChatClient.cons.EnMsgType;
 import ChatClient.Swing.Frame.TipMessageFrame;
 
 import java.util.concurrent.SynchronousQueue;
@@ -12,6 +12,8 @@ public class Handle {
     public static String nickName;
     public static String signature;
     public static String[] friends;
+    public static String[] groups;
+    public static String[] groupMembers;
 
     public boolean handling(String message){
         if(message.equals(EnMsgType.EN_MSG_LOGIN_Fail.toString())){
@@ -29,12 +31,13 @@ public class Handle {
             System.out.println(nickName + "已经上线啦");
             new TipMessageFrame().sendMessageTip("上线通知",nickName + "已经上线啦",false);
             return true;
-        }else if(message.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+        }else if(message.startsWith(EnMsgType.EN_MSG_OPEN_CHAT.toString())){
             //一对一聊天
             int index1 = message.indexOf(" ");
             int index2 = message.indexOf(":");
             String chatName = message.substring(index1 + 1,index2);
             System.out.println(chatName + "打开和你的聊天窗口");
+            new TipMessageFrame().sendMessageTip("提示",chatName + "打开和你的聊天窗口",false);
             return true;
         } else if(message.equals(EnMsgType.EN_MSG_ADD_FRIEND.toString())){
             //添加好友
@@ -86,13 +89,28 @@ public class Handle {
             String friendName = message.substring(index + 1);
             System.out.println(friendName + "下线了");
             new TipMessageFrame().sendMessageTip("上线通知",friendName + "下线啦",false);
-
             return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_INFROMATION.toString())){
+            int index = message.indexOf(" ");
+            String realMessage = message.substring(index + 1);
+            groups = realMessage.split(":");
+            queue.offer(400);
+            return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString())){
+            int index = message.indexOf(" ");
+            message = message.substring(index + 1);
+            groupMembers = message.split(":");
+            queue.offer(500);
+            return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+
+            return false;
+        }else if(message.startsWith(EnMsgType.EN_MSG_OPEN_GROUP.toString())){
+
+            return false;
         }else {
             return false;
         }
     }
-
-
 
 }

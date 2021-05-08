@@ -1,7 +1,9 @@
 package ChatServer.load;
 
+import ChatServer.bean.Group;
 import ChatServer.bean.Information;
 import ChatServer.dao.FriendDaompl;
+import ChatServer.dao.GroupChatDaoImpl;
 import ChatServer.dao.InformationDaoImpl;
 import ChatServer.dao.UserDaoImpl;
 
@@ -18,10 +20,13 @@ public class GetDataFromDao {
 
     FriendDaompl friendDaompl;
 
+    GroupChatDaoImpl groupChatDaompl;
+
     public GetDataFromDao(){
         userDaompl = new UserDaoImpl();
         informationDaompl = new InformationDaoImpl();
         friendDaompl = new FriendDaompl();
+        groupChatDaompl = new GroupChatDaoImpl();
     }
 
     /**
@@ -145,5 +150,28 @@ public class GetDataFromDao {
     public Information getUserIDByNickName(String nickName){
         return informationDaompl.getUserIDByNickName(nickName);
     }
+
+    /**
+     * 获取群的信息
+     * @return 群的信息
+     */
+    public List<Group> getGroupInformation(){
+        return groupChatDaompl.getGroupInformation();
+    }
+
+
+    public String[] getGroupName(){
+        List<Group> groupList = getGroupInformation();
+        String []groupName = new String[groupList.size()];
+        for(int i =0;i < groupList.size();i++){
+            groupName[i] = groupList.get(i).getGroupName();
+        }
+        return groupName;
+    }
+
+    public Group getGroupidByName(String groupName){
+        return groupChatDaompl.getGroupid(groupName);
+    }
+
 
 }

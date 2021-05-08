@@ -8,8 +8,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,12 +21,12 @@ public class Channel implements Runnable{
     DataInputStream dis = null;
     DataOutputStream dos = null;
     boolean isRunning;
-    public String userid;
-    public String chatUserid;
+    String userid;
+    String nickName;
+    String chatUserid;
     History history;
     Process process;
 
-    String []friends;
 
     public Channel(Socket server){
         this.server = server;
@@ -74,9 +72,8 @@ public class Channel implements Runnable{
     }
     /**
      * @param msg 消息
-     * @param isSys 识别是否是系统发的消息
      */
-    public void sendMsgToOthers(String msg,boolean isSys){
+    public void sendMsgToOther(String msg){
         for(Channel other : Server.all){
             if(other == this){
                 continue;
@@ -86,6 +83,53 @@ public class Channel implements Runnable{
                 break;
             }
 
+        }
+    }
+
+
+    /**
+     * 群聊：获取自己的消息，发给其他人
+     * 私聊：约定数据格式：@xxx msg
+     * @param msg 消息
+     */
+    public void sendMsgToAll(String msg,boolean isSys){
+        int index1 = msg.indexOf("\n");
+        //去掉前面的空格
+        String realMessage = msg.substring(index1 + 1).trim();
+        boolean isPrivte = realMessage.contains("@");
+        if(isPrivte){  //是否为私聊
+            //把前面的日期和昵称截取
+            String nickNameAndDate = msg.substring(0,index1);
+            int index2 = realMessage.indexOf(" ");
+            int index3 = realMessage.lastIndexOf(":");
+            String targetName = realMessage.substring(1,index2);
+            String groupName = realMessage.substring(index3 + 1);
+            realMessage = realMessage.substring(index2 + 1,index3);
+            for(Channel other : Server.all){
+                if(other.nickName.equals(targetName)){
+                    other.sendMsg(EnMsgType.EN_MSG_GROUP_SINGLE_CHAT.toString() + " " + nickNameAndDate + "   悄悄对您说：\n    " + realMessage + ":" + groupName);
+                    break;
+                }
+            }
+        }else {
+            for(Channel other : Server.all){  //遍历判断是否是自己的客户端
+                if(other == this){
+                    continue;
+                }
+                if(!isSys){
+                    other.sendMsg(EnMsgType.EN_MSG_GROUP_CHAT.toString() + " " + msg);  //群聊消息
+                }else {
+                    if(msg.startsWith(EnMsgType.EN_MSG_OPEN_GROUP.toString())){
+                        int index = msg.indexOf(" ");
+                        String realMassage = msg.substring(index + 1);
+                        other.sendMsg(EnMsgType.EN_MSG_OPEN_GROUP.toString() + " " + "系统消息：" + realMassage);  //系统消息
+                    }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
+                        int index = msg.indexOf(" ");
+                        String realMassage = msg.substring(index + 1);
+                        other.sendMsg(EnMsgType.EN_MSG_GROUP_EXIT.toString() + " " + "系统消息：" + realMassage);
+                    }
+                }
+            }
         }
     }
 
@@ -140,7 +184,7 @@ public class Channel implements Runnable{
                         int index1 = handleMessage.indexOf(" ");
                         int index2 = handleMessage.indexOf(":");
                         userid = handleMessage.substring(index1 + 1,index2);
-                        String nickName = handleMessage.substring(index2 + 1);
+                        nickName = handleMessage.substring(index2 + 1);
                         System.out.println(nickName + "(" + userid + ")" + " 客户端建立了连接");
                         //获取好友列表
                         process.getChannelFriend(userid);
@@ -149,30 +193,51 @@ public class Channel implements Runnable{
                         //告诉好友我已经上线了
                         sendMsgToFriend(handleMessage);
                     }
-                }else if(msg.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+                }else if(msg.startsWith(EnMsgType.EN_MSG_OPEN_CHAT.toString())){
                     //一对一聊天
                     //获取聊天对象的userid
                     chatUserid = process.Processing(msg);
-                    sendMsgToOthers(msg,false);
-                }else if(msg.startsWith(EnMsgType.EN_MSG_GET_FRIEND.toString())){
-                    //把所有好友发给登陆的客户端，点击刷新按钮的客户端
-                    String friend = process.Processing(msg);
-                    //发给自己，获得好友列表
-                    sendMsgToMy(EnMsgType.EN_MSG_GET_FRIEND + " " + friend);
+                    //告诉其他人我打开和你的聊天窗口
+                    sendMsgToOther(msg);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+                    String realMassage = process.Processing(msg);
+                    //发送消息给别人
+                    sendMsgToOther(realMassage);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_EXIT.toString())){
                     String handleMessage = process.Processing(msg);
                     //发给好友，我已经下线
                     sendMsgToFriend(handleMessage);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString())){
+                    int index3 = msg.lastIndexOf(":");
+                    String chatGroupName = msg.substring(index3 + 1);
+                    String message = process.Processing(msg);
+                    //把登录进来的id和昵称发给所有人，告诉其他人我进群了
+                    sendMsgToAll(message,true);
+                    //发送给自己，在群里的其他人信息
+                    StringBuilder sb = new StringBuilder();
+                    for(String s : Server.groupMap.get(chatGroupName)){
+                        sb.append(s).append(":");
+                    }
+                    sendMsgToMy(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString() + " " + sb.toString());
+                }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
+                    String message = process.Processing(msg);
+                    //告诉其他人我已经退群
+                    sendMsgToAll(message,true);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_CHAT.toString())){
+                    //群聊标识
+                    int index = msg.indexOf(" ");
+                    String realMessage = msg.substring(index + 1);
+                    sendMsgToAll(realMessage,false);
                 }else if(msg.startsWith("EN_MSG")){
                     //处理响应按钮 发送的消息
                     String result = process.Processing(msg);
                     if(null != result){
                         sendMsgToMy(result);
                     }else {
-                        sendMsgToOthers(msg,false);
+                        sendMsgToOther(msg);
                     }
                 } else {
-                    sendMsgToOthers(msg,false);
+                    sendMsgToOther(msg);
                 }
 
             }

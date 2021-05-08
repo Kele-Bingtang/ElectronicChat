@@ -16,6 +16,8 @@ import java.util.Map;
 public class Server {
     public static List<Channel> all = new ArrayList<>();
     public static Map<String,List<String>> useridMap = new HashMap<>();
+    public static Map<String,List<String>> groupMap = new HashMap<>();
+    public static List<String> groupNameList = new ArrayList<>();
 
     public static void main(String[] args) {
         new Server().startServer();

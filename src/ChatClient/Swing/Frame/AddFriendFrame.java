@@ -228,12 +228,14 @@ public class AddFriendFrame extends JFrame {
             rowData.add(information.getSignNature());
             rowData.add(information.getStatus());
             //判断是不是好友
+            System.out.println(information.getUid() + "  ");
             for (String s : friendid) {
                 if (information.getUid().equals(s)) {
                     rowData.remove("陌生人");
                     rowData.add("好友");
                     break;
                 }else {
+                    rowData.remove("陌生人");
                     rowData.add("陌生人");
                 }
             }

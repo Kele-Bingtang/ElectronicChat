@@ -27,7 +27,8 @@ public class Client {
         try {
             socket = new Socket("localhost",8888);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("服务器没有启动，无法进行登录操作");
         }
         return socket;
     }

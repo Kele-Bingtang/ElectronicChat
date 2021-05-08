@@ -7,6 +7,7 @@ import ChatServer.bean.Information;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Process {
     static GetDataFromDao getDataFromDao = new GetDataFromDao();
@@ -35,9 +36,11 @@ public class Process {
         }else if(message.startsWith(EnMsgType.EN_MSG_LOGIN.toString())){
             //返回登陆消息+登陆的昵称
             return verifyAndModifyMessage(message);
-        }else if(message.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+        }else if(message.startsWith(EnMsgType.EN_MSG_OPEN_CHAT.toString())){
             //返回聊天对象名称
             return getChatUserid(message);
+        }else if (message.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+            return sendMsgToOther(message);
         }else if(message.startsWith(EnMsgType.EN_MSG_GET_INFORMATION.toString())){
             //登陆成功后返回用户昵称和签名
             return getInformation(message);
@@ -47,6 +50,13 @@ public class Process {
         }else if(message.startsWith(EnMsgType.EN_MSG_EXIT.toString())){
             //退出客户端
             return getExit(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_INFROMATION.toString())){
+            //返回群信息
+        return getGroupName(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString())){
+            return getGroupMember(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
+            return removeGroupMember(message);
         }
         return null;
     }
@@ -140,7 +150,6 @@ public class Process {
 
     }
 
-
     /**
      * 获取聊天的对象名称
      * @param message 消息
@@ -150,8 +159,18 @@ public class Process {
         int index1 = message.indexOf(" ");
         int index2 = message.indexOf(":");
         String chatName = message.substring(index2 + 1);
+        System.out.println(chatName);
         String chatUserid = getDataFromDao.getUserIDByNickName(chatName).getUid();
         return chatUserid;
+    }
+
+    /**
+     * 和别人聊天，原封不动发给别人
+     * @param message 消息
+     * @return 消息
+     */
+    public String sendMsgToOther(String message){
+        return message;
     }
 
     /**
@@ -168,7 +187,7 @@ public class Process {
         if(isReal){
             Information information = getDataFromDao.getinformationByUserid(userid);
             String nickName = information.getNickName();
-            return message.substring(0,index2) + ":" + nickName;
+            return EnMsgType.EN_MSG_LOGIN + " " + userid + ":" + nickName;
         }else {
             return EnMsgType.EN_MSG_LOGIN_Fail.toString();
         }
@@ -199,13 +218,19 @@ public class Process {
         StringBuilder friendBuil = new StringBuilder();
         int index = message.indexOf(" ");
         String userid = message.substring(index + 1);
-        String [] friendNickNameAndStatus= getDataFromDao.getFriendNickNameAndStatus(userid);
-        for(String f : friendNickNameAndStatus){
-            friendBuil.append(f).append(":");
+        String [] friendNickNameAndStatus = getDataFromDao.getFriendNickNameAndStatus(userid);
+        for(String s : friendNickNameAndStatus){
+            friendBuil.append(s).append(":");
         }
-        return friendBuil.toString();
+
+        return EnMsgType.EN_MSG_GET_FRIEND + " " + friendBuil.toString();
     }
 
+    /**
+     * 离线
+     * @param message 离线消息
+     * @return 离线消息
+     */
     public String getExit(String message){
         int index1 = message.indexOf(" ");
         int index2 = message.indexOf(":");
@@ -215,6 +240,18 @@ public class Process {
         System.out.println(nickName + "离线了");
         return EnMsgType.EN_MSG_EXIT.toString() + " " + nickName;
     }
+
+
+    public String getGroupName(String message){
+        StringBuilder groupBuil = new StringBuilder();
+
+       String[] groupName = getDataFromDao.getGroupName();
+       for(String s : groupName){
+           groupBuil.append(s).append(":");
+       }
+       return EnMsgType.EN_MSG_GET_GROUP_INFROMATION + " " + groupBuil.toString();
+    }
+
 
     /**
      * 把自己的Chanel与好友的Chanel一一对应
@@ -231,6 +268,42 @@ public class Process {
             Server.useridMap.put(userid,friendList);
         }
 
+    }
+
+    /**
+     * 显示进入群的群成员，不用访问数据库
+     * 消息已经发昵称过来
+     * @param message 消息
+     * @return
+     */
+    public String getGroupMember(String message){
+        //EN_MSG_GET_GROUP_MENBER + " " + userid + ":" + nickName + ":" + chatGroupName
+        int index1 = message.indexOf(" ");
+        int index2 = message.indexOf(":");
+        int index3 = message.lastIndexOf(":");
+        String userid = message.substring(index1 + 1,index2);
+        String nickName = message.substring(index2 + 1,index3);
+        String chatGroupName = message.substring(index3 + 1);
+        Server.groupNameList.add(nickName + "(" + userid + ")");
+        Server.groupMap.put(chatGroupName,Server.groupNameList);
+        return EnMsgType.EN_MSG_OPEN_GROUP.toString() + " " + "欢迎" + nickName + "(" + userid + ")来到" + chatGroupName + "群里";
+    }
+
+    public String removeGroupMember(String message){
+        int index1 = message.indexOf(" ");
+        int index2 = message.indexOf(":");
+        int index3 = message.lastIndexOf(":");
+        String userid = message.substring(index1 + 1,index2);
+        String nickName = message.substring(index2 + 1,index3);
+        String chatGroupName = message.substring(index3 + 1);
+
+        Set<String> key = Server.groupMap.keySet();
+        for (String keySet : key){
+            if(keySet.equals(chatGroupName)){
+                Server.groupMap.get(keySet).remove(nickName + "(" + userid + ")");
+            }
+        }
+        return EnMsgType.EN_MSG_GROUP_EXIT + " " + nickName + "(" + userid + ")离开了" + chatGroupName + "群";
     }
 
 }

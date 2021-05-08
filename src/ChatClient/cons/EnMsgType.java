@@ -4,8 +4,8 @@ public enum EnMsgType {
     EN_MSG_LOGIN, //用户登录消息
     EN_MSG_LOGIN_Fail, //用户登录失败
     EN_MSG_LOGIN_SUCC, //用户登录失败
+    EN_MSG_OPEN_CHAT, //一对一聊天消息
     EN_MSG_SINGLE_CHAT, //一对一聊天消息
-    EN_MSG_OK, //处理消息成功
     EN_MSG_MODIFY_NICKNAME,//修改昵称
     EN_MSG_MODIFY_SIGNATURE, //修改个性签名
     EN_MSG_GET_INFORMATION, //获取登录用户的信息
@@ -17,5 +17,10 @@ public enum EnMsgType {
     EN_MSG_ADD_FRIEND_Fail, //添加好友失败
     EN_MSG_DEL_FRIEND,   //删除好友
     EN_MSG_EXIT,    //退出客户端
-    EN_MSG_ACTIVE_STATE,    //好友在线状态
+    EN_MSG_GET_GROUP_INFROMATION,  //获取群信息
+    EN_MSG_GET_GROUP_MENBER,  //获取群成员信息
+    EN_MSG_GROUP_CHAT,  //群聊
+    EN_MSG_GROUP_SINGLE_CHAT,//群的私聊
+    EN_MSG_OPEN_GROUP,  //系统消息
+    EN_MSG_GROUP_EXIT,  //退出群
 }

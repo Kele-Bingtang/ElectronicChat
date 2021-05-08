@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface FriendDao {
 
-
     //获取好友列表
     public List<Information> getFriends(String userid);
 
@@ -15,6 +14,5 @@ public interface FriendDao {
 
     //删除好友
     void deleteFriend(String userid,String friendid);
-
 
 }

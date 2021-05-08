@@ -70,24 +70,27 @@ public class LoginFrame extends JFrame {
             try {
                 //获取quenue，没有获取之前卡在这一步，别处必须offer或者put
                 code = (int) Handle.queue.take();
-                System.out.println("登陆成功的：" + code);
+                System.out.println("验证登录");
             } catch (InterruptedException interruptedException) {
                 interruptedException.printStackTrace();
             }
 
             if(code == 200){
                 new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_INFORMATION.toString() + " " + username);
+                new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_INFROMATION.toString() + " " + username);
                 new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_FRIEND.toString() + " " + username);
                 try {
                     //获取quenue，没有获取之前卡在这一步，别处必须offer或者put
+                    Handle.queue.take();
                     code = (int) Handle.queue.take();
+                    System.out.println("获取个人信息，好友列表，群组列表:" + code);
                 } catch (InterruptedException interruptedException) {
                     interruptedException.printStackTrace();
                 }
                 //关闭自己
-                if(code == 300){
+                if(code == 300 || code == 400){
                     dispose();
-                    MainFrame mainFrame = new MainFrame(socket,username,Handle.nickName,Handle.signature,Handle.friends);
+                    MainFrame mainFrame = new MainFrame(socket,username,Handle.nickName,Handle.signature,Handle.friends,Handle.groups);
                     mainFrame.init();
                 }
 
