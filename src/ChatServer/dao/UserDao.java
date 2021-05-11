@@ -6,6 +6,8 @@ public interface UserDao {
     //判断是否成功登录
     boolean verifyUseridAndPassword(String userid,String password);
 
+    //注册用户名和密码
+
 
     //修改密码
     void modifyPassword(String userid,String password);

@@ -14,6 +14,8 @@ public class Handle {
     public static String[] friends;
     public static String[] groups;
     public static String[] groupMembers;
+    public static boolean isOpenChat = false;
+
 
     public boolean handling(String message){
         if(message.equals(EnMsgType.EN_MSG_LOGIN_Fail.toString())){
@@ -35,7 +37,8 @@ public class Handle {
             //一对一聊天
             int index1 = message.indexOf(" ");
             int index2 = message.indexOf(":");
-            String chatName = message.substring(index1 + 1,index2);
+            String chatName = message.substring(index1 + 1);
+            isOpenChat = true;
             System.out.println(chatName + "打开和你的聊天窗口");
             new TipMessageFrame().sendMessageTip("提示",chatName + "打开和你的聊天窗口",false);
             return true;
@@ -88,7 +91,7 @@ public class Handle {
             int index = message.indexOf(" ");
             String friendName = message.substring(index + 1);
             System.out.println(friendName + "下线了");
-            new TipMessageFrame().sendMessageTip("上线通知",friendName + "下线啦",false);
+            new TipMessageFrame().sendMessageTip("下线通知",friendName + "下线啦",false);
             return true;
         }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_INFROMATION.toString())){
             int index = message.indexOf(" ");
@@ -102,6 +105,9 @@ public class Handle {
             groupMembers = message.split(":");
             queue.offer(500);
             return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString())){
+
+            return false;
         }else if(message.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
 
             return false;

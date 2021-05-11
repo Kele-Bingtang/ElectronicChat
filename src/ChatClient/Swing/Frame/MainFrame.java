@@ -120,7 +120,11 @@ public class MainFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 listPanel.setViewportView(friendJList);
-                listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
+                if(friendModel.size() != 0){
+                    listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
+                }else {
+                    listPanel.setSize(new Dimension(295,0));
+                }
             }
         });
 
@@ -128,7 +132,11 @@ public class MainFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 listPanel.setViewportView(groupJList);
-                listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
+                if(groupModel.size() != 0){
+                    listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
+                }else {
+                    listPanel.setSize(new Dimension(295,0));
+                }
             }
         });
 
@@ -192,52 +200,14 @@ public class MainFrame extends JFrame {
         topPanel.add(searchField);
         //回车键即可查询
         searchField.addActionListener(e -> {
-            if(listPanel.getViewport().getView().equals(friendJList)){
-                String msg = searchField.getText().trim();
-                if(msg.length() == 0){
-                    friendModel.clear();
-                    flushFriendList();
-                    return;
-                }
-                friendModel.clear();
-                onsearchID(msg,friendModel);
-            }else if(listPanel.getViewport().getView().equals(groupJList)){
-                String msg = searchField.getText().trim();
-                if(msg.length() == 0){
-                    groupModel.clear();
-                    flushGroupList();
-                    return;
-                }
-                groupModel.clear();
-                onsearchID(msg,groupModel);
-            }
+            onSearch(searchField);
 
         });
         //搜索符号也能点击查询
         searchlabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
-                if(listPanel.getViewport().getView().equals(friendJList)){
-                    String msg = searchField.getText().trim();
-                    if(msg.length() == 0){
-                        friendModel.clear();
-                        flushFriendList();
-                        return;
-                    }
-                    friendModel.clear();
-                    onsearchID(msg,friendModel);
-                }else if(listPanel.getViewport().getView().equals(groupJList)){
-                    String msg = searchField.getText().trim();
-                    if(msg.length() == 0){
-                        groupModel.clear();
-                        flushGroupList();
-                        return;
-                    }
-                    groupModel.clear();
-                    onsearchID(msg,groupModel);
-
-                }
+                onSearch(searchField);
             }
         });
 
@@ -265,7 +235,7 @@ public class MainFrame extends JFrame {
                         String oldPassword = changePassword.getOldtValues();
                         String newPassword = changePassword.getNewValues();
 
-                        if(newPassword.equals("") || newPassword.contains(" ")){
+                        if(newPassword.equals("") || newPassword.contains(" ") || newPassword.contains(":")){
                             new TipMessageFrame().modifypasswordSuccOrFail("失败","您输入的新密码为空");
                         }else if(!oldPassword.equals(newPassword)){
                             //发送信息给服务端进行解析 修改密码
@@ -279,7 +249,7 @@ public class MainFrame extends JFrame {
                     ChangeNickName changeNickName = new ChangeNickName(MainFrame.this,nickName);
                     if(changeNickName.isClick()){
                         String newNickName = changeNickName.getValues();
-                        if(newNickName.equals("") || newNickName.contains(" ")){
+                        if(newNickName.equals("") || newNickName.contains(" ") || newNickName.contains(":")){
                             new TipMessageFrame().sendMessageTip("失败","您的昵称非法",true);
                         }else if(!nickName.equals(newNickName)){
                             nickNameLabel.setText(newNickName);
@@ -290,13 +260,12 @@ public class MainFrame extends JFrame {
                             new TipMessageFrame().sendMessageTip("失败","您的昵称和原来的一样",true);
                         }
                     }
-
                 }else if(box_1.getSelectedItem().equals(Item3)){
                     //修改签名
                     ChangeSignature changeSignature = new ChangeSignature(MainFrame.this,signature);
                     if(changeSignature.isClick()){
                         String newSignature = changeSignature.getValues();
-                        if(newSignature.equals("") || newSignature.contains(" ")){
+                        if(newSignature.equals("") || newSignature.contains(" ") || newSignature.contains(":")){
                             new TipMessageFrame().sendMessageTip("失败","您的签名非法",true);
                         }else if(!signature.equals(newSignature)){
                             signatureField.setText(newSignature);
@@ -328,7 +297,7 @@ public class MainFrame extends JFrame {
                     System.out.println("进行好友操作");
                 }else if(box_2.getSelectedItem().equals(addFriend)){
                     //添加好友
-                    AddFriendFrame addFriendFrame = new AddFriendFrame(socket,userid);
+                    new AddFriendFrame(socket,userid);
                 }else if(box_2.getSelectedItem().equals(deleteFriend)){
                     //删除好友
                     new DeleteFriendFrame(socket,userid);
@@ -345,45 +314,7 @@ public class MainFrame extends JFrame {
         fluashLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                //如果是好友列表
-                if(listPanel.getViewport().getView().equals(friendJList)){
-                    int code = 0;
-                    friendJList.removeAll();
-                    friendModel = new DefaultListModel<>();
-                    new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_FRIEND.toString() + " " + userid);
-                    try {
-                        //阻塞线程，等待发送的消息接收并且处理后
-                        code = (int) Handle.queue.take();
-                        System.out.println("刷新的：" + code);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                    if(code == 300){
-                        flushFriendList();
-                    }
-                    //高度自定义，防止点击空白处自动获取list的最后一行
-                    listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
-                    friendJList.setModel(friendModel);
-                    //如果是群列表
-                }else if(listPanel.getViewport().getView().equals(groupJList)){
-                    int code = 0;
-                    groupJList.removeAll();
-                    groupModel = new DefaultListModel<>();
-                    new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_INFROMATION.toString());
-                    try {
-                        //阻塞线程，等待发送的消息接收并且处理后
-                        code = (int) Handle.queue.take();
-                        System.out.println("刷新的：" + code);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                    if(code == 400){
-                        flushGroupList();
-                    }
-                    //高度自定义，防止点击空白处自动获取list的最后一行
-                    listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
-                    groupJList.setModel(groupModel);
-                }
+              onFlush();
             }
 
         });
@@ -459,15 +390,51 @@ public class MainFrame extends JFrame {
         }
 
     }
-    public void onsearchID(String msg,DefaultListModel<String> model){
-        for (String s : friendList) {
-            int index =s.indexOf(" ");
-            s = s.substring(0,index);
-            if(msg.startsWith(s)){
-                model.addElement(s);
+
+    public void onSearch(JTextField searchField){
+        if(listPanel.getViewport().getView().equals(friendJList)){
+            String msg = searchField.getText().trim();
+            if(msg.length() == 0){
+                friendModel.clear();
+                flushFriendList();
+                return;
             }
+            friendModel.clear();
+            onsearchID(msg,friendModel,friendList);
+        }else if(listPanel.getViewport().getView().equals(groupJList)){
+            String msg = searchField.getText().trim();
+            if(msg.length() == 0){
+                groupModel.clear();
+                flushGroupList();
+                return;
+            }
+            groupModel.clear();
+            onsearchID(msg,groupModel,groupList);
         }
     }
+
+    public void onsearchID(String msg,DefaultListModel<String> model,String[] list){
+        if(list == friendList){
+            for (String s : friendList) {
+                int index =s.indexOf(" ");
+                String friendNames = s.substring(0,index);
+                if(msg.startsWith(friendNames)){
+                    model.addElement(s);
+                }
+            }
+        }else if(list == groupList){
+            for (String s : groupList) {
+                if(msg.equals(s)){
+                    model.addElement(s);
+                }
+            }
+        }
+
+
+    }
+
+
+
     public void initFriendList(){
         //初始化model
         friendModel = new DefaultListModel<>();
@@ -490,8 +457,6 @@ public class MainFrame extends JFrame {
                             String chatName = friendJList.getSelectedValue().substring(0,index);
                             new ChatFrame(socket,nickName,chatName);
                             new Send(socket).sendMsg(EnMsgType.EN_MSG_OPEN_CHAT.toString() + " " + nickName + ":" + chatName);
-                            //清空窗口
-                            //ChatFrame.messageToFrame.get(chatName).delete(0,ChatFrame.messageToFrame.get(chatName).length());
                             System.out.println("创建了第" + ++sum + "个聊天窗口");
                             friendJList.clearSelection();
                         }
@@ -528,8 +493,6 @@ public class MainFrame extends JFrame {
                             }
                             new GroupFrame(socket,userid,nickName,chatGroupName,Handle.groupMembers);
 
-                            //清空窗口
-                            //ChatFrame.messageToFrame.get(chatName).delete(0,ChatFrame.messageToFrame.get(chatName).length());
                             groupJList.clearSelection();
                         }
                     }
@@ -538,6 +501,54 @@ public class MainFrame extends JFrame {
         });
     }
 
-
+    public void onFlush(){
+        //如果是好友列表
+        if(listPanel.getViewport().getView().equals(friendJList)){
+            int code = 0;
+            friendJList.removeAll();
+            friendModel = new DefaultListModel<>();
+            new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_FRIEND.toString() + " " + userid);
+            try {
+                //阻塞线程，等待发送的消息接收并且处理后
+                code = (int) Handle.queue.take();
+                System.out.println("刷新的：" + code);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+            if(code == 300){
+                flushFriendList();
+            }
+            //高度自定义，防止点击空白处自动获取list的最后一行
+            if(friendModel.size() != 0){
+                listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
+            }else {
+                listPanel.setSize(new Dimension(295, 0));
+            }
+            friendJList.setModel(friendModel);
+            //如果是群列表
+        }else if(listPanel.getViewport().getView().equals(groupJList)){
+            int code = 0;
+            groupJList.removeAll();
+            groupModel = new DefaultListModel<>();
+            new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_INFROMATION.toString());
+            try {
+                //阻塞线程，等待发送的消息接收并且处理后
+                code = (int) Handle.queue.take();
+                System.out.println("刷新的：" + code);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+            if(code == 400){
+                flushGroupList();
+            }
+            //高度自定义，防止点击空白处自动获取list的最后一行
+            if(groupModel.size() != 0){
+                listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
+            }else {
+                listPanel.setSize(new Dimension(295, 0));
+            }
+            groupJList.setModel(groupModel);
+        }
+    }
 
 }

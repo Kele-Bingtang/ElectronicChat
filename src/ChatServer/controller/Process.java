@@ -2,19 +2,15 @@ package ChatServer.controller;
 
 import ChatServer.load.EnMsgType;
 import ChatServer.load.GetDataFromDao;
+import ChatServer.server.Channel;
 import ChatServer.server.Server;
 import ChatServer.bean.Information;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Process {
     static GetDataFromDao getDataFromDao = new GetDataFromDao();
 
-    public static void main(String[] args) {
-        String m = new Process().Processing("askele:kele123:kele1234567");
-    }
 
     public String Processing(String message){
 
@@ -38,9 +34,12 @@ public class Process {
             return verifyAndModifyMessage(message);
         }else if(message.startsWith(EnMsgType.EN_MSG_OPEN_CHAT.toString())){
             //返回聊天对象名称
-            return getChatUserid(message);
+            return sendMsgToOtherOpen(message);
         }else if (message.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+            //发消息聊天
             return sendMsgToOther(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_GROUP_CHAT.toString())){
+            return storageGroupHitory(message);
         }else if(message.startsWith(EnMsgType.EN_MSG_GET_INFORMATION.toString())){
             //登陆成功后返回用户昵称和签名
             return getInformation(message);
@@ -54,9 +53,17 @@ public class Process {
             //返回群信息
         return getGroupName(message);
         }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString())){
+            //返回群成员信息
             return getGroupMember(message);
         }else if(message.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
+            //返回退群的成员
             return removeGroupMember(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString())){
+            //返回一对一聊天历史记录
+            return getSingleHistory(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString())){
+            //返回群的聊天历史记录
+            return getGroupHistory(message);
         }
         return null;
     }
@@ -118,6 +125,7 @@ public class Process {
      * @return 标识符
      */
     public String modifySignature(String message){
+        //EN_MSG_MODIFY_SIGNATURE + " " + userid + ":" + newSignature
         int index1 = message.indexOf(" ");
         int index2 = message.indexOf(":");
         String userid = message.substring(index1 + 1,index2);
@@ -133,6 +141,7 @@ public class Process {
      * @return 标识符
      */
     public String modifyPassword(String message){
+        //EN_MSG_MODIFY_PASSWORD + " " + userid + ":" + oldPassword + ":" + newPassword
         int index1 = message.indexOf(" ");
         int index2 = message.indexOf(":");
         int index3 = message.lastIndexOf(":");
@@ -155,22 +164,67 @@ public class Process {
      * @param message 消息
      * @return 对象
      */
-    public String getChatUserid(String message){
+    public String sendMsgToOtherOpen(String message){
         int index1 = message.indexOf(" ");
-        int index2 = message.indexOf(":");
+        int index2 = message.lastIndexOf(":");
+        String nickName = message.substring(index1 + 1,index2);
         String chatName = message.substring(index2 + 1);
-        System.out.println(chatName);
-        String chatUserid = getDataFromDao.getUserIDByNickName(chatName).getUid();
-        return chatUserid;
+
+        return message;
     }
 
     /**
      * 和别人聊天，原封不动发给别人
+     * 处理有用消息，存储到聊天历史记录
      * @param message 消息
      * @return 消息
      */
     public String sendMsgToOther(String message){
+        //EN_MSG_SINGLE_CHAT + " " + message
+        int index1 = message.indexOf(" ");
+        //先把前面的EN_MSG_SINGLE_CHAT去掉
+        String allChatMessage = message.substring(index1 + 1);
+        //allChatMessage为 nickName + "  " + new Date() + "\n" + 聊天消息  + ":" + chatName
+        int index2 = allChatMessage.indexOf(" ");
+        int index3 = allChatMessage.lastIndexOf(":");
+
+        String nickName = allChatMessage.substring(0,index2);
+        String chatMessage = allChatMessage.substring(0,index3).trim();
+        String chatName = allChatMessage.substring(index3 + 1);
+
+        //存储聊天信息到自己的历史记录
+        storageSingleHitory(chatMessage,nickName,chatName);
+        //存储聊天信息到聊天对象的历史记录
+        storageSingleHitory(chatMessage,chatName,nickName);
+
         return message;
+    }
+
+    /**
+     * 存储聊天信息到历史记录
+     * @param chatMessage 聊天消息
+     * @param nickName 昵称
+     * @param chatName 聊天对象
+     */
+    public void storageSingleHitory(String chatMessage,String nickName,String chatName){
+        Map<String,String> doubleNameMap = new HashMap<>();
+        StringBuilder chatMessageBuil = new StringBuilder();
+        Set<Map<String,String>> mapKeySet = Server.singleHistory.keySet();
+        for(Map<String,String> mapKey : mapKeySet){
+            Set<String> keySet = mapKey.keySet();
+            for(String nameKey : keySet){
+                if(nameKey.equals(nickName)){
+                    if(mapKey.get(nameKey).equals(chatName)){
+                        chatMessageBuil.append(Server.singleHistory.get(mapKey).toString());
+                        break;
+                    }
+                }
+            }
+        }
+
+        chatMessageBuil.append(chatMessage).append("\n");
+        doubleNameMap.put(nickName,chatName);
+        Server.singleHistory.put(doubleNameMap,chatMessageBuil);
     }
 
     /**
@@ -241,7 +295,6 @@ public class Process {
         return EnMsgType.EN_MSG_EXIT.toString() + " " + nickName;
     }
 
-
     public String getGroupName(String message){
         StringBuilder groupBuil = new StringBuilder();
 
@@ -287,6 +340,72 @@ public class Process {
         Server.groupNameList.add(nickName + "(" + userid + ")");
         Server.groupMap.put(chatGroupName,Server.groupNameList);
         return EnMsgType.EN_MSG_OPEN_GROUP.toString() + " " + "欢迎" + nickName + "(" + userid + ")来到" + chatGroupName + "群里";
+    }
+
+    /**
+     * 一对一聊天获取聊天历史记录
+     * @param message 消息
+     * @return 聊天历史记录
+     */
+    public String getSingleHistory(String message){
+        //EN_MSG_GET_HISTORY + " " + nickName + ":" + chatName
+        int index1 = message.indexOf(" ");
+        int index2 = message.indexOf(":");
+        String nickName = message.substring(index1 + 1,index2);
+        String chatName = message.substring(index2 + 1);
+
+        if(null != Server.singleHistory){
+            Set<Map<String,String>> doubleNameMapSet = Server.singleHistory.keySet();
+            for(Map<String,String> nameKeyMap : doubleNameMapSet){
+                if(null != nameKeyMap.get(nickName)){
+                    Set<String> secondNameSet = nameKeyMap.keySet();
+                    for(String secondName : secondNameSet){
+                        if(nameKeyMap.get(secondName).equals(chatName)){
+                            System.out.println("5：" + message);
+                            if(null != Server.singleHistory.get(nameKeyMap)){
+                                return EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString() + " " + Server.singleHistory.get(nameKeyMap).toString() + ":" + chatName;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString() + " " + "null" + ":";
+    }
+
+    public String storageGroupHitory(String message){
+        //EN_MSG_GROUP_CHAT + " " + message + ":" + chatGroupName
+        int index1 = message.indexOf(" ");
+        int index2 = message.lastIndexOf(":");
+        String realMessage = message.substring(index1 + 1,index2);
+        String chatGroupName = message.substring(index2 + 1);
+
+        StringBuilder groupMessageBuil = new StringBuilder();
+        Set<String> keySet = Server.groupHistory.keySet();
+        for(String groupName : keySet){
+            if(groupName.equals(chatGroupName)){
+                groupMessageBuil.append(Server.groupHistory.get(chatGroupName).toString());
+            }
+        }
+        groupMessageBuil.append(realMessage).append("\n");
+        Server.groupHistory.put(chatGroupName,groupMessageBuil);
+        return null;
+    }
+
+    public String getGroupHistory(String message){
+        //EN_MSG_GET_GROUP_HISTORY + " " + chatGroupName
+        int index1 = message.indexOf(" ");
+        String chatGroupName = message.substring(index1 + 1);
+        StringBuilder groupHistoryMap = new StringBuilder();
+
+        if(null != Server.groupHistory){
+            if(null != Server.groupHistory.get(chatGroupName)){
+                groupHistoryMap.append(Server.groupHistory.get(chatGroupName).toString());
+                return EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString() + " " + groupHistoryMap.toString() + ":" + chatGroupName;
+            }
+        }
+        return  EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString() + " " + "null" + ":";
+
     }
 
     public String removeGroupMember(String message){

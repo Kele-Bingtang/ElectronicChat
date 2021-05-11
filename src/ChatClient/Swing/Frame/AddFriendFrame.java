@@ -19,7 +19,9 @@ public class AddFriendFrame extends JFrame {
     JTable table;
     JButton searchButton,addButton;
     JTextField searchField = new JTextField(50);
+
     List<Information> dataList;
+
     GetDataFromDao getDataFromDao;
 
     boolean isAdd = false;

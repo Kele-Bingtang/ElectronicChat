@@ -4,8 +4,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class TipMessageFrame extends JFrame {
+
+
+    public TipMessageFrame(){
+
+    }
+
     /**
      * 修改密码错误提示
      */
@@ -28,12 +36,16 @@ public class TipMessageFrame extends JFrame {
         sureButton.setBounds(110,90,75,25);
         container.add(sureButton);
 
+
+
         sureButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
             }
         });
+
+
     }
 
     /**
@@ -70,7 +82,7 @@ public class TipMessageFrame extends JFrame {
                 dispose();
             }
         });
-    }
 
+    }
 
 }

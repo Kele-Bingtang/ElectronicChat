@@ -8,7 +8,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 管道
@@ -23,15 +24,11 @@ public class Channel implements Runnable{
     boolean isRunning;
     String userid;
     String nickName;
-    String chatUserid;
-    History history;
     Process process;
-
 
     public Channel(Socket server){
         this.server = server;
         this.isRunning = true;
-        history = new History();
         process = new Process();
         try {
             dis = new DataInputStream(server.getInputStream());
@@ -74,12 +71,16 @@ public class Channel implements Runnable{
      * @param msg 消息
      */
     public void sendMsgToOther(String msg){
+        //解析消息，获取聊天对象
+        int index = msg.lastIndexOf(":");
+        String chatName = msg.substring(index + 1);
+        String realMessage = msg.substring(0,index);
         for(Channel other : Server.all){
             if(other == this){
                 continue;
-            } else if(other.userid.equals(chatUserid)){
-                System.out.println("消息：" + msg);
-                other.sendMsg(msg);
+            } else if(other.nickName.equals(chatName)){
+                System.out.println("消息：" + realMessage);
+                other.sendMsg(realMessage);
                 break;
             }
 
@@ -194,11 +195,9 @@ public class Channel implements Runnable{
                         sendMsgToFriend(handleMessage);
                     }
                 }else if(msg.startsWith(EnMsgType.EN_MSG_OPEN_CHAT.toString())){
-                    //一对一聊天
-                    //获取聊天对象的userid
-                    chatUserid = process.Processing(msg);
+                    String realMessage = process.Processing(msg);
                     //告诉其他人我打开和你的聊天窗口
-                    sendMsgToOther(msg);
+                    sendMsgToOther(realMessage);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
                     String realMassage = process.Processing(msg);
                     //发送消息给别人
@@ -213,31 +212,36 @@ public class Channel implements Runnable{
                     String message = process.Processing(msg);
                     //把登录进来的id和昵称发给所有人，告诉其他人我进群了
                     sendMsgToAll(message,true);
-                    //发送给自己，在群里的其他人信息
+                    //存储群成员的信息，用:区分开(方便截取)
                     StringBuilder sb = new StringBuilder();
                     for(String s : Server.groupMap.get(chatGroupName)){
                         sb.append(s).append(":");
                     }
+                    //发送给自己，在群里的其他人信息
                     sendMsgToMy(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString() + " " + sb.toString());
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
                     String message = process.Processing(msg);
                     //告诉其他人我已经退群
                     sendMsgToAll(message,true);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_CHAT.toString())){
+                    //存储群的聊天记录
+                    process.Processing(msg);
                     //群聊标识
                     int index = msg.indexOf(" ");
                     String realMessage = msg.substring(index + 1);
                     sendMsgToAll(realMessage,false);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString())){
+                    String singleHistory = process.Processing(msg);
+                    sendMsgToMy(singleHistory);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString())){
+                    String groupHistory = process.Processing(msg);
+                    sendMsgToMy(groupHistory);
                 }else if(msg.startsWith("EN_MSG")){
                     //处理响应按钮 发送的消息
                     String result = process.Processing(msg);
                     if(null != result){
                         sendMsgToMy(result);
-                    }else {
-                        sendMsgToOther(msg);
                     }
-                } else {
-                    sendMsgToOther(msg);
                 }
 
             }

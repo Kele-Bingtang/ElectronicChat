@@ -2,10 +2,12 @@ package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
-import ChatServer.server.History;
+import ChatClient.controller.Handle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -29,21 +31,16 @@ public class ChatFrame extends JFrame{
     String chatName;
     //客户端昵称
     String nickName;
-    //历史记录，一个聊天对象对应一个聊天记录
-    //public static Map<String,StringBuilder> history = new HashMap<>();
     //一个聊天对象对应一个聊天窗口(实现多窗口聊天)
     public static Map<String ,JTextPane> TextPaneMap = new HashMap<>();
     //发送消息到聊天窗口，一个聊天对象对应一个消息缓冲区(StringBuilder)
     //与jTextPaneMap对应，key相同，根据key将消息放到指定聊天窗口
     public static Map<String,StringBuilder> messageToFrame = new HashMap<>();
-    //历史记录类
-    History history;
 
     Send send;
     public ChatFrame(Socket socket,String nickName,String chatName){
         this.socket = socket;
         this.chatName = chatName;
-        history = new History();
         //从登录窗口获取昵称
         this.nickName = nickName;
         send  = new Send(socket);
@@ -103,11 +100,8 @@ public class ChatFrame extends JFrame{
                     TextPaneMap.get(key).setText(messageToFrame.get(key).toString());
                 }
             }
-            //存储聊天记录
-            history.setHitory(message,chatName);
-
             //发送消息出去
-            sendMsg(EnMsgType.EN_MSG_SINGLE_CHAT.toString() + " " + message);
+            sendMsg(EnMsgType.EN_MSG_SINGLE_CHAT.toString() + " " + message + ":" + chatName);
         });
 
         //表情按钮初始化
@@ -119,21 +113,15 @@ public class ChatFrame extends JFrame{
         JButton historyButtuon = new JButton("历史记录");
         historyButtuon.setFont(new Font("微软雅黑",Font.PLAIN,18));
         historyButtuon.addActionListener(e -> {
-            //获取key值
-            Set<String> set = History.historyMap.keySet();
-            for (String key : set) {
-                if (key.equals(chatName)) {
-                    //先清空，再放历史记录
-                    displayTextPanel.setText("");
-                    displayTextPanel.setText(History.historyMap.get(chatName).toString());
-                }
-            }
+            new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString() + " " + nickName + ":" + chatName);
+
         });
 
         //聊天窗口底部Panel
         JPanel SouthPanel = new JPanel();
         SouthPanel.setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
+        toolBar.setOpaque(false);
         toolBar.add(sendButton);
         toolBar.add(emjioButton);
         toolBar.addSeparator(new Dimension(300,20));
@@ -151,6 +139,13 @@ public class ChatFrame extends JFrame{
         add(label,BorderLayout.CENTER);
         setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
         setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Handle.isOpenChat = false;
+            }
+        });
     }
 
     public void sendMsg(String message){

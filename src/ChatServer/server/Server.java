@@ -14,10 +14,19 @@ import java.util.Map;
  * 服务端
  */
 public class Server {
+    //存储每一个客户端
     public static List<Channel> all = new ArrayList<>();
+    //key：用户id，value：好友id(用List是多个好友)
     public static Map<String,List<String>> useridMap = new HashMap<>();
+    ////key：群名，value：进群的用户(用List是多个用户)
     public static Map<String,List<String>> groupMap = new HashMap<>();
+    //存储多个用户
     public static List<String> groupNameList = new ArrayList<>();
+    //key的key：用户id, key的value：聊天对象，value：聊天记录
+    public static Map<Map<String,String>,StringBuilder> singleHistory = new HashMap<>();
+    //key：群id，value：聊天记录
+    public static Map<String,StringBuilder> groupHistory = new HashMap<>();
+
 
     public static void main(String[] args) {
         new Server().startServer();

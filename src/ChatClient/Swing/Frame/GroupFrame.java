@@ -2,9 +2,6 @@ package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
-import ChatClient.cons.GroupMap;
-import ChatClient.controller.Handle;
-import ChatServer.server.History;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,8 +37,6 @@ public class GroupFrame extends JFrame{
     String userid;
 
     String[] groupMembers;
-    //历史记录，一个聊天对象对应一个聊天记录
-    //public static Map<String,StringBuilder> history = new HashMap<>();
     //一个聊天群对应一个聊天窗口(实现多窗口聊天)
     public static Map<String ,JTextPane> TextPaneMap = new HashMap<>();
     //发送消息到聊天窗口，一个聊天对象对应一个消息缓冲区(StringBuilder)
@@ -50,15 +45,12 @@ public class GroupFrame extends JFrame{
 
     //显示群成员的列表
     public static Map<String, JTextPane> showUserNamePaneMap = new HashMap<>();
-    //历史记录类
-    History history;
 
     Send send;
     public GroupFrame(Socket socket, String userid, String nickName, String chatGroupName,String[] groupMembers){
         this.socket = socket;
         this.userid = userid;
         this.chatGroupName = chatGroupName;
-        history = new History();
         //从登录窗口获取昵称
         this.nickName = nickName;
         this.groupMembers = groupMembers;
@@ -74,7 +66,7 @@ public class GroupFrame extends JFrame{
         setResizable(false);
         //设置聊天窗口总是前置
         setAlwaysOnTop(true);
-        setTitle(nickName + "与" + chatGroupName + "聊天");
+        setTitle("\t" + chatGroupName);
         //聊天信息框不可编辑
         displayTextPanel = new JTextPane();
         displayTextPanel.setEditable(false);
@@ -100,7 +92,7 @@ public class GroupFrame extends JFrame{
         for (String key: set) {
             if(key.equals(chatGroupName)){
                 StringBuilder members = new StringBuilder();
-                members.append("群成员").append("\n");
+                members.append("群成员：").append("\n");
                 if(null != groupMembers){
                     for (String groupMember : groupMembers) {
                         members.append(groupMember).append("\n");
@@ -157,21 +149,15 @@ public class GroupFrame extends JFrame{
         JButton historyButtuon = new JButton("历史记录");
         historyButtuon.setFont(new Font("微软雅黑",Font.PLAIN,18));
         historyButtuon.addActionListener(e -> {
-            //获取key值
-            Set<String> keySet = History.historyMap.keySet();
-            for (String key : keySet) {
-                if (key.equals(chatGroupName)) {
-                    //先清空，再放历史记录
-                    displayTextPanel.setText("");
-                    displayTextPanel.setText(History.historyMap.get(chatGroupName).toString());
-                }
-            }
+
+            new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString() + " " + chatGroupName);
         });
 
         //聊天窗口底部Panel
         JPanel SouthPanel = new JPanel();
         SouthPanel.setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
+        toolBar.setOpaque(false);
         toolBar.add(sendButton);
         toolBar.add(emjioButton);
         toolBar.addSeparator(new Dimension(300,20));
