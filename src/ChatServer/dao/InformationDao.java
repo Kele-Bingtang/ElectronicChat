@@ -19,4 +19,5 @@ public interface InformationDao {
     //修改用户状态
     void modifyStatus(String userid,String status);
 
+
 }

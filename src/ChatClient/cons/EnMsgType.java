@@ -4,6 +4,7 @@ public enum EnMsgType {
     EN_MSG_LOGIN, //用户登录消息
     EN_MSG_LOGIN_Fail, //用户登录失败
     EN_MSG_LOGIN_SUCC, //用户登录失败
+    EN_MSG_REGISTER, //用户注册
     EN_MSG_OPEN_CHAT, //一对一聊天消息
     EN_MSG_SINGLE_CHAT, //一对一聊天消息
     EN_MSG_MODIFY_NICKNAME,//修改昵称

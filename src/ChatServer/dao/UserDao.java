@@ -7,7 +7,7 @@ public interface UserDao {
     boolean verifyUseridAndPassword(String userid,String password);
 
     //注册用户名和密码
-
+    void register(String userid,String password);
 
     //修改密码
     void modifyPassword(String userid,String password);

@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * 主界面
@@ -80,6 +81,7 @@ public class MainFrame extends JFrame {
         nickNameLabel = new JLabel(nickName);
         nickNameLabel.setBounds(100,10,100,30);
         nickNameLabel.setFont(new Font("宋体",Font.PLAIN,18));
+        nickNameLabel.setForeground(Color.WHITE);
         topPanel.add(nickNameLabel);
 
         //设置label_2(头像)
@@ -95,9 +97,50 @@ public class MainFrame extends JFrame {
         //初始化panel_2
         //初始化面板二
         CenterPanel = new JScrollPane();
+        JLabel frinedLabel = new JLabel("好友");
+        frinedLabel.setBounds(5,0,60,30);
+        frinedLabel.setFont(new Font("宋体",Font.PLAIN,20));
+
+        JLabel groupLabel = new JLabel("群聊");
+        groupLabel.setBounds(80,0,60,30);
+        groupLabel.setFont(new Font("宋体",Font.PLAIN,20));
+        groupLabel.setBounds(45,0,30,20);
+
+        //工具栏，存储中间面板的标题
+        JToolBar titleBar = new JToolBar();
+        titleBar.setBounds(0,0,295,30);
+        titleBar.setFloatable(false);
+        titleBar.addSeparator(new Dimension(50,30));
+        titleBar.add(frinedLabel);
+        titleBar.addSeparator(new Dimension(50,30));
+        titleBar.setOpaque(false);
+        titleBar.setBorder(BorderFactory.createEmptyBorder());
+        titleBar.add(groupLabel);
+
+        //线，放在标题下面
+        JLabel lineOnTool = new JLabel();
+        lineOnTool.setBounds(0,30,295,1);
+        lineOnTool.setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255)));
+
+        JLabel line1 = new JLabel();
+        line1.setBounds(45,30,50,1);
+        line1.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
+
+        JLabel line2 = new JLabel();
+        line2.setBounds(135,30,50,1);
+        line2.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
+        line2.setVisible(false);
+
+        CenterPanel.add(line1);
+        CenterPanel.add(line2);
+        CenterPanel.add(lineOnTool);
+        CenterPanel.add(titleBar);
+
+        //初始化好友列表面板
         listPanel = new JScrollPane();
+
         listPanel.setViewportView(friendJList);
-        listPanel.setBounds(0,20,80,20);
+        listPanel.setBounds(0,40,80,20);
         //listPanel存放list,根据list高度变化而变化，防止点击空白处，list自动获取最后一行
         //CenterPanel存放listPanel，高度确定
         CenterPanel.setLocation(0,147);
@@ -105,22 +148,20 @@ public class MainFrame extends JFrame {
         listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
         listPanel.getViewport().setOpaque(false);
         listPanel.setOpaque(false);
+        listPanel.setBorder(BorderFactory.createEmptyBorder());
+
         CenterPanel.setSize(new Dimension(295,470));
         CenterPanel.getViewport().setOpaque(false);
         CenterPanel.setOpaque(false);
         CenterPanel.add(listPanel);
 
-        JLabel frinedLabel = new JLabel("好友");
-        JLabel groupLabel = new JLabel("群聊");
-        frinedLabel.setBounds(5,0,30,20);
-        groupLabel.setBounds(45,0,30,20);
-        CenterPanel.add(frinedLabel);
-        CenterPanel.add(groupLabel);
+
+
         frinedLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 listPanel.setViewportView(friendJList);
-                if(friendModel.size() != 0){
+                if(friendList.length != 0){
                     listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
                 }else {
                     listPanel.setSize(new Dimension(295,0));
@@ -132,7 +173,7 @@ public class MainFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 listPanel.setViewportView(groupJList);
-                if(groupModel.size() != 0){
+                if(groupList.length != 0){
                     listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
                 }else {
                     listPanel.setSize(new Dimension(295,0));
@@ -148,12 +189,14 @@ public class MainFrame extends JFrame {
         box.addItem("\uD83D\uDCBB忙碌");
         box.addItem("❎离线");
         box.setBounds(200, 10, 70, 30);
+        box.setFont(new Font(null,Font.PLAIN,14));
+        box.setForeground(Color.BLACK);
         topPanel.add(box);
 
         //设置个性签名的标签
         JLabel label_4 = new JLabel("个性签名:");
         label_4.setFont(new Font("宋体", Font.PLAIN, 16));
-        label_4.setForeground(Color.BLUE);
+        label_4.setForeground(Color.WHITE);
         label_4.setBounds(100, 50, 100, 20);
         topPanel.add(label_4);
 
@@ -162,6 +205,7 @@ public class MainFrame extends JFrame {
         signatureField.setBounds(100, 80, 180, 30);
         signatureField.setOpaque(false);
         signatureField.setFont(new Font("宋体",Font.PLAIN,15));
+        signatureField.setForeground(Color.WHITE);
         signatureField.setBorder(BorderFactory.createEmptyBorder());
         signatureField.addMouseListener(new MouseAdapter() {
             @Override
@@ -221,6 +265,8 @@ public class MainFrame extends JFrame {
         box_1.addItem(Item2);
         box_1.addItem(Item3);
         box_1.setBounds(8, 20, 100, 25);
+        box_1.setFont(new Font(null,Font.PLAIN,18));
+        box_1.setForeground(Color.BLACK);
         buttomPanel.add(box_1);
 
         box_1.addActionListener(new ActionListener() {
@@ -236,12 +282,12 @@ public class MainFrame extends JFrame {
                         String newPassword = changePassword.getNewValues();
 
                         if(newPassword.equals("") || newPassword.contains(" ") || newPassword.contains(":")){
-                            new TipMessageFrame().modifypasswordSuccOrFail("失败","您输入的新密码为空");
+                            new TipMessageFrame().SuccOrFail("失败","您输入的新密码为空");
                         }else if(!oldPassword.equals(newPassword)){
                             //发送信息给服务端进行解析 修改密码
                             new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_PASSWORD.toString() + " " + userid + ":" + oldPassword + ":" + newPassword);
                         }else {
-                            new TipMessageFrame().modifypasswordSuccOrFail("失败","您输入的新密码和旧密码相同");
+                            new TipMessageFrame().SuccOrFail("失败","您输入的新密码和旧密码相同");
                         }
                     }
                 }else if(box_1.getSelectedItem().equals(Item2)){
@@ -288,6 +334,8 @@ public class MainFrame extends JFrame {
         box_2.addItem(ItemIcon);
         box_2.addItem(addFriend);
         box_2.addItem(deleteFriend);
+        box_2.setFont(new Font(null,Font.PLAIN,18));
+        box_2.setForeground(Color.BLACK);
         box_2.setBounds(170, 20, 100, 25);
 
         box_2.addActionListener(new ActionListener() {
@@ -325,7 +373,8 @@ public class MainFrame extends JFrame {
         frame.setTitle("界面");
         //给窗体设置图片
         frame.setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
-        JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/5.png"));
+
+        JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/mainbj3.png"));
         //获取窗口的第二层，将label放入
         frame.getLayeredPane().add(label,new Integer(Integer.MIN_VALUE)); //MAX是覆盖，MIN是后置
 
@@ -335,9 +384,12 @@ public class MainFrame extends JFrame {
         frame.setLayout(null);
         frame.setLocation(1200, 50);
         frame.setSize(287, 700);
+        //开局失去焦点
+        frame.setFocusable(true);
         frame.setVisible(true);
         //无法调节窗口大小
         frame.setResizable(false);
+
         label.setBounds(0, 0, 295, 700);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //点击面板给头像获得焦点，促使文本框失去焦点
@@ -363,6 +415,7 @@ public class MainFrame extends JFrame {
         frame.add(buttomPanel);
         frame.add(CenterPanel);
 
+
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -371,21 +424,27 @@ public class MainFrame extends JFrame {
             }
         });
 
+
+
     }
 
     public void flushFriendList(){
         friendList = Handle.friends;
-        if(null != friendList){
+        if(Arrays.toString(friendList).trim().length() != 0){
             for (String s : friendList) {
-                friendModel.addElement(s);
+                if(!s.equals("")){
+                    friendModel.addElement(s);
+                }
             }
         }
     }
     public void flushGroupList(){
         groupList = Handle.groups;
-        if(null != groupList){
+        if(Arrays.toString(groupList).trim().length() != 0){
             for (String s : groupList) {
-                groupModel.addElement(s);
+                if(!s.equals("")) {
+                    groupModel.addElement(s);
+                }
             }
         }
 
@@ -429,11 +488,7 @@ public class MainFrame extends JFrame {
                 }
             }
         }
-
-
     }
-
-
 
     public void initFriendList(){
         //初始化model
@@ -442,9 +497,11 @@ public class MainFrame extends JFrame {
         flushFriendList();
         friendJList = new JList<>(friendModel);
         //背景透明
+        ((JLabel)friendJList.getCellRenderer()).setOpaque(false);
         friendJList.setOpaque(false);
         //设置每个列表的高
         friendJList.setFixedCellHeight(20);
+        friendJList.setFont(new Font("宋体",Font.PLAIN,18));
         friendJList.setSelectionBackground(new Color(0xBBFFFF));
         //打开聊天窗口
         friendJList.addListSelectionListener(new ListSelectionListener() {
@@ -473,9 +530,11 @@ public class MainFrame extends JFrame {
         flushGroupList();
         groupJList = new JList<>(groupModel);
         //背景透明
+        ((JLabel)groupJList.getCellRenderer()).setOpaque(false);
         groupJList.setOpaque(false);
         //设置每个列表的高
         groupJList.setFixedCellHeight(20);
+        groupJList.setFont(new Font("宋体",Font.PLAIN,18));
         groupJList.setSelectionBackground(new Color(0xBBFFFF));
         //打开聊天窗口
         groupJList.addListSelectionListener(new ListSelectionListener() {
@@ -519,7 +578,7 @@ public class MainFrame extends JFrame {
                 flushFriendList();
             }
             //高度自定义，防止点击空白处自动获取list的最后一行
-            if(friendModel.size() != 0){
+            if(friendList.length != 0){
                 listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
             }else {
                 listPanel.setSize(new Dimension(295, 0));
@@ -542,7 +601,7 @@ public class MainFrame extends JFrame {
                 flushGroupList();
             }
             //高度自定义，防止点击空白处自动获取list的最后一行
-            if(groupModel.size() != 0){
+            if(groupList.length != 0){
                 listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
             }else {
                 listPanel.setSize(new Dimension(295, 0));

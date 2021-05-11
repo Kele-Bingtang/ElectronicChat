@@ -24,8 +24,6 @@ public class AddFriendFrame extends JFrame {
 
     GetDataFromDao getDataFromDao;
 
-    boolean isAdd = false;
-
     String userid;
     Socket socket;
 
@@ -152,7 +150,6 @@ public class AddFriendFrame extends JFrame {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                isAdd = true;
 
                 int[] row = table.getSelectedRows();
                 for (int i = 0; i < row.length; i++) {
@@ -185,7 +182,7 @@ public class AddFriendFrame extends JFrame {
         // 把符合条件的记录显示在表格里
         tableModel.setRowCount(0);//清空
         for (Information in: dataList) {
-            //名字或者学号有一个字符串出现，则都显示
+            //判断条件
             if(fieldInfo.equals(in.getUid())){
                 addTableRow(in);
             }
@@ -230,16 +227,19 @@ public class AddFriendFrame extends JFrame {
             rowData.add(information.getSignNature());
             rowData.add(information.getStatus());
             //判断是不是好友
-            System.out.println(information.getUid() + "  ");
-            for (String s : friendid) {
-                if (information.getUid().equals(s)) {
-                    rowData.remove("陌生人");
-                    rowData.add("好友");
-                    break;
-                }else {
-                    rowData.remove("陌生人");
-                    rowData.add("陌生人");
+            if(friendid.length != 0){
+                for (String s : friendid) {
+                    if (information.getUid().equals(s)) {
+                        rowData.remove("陌生人");
+                        rowData.add("好友");
+                        break;
+                    }else {
+                        rowData.remove("陌生人");
+                        rowData.add("陌生人");
+                    }
                 }
+            }else {
+                rowData.add("陌生人");
             }
             //如果是自己的id，则不添加进去
             if(!userid.equals(information.getUid())){

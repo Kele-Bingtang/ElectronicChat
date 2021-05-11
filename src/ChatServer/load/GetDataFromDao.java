@@ -44,6 +44,17 @@ public class GetDataFromDao {
     }
 
     /**
+     * 注册您的信息
+     * @param userid 用户id
+     * @param password 密码
+     */
+    public void register(String userid,String password){
+        userDaompl.register(userid,password);
+
+    }
+
+
+    /**
      * 判断用户名和密码是否正确
      * @param userid 用户id
      * @param password 密码

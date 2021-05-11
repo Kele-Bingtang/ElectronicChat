@@ -64,6 +64,8 @@ public class Process {
         }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString())){
             //返回群的聊天历史记录
             return getGroupHistory(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_REGISTER.toString())){
+            return register(message);
         }
         return null;
     }
@@ -133,6 +135,16 @@ public class Process {
         getDataFromDao.modifySignature(userid,newSignature);
 
         return EnMsgType.EN_MSG_MODIFY_SIGNATURE.toString();
+    }
+
+    public String register(String message){
+        int index1 = message.indexOf(" ");
+        int index2 = message.indexOf(":");
+        String userid = message.substring(index1 + 1,index2);
+        String password = message.substring(index2 + 1);
+        getDataFromDao.register(userid,password);
+
+        return EnMsgType.EN_MSG_REGISTER.toString();
     }
 
     /**

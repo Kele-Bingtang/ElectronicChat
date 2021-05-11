@@ -17,7 +17,7 @@ public class TipMessageFrame extends JFrame {
     /**
      * 修改密码错误提示
      */
-    public void modifypasswordSuccOrFail(String title,String tipMessage){
+    public void SuccOrFail(String title,String tipMessage){
         setTitle(title);
         setAlwaysOnTop(true);
         setLayout(null);
@@ -35,8 +35,6 @@ public class TipMessageFrame extends JFrame {
         JButton sureButton = new JButton("确定");
         sureButton.setBounds(110,90,75,25);
         container.add(sureButton);
-
-
 
         sureButton.addActionListener(new ActionListener() {
             @Override
@@ -79,6 +77,18 @@ public class TipMessageFrame extends JFrame {
         sureButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                try {
+                    Thread.sleep(800);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
                 dispose();
             }
         });

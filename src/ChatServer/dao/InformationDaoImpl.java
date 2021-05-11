@@ -41,8 +41,8 @@ public class InformationDaoImpl implements InformationDao {
             }
             if(null == imformation){
                 imformation = new Information();
-                imformation.setNickName("游客");
-                imformation.setSignNature("欢迎来到第八组简易聊天系统");
+                imformation.setNickName("创建昵称");
+                imformation.setSignNature("编辑个性签名");
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -142,6 +142,7 @@ public class InformationDaoImpl implements InformationDao {
             JDBCUtils.close(pstt,conn);
         }
     }
+
 
     /**
      * 获取全部用户信息

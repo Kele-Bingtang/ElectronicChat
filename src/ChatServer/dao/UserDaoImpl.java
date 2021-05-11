@@ -41,6 +41,25 @@ public class UserDaoImpl implements UserDao{
         return flag;
     }
 
+    @Override
+    public void register(String userid, String password) {
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "INSERT INTO users(userid,password) VALUES(?,?)";
+        PreparedStatement pstt = null;
+
+        try {
+            pstt = conn.prepareStatement(sql);
+            pstt.setString(1,userid);
+            pstt.setString(2,password);
+            pstt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            SxUtils.close(pstt,conn);
+        }
+
+    }
+
     /**
      * 修改密码
      * @param userid 用户id
