@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * 主界面
@@ -29,10 +30,16 @@ public class MainFrame extends JFrame {
     public JScrollPane CenterPanel,listPanel;
     //列表
     public static JList<String> friendJList,groupJList;
+    //头像id
+    int headIconID;
     //好友列表数组
     private String[] friendList,groupList;
     //列表s
     public static DefaultListModel<String> friendModel,groupModel;
+    //判断是否已经打开此私聊对象的窗口
+    public static HashMap<Integer,Boolean> isopenFriend = new HashMap<Integer, Boolean>();
+    //判断是否已经打开此聊天群组的窗口
+    public static HashMap<Integer,Boolean> isopenGroup = new HashMap<Integer, Boolean>();
 
     //通信
     Socket socket;
@@ -53,12 +60,14 @@ public class MainFrame extends JFrame {
     String nickName;
     String signature;
 
-    public MainFrame(Socket socket,String userid,String nickName,String signature,String[] friendList,String[] groupList){
+    public MainFrame(Socket socket,String userid,int headIconID,String nickName,String signature,String[] friendList,String[] groupList){
         this.socket = socket;
         //获取用户名
         this.userid = userid;
         //获取昵称
         this.nickName = nickName;
+        //获取头像id
+        this.headIconID = headIconID;
         //获取个性签名
         this.signature = signature;
         //回去好友列表
@@ -85,11 +94,18 @@ public class MainFrame extends JFrame {
         buttomPanel.setSize(new Dimension(buttomPanelWidth,buttomPanelHeight));
         buttomPanel.setOpaque(false);
 
-        //设置label_2(头像)
+        //headButton(头像)
         //标签
-        JLabel label_2 = new JLabel(new ImageIcon("src/ChatClient/Image/tx1.png"));
-        label_2.setBounds(15,20,80,80);
-        topPanel.add(label_2);
+        JButton headButton = new JButton();
+        headButton.setBounds(15,20,80,80);
+        headButton.setToolTipText("点击更换头像");
+        HeadFrame headFrame = new HeadFrame(socket,userid,headIconID,headButton);
+        //初始化头像，从数据库获取头像ID
+        headButton.setIcon(HeadFrame.ChangeImgSize((ImageIcon) (HeadFrame.icons.get(headIconID).getIcon()),headButton));
+        headButton.addActionListener(e -> {
+            headFrame.setVisible(true);
+        });
+        topPanel.add(headButton);
 
         //设置label_1昵称
         nickNameLabel = new JLabel(nickName);
@@ -462,23 +478,23 @@ public class MainFrame extends JFrame {
         frame.setResizable(false);
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        //点击面板给头像获得焦点，促使文本框失去焦点
+        //点击面板给昵称获得焦点，促使文本框失去焦点
         topPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                label_2.requestFocus();
+                nickNameLabel.requestFocus();
             }
         });
         CenterPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                label_2.requestFocus();
+                nickNameLabel.requestFocus();
             }
         });
         buttomPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                label_2.requestFocus();
+                nickNameLabel.requestFocus();
             }
         });
         frame.add(topPanel);
@@ -499,21 +515,27 @@ public class MainFrame extends JFrame {
     }
 
     public void flushFriendList(){
+        int i = 0;
         friendList = Handle.friends;
         if(Arrays.toString(friendList).trim().length() != 0){
             for (String s : friendList) {
                 if(!s.equals("")){
                     friendModel.addElement(s);
+                    isopenFriend.put(i,false);
+                    i++;
                 }
             }
         }
     }
     public void flushGroupList(){
+        int i = 0;
         groupList = Handle.groups;
         if(Arrays.toString(groupList).trim().length() != 0){
             for (String s : groupList) {
                 if(!s.equals("")) {
                     groupModel.addElement(s);
+                    isopenGroup.put(i,false);
+                    i++;
                 }
             }
         }
@@ -582,10 +604,13 @@ public class MainFrame extends JFrame {
                     for(int i = 0;i < friendModel.size();i++){
                         if(friendModel.get(i).equals(friendJList.getSelectedValue())){
                             int index = friendJList.getSelectedValue().indexOf(" ");
-                            String chatName = friendJList.getSelectedValue().substring(0,index);
-                            new ChatFrame(socket,nickName,chatName);
-                            new Send(socket).sendMsg(EnMsgType.EN_MSG_OPEN_CHAT.toString() + " " + nickName + ":" + chatName);
-                            System.out.println("创建了第" + ++sum + "个聊天窗口");
+                            if(!isopenFriend.get(friendJList.getSelectedIndex())) {
+                                isopenFriend.put(friendJList.getSelectedIndex(), true);
+                                String chatName = friendJList.getSelectedValue().substring(0, index);
+                                new ChatFrame(socket, nickName, chatName,friendJList.getSelectedIndex());
+                                new Send(socket).sendMsg(EnMsgType.EN_MSG_OPEN_CHAT.toString() + " " + nickName + ":" + chatName);
+                                System.out.println("创建了第" + ++sum + "个聊天窗口");
+                            }
                             friendJList.clearSelection();
                         }
                     }
@@ -615,15 +640,17 @@ public class MainFrame extends JFrame {
                 if(e.getValueIsAdjusting()){
                     for(int i = 0;i < groupModel.size();i++){
                         if(groupModel.get(i).equals(groupJList.getSelectedValue())){
-                            String chatGroupName = groupJList.getSelectedValue();
-                            new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString() + " " + userid + ":" + nickName + ":" + chatGroupName);
-                            try {
-                                Handle.queue.take();
-                            } catch (InterruptedException interruptedException) {
-                                interruptedException.printStackTrace();
+                            if(!isopenGroup.get(groupJList.getSelectedIndex())) {
+                                isopenGroup.put(groupJList.getSelectedIndex(), true);
+                                String chatGroupName = groupJList.getSelectedValue();
+                                new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString() + " " + userid + ":" + nickName + ":" + chatGroupName);
+                                try {
+                                    Handle.queue.take();
+                                } catch (InterruptedException interruptedException) {
+                                    interruptedException.printStackTrace();
+                                }
+                                new GroupFrame(socket, userid, nickName, chatGroupName, Handle.groupMembers,groupJList.getSelectedIndex());
                             }
-                            new GroupFrame(socket,userid,nickName,chatGroupName,Handle.groupMembers);
-
                             groupJList.clearSelection();
                         }
                     }
@@ -680,6 +707,22 @@ public class MainFrame extends JFrame {
             }
             groupJList.setModel(groupModel);
         }
+    }
+
+    /**
+     * 关闭与XXX的聊天窗口，重置isopen,可打开新的与XXX的聊天给窗口
+     * @param closeIndex 聊天对象索引
+     */
+    public static void friendClose(int closeIndex){
+        isopenFriend.put(closeIndex,false);
+    }
+
+    /**
+     * 关闭与XXX的聊天窗口，重置isopen,可打开新的与XXX的聊天给窗口
+     * @param closeIndex 聊天对象索引
+     */
+    public static void groupClose(int closeIndex){
+        isopenGroup.put(closeIndex,false);
     }
 
 }

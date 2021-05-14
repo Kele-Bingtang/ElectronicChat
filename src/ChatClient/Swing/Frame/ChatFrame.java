@@ -31,6 +31,8 @@ public class ChatFrame extends JFrame{
     String chatName;
     //客户端昵称
     String nickName;
+    //当前打开的聊天窗口所对应的好友在好友列表中的序号
+    int listIndex;
     //一个聊天对象对应一个聊天窗口(实现多窗口聊天)
     public static Map<String ,JTextPane> TextPaneMap = new HashMap<>();
     //发送消息到聊天窗口，一个聊天对象对应一个消息缓冲区(StringBuilder)
@@ -41,11 +43,12 @@ public class ChatFrame extends JFrame{
     int height = 600;
 
     Send send;
-    public ChatFrame(Socket socket,String nickName,String chatName){
+    public ChatFrame(Socket socket,String nickName,String chatName,int listIndex){
         this.socket = socket;
         this.chatName = chatName;
         //从登录窗口获取昵称
         this.nickName = nickName;
+        this.listIndex = listIndex;
         send  = new Send(socket);
         init();
     }
@@ -143,6 +146,7 @@ public class ChatFrame extends JFrame{
         SouthPanel.setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
         toolBar.setOpaque(false);
+        toolBar.setFloatable(false);
         toolBar.addSeparator(new Dimension(20,20));
         toolBar.add(sendButton);
         toolBar.addSeparator(new Dimension(20,20));
@@ -167,7 +171,7 @@ public class ChatFrame extends JFrame{
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                Handle.isOpenChat = false;
+                new Send(socket).sendMsg(EnMsgType.EN_MSG_SINGLE_CLOSE.toString() + " " + listIndex);
             }
         });
     }

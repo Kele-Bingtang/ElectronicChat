@@ -6,7 +6,11 @@ import ChatServer.dao.FriendDaompl;
 import ChatServer.dao.GroupChatDaoImpl;
 import ChatServer.dao.InformationDaoImpl;
 import ChatServer.dao.UserDaoImpl;
+import Utils.JDBCUtils;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -143,7 +147,14 @@ public class GetDataFromDao {
     public void modifySignature(String userid,String signature){
         informationDaompl.storeSignature(userid,signature);
     }
-
+    /**
+     * 更新头像ID
+     * @param iconID 头像ID
+     * @param userid 用户id
+     */
+    public void modifyIconID(String userid,int iconID){
+        informationDaompl.storeIconID(userid,iconID);
+    }
 
     /**
      * 修改密码

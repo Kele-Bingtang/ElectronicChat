@@ -35,7 +35,8 @@ public class GroupFrame extends JFrame{
     String nickName;
     //用户id
     String userid;
-
+    //当前打开的聊天窗口所对应的群聊列表的序号
+    int listIndex;
     String[] groupMembers;
     //一个聊天群对应一个聊天窗口(实现多窗口聊天)
     public static Map<String ,JTextPane> TextPaneMap = new HashMap<>();
@@ -50,13 +51,14 @@ public class GroupFrame extends JFrame{
 
     int width = 600;
     int height = 600;
-    public GroupFrame(Socket socket, String userid, String nickName, String chatGroupName,String[] groupMembers){
+    public GroupFrame(Socket socket, String userid, String nickName, String chatGroupName,String[] groupMembers,int listIndex){
         this.socket = socket;
         this.userid = userid;
         this.chatGroupName = chatGroupName;
         //从登录窗口获取昵称
         this.nickName = nickName;
         this.groupMembers = groupMembers;
+        this.listIndex = listIndex;
         send  = new Send(socket);
         init();
     }
@@ -178,6 +180,7 @@ public class GroupFrame extends JFrame{
         JPanel SouthPanel = new JPanel();
         SouthPanel.setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         toolBar.setOpaque(false);
         toolBar.addSeparator(new Dimension(20,20));
         toolBar.add(sendButton);
@@ -205,6 +208,7 @@ public class GroupFrame extends JFrame{
             @Override
             public void windowClosing(WindowEvent e) {
                 new Send(socket).sendMsg(EnMsgType.EN_MSG_GROUP_EXIT.toString() + " " + userid + ":" + nickName + ":" + chatGroupName);
+                new Send(socket).sendMsg(EnMsgType.EN_MSG_GROUP_CLOSE.toString() + " " + listIndex);
             }
         });
 

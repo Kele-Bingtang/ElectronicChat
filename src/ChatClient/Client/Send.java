@@ -1,6 +1,7 @@
 package ChatClient.Client;
 
 import ChatClient.Swing.Frame.GroupFrame;
+import ChatClient.Swing.Frame.MainFrame;
 import ChatClient.cons.EnMsgType;
 import ChatClient.Swing.Frame.ChatFrame;
 import ChatClient.Swing.Frame.TipMessageFrame;

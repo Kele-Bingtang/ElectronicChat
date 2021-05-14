@@ -53,7 +53,7 @@ public class RegisterFrame extends JFrame {
         JButton returnButton = new JButton("返回");
         //上沿显示标签
         JLabel topLabel1 = new JLabel(new ImageIcon("src/ChatClient/Image/topIcon.png"));
-        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/tx1.png"));
+        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/icon(10).jpg"));
         //账号标签
         useridLabel = new JLabel(new ImageIcon("src/ChatClient/Image/useridIcon1.png"));
         //密码标签

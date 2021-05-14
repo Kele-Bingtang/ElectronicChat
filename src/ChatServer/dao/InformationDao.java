@@ -16,6 +16,8 @@ public interface InformationDao {
     //修改的个性签名存储到数据库
     void storeSignature(String userid,String signature);
 
+    void storeIconID(String userid, int iconID);
+
     //修改用户状态
     void modifyStatus(String userid,String status);
 

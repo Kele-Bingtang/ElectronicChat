@@ -26,6 +26,9 @@ public class Process {
         }else if(message.startsWith(EnMsgType.EN_MSG_MODIFY_SIGNATURE.toString())){
             //修改签名
             return modifySignature(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_MODIFY_ICON.toString())){
+            //修改头像
+            return modifyIconID(message);
         }else if(message.startsWith(EnMsgType.EN_MSG_MODIFY_PASSWORD.toString())){
             //修改密码
             return modifyPassword(message);
@@ -148,6 +151,20 @@ public class Process {
     }
 
     /**
+     * 修改头像
+     * @param message 消息
+     * @return 标识符
+     */
+    public String modifyIconID(String message){
+        int index1 = message.indexOf(" ");
+        int index2 = message.indexOf(":");
+        String userid = message.substring(index1 + 1,index2);
+        String newIconID = message.substring(index2 + 1);
+        getDataFromDao.modifyIconID(userid,Integer.parseInt(newIconID));
+        return EnMsgType.EN_MSG_MODIFY_ICON.toString();
+    }
+
+    /**
      * 修改密码
      * @param message 消息
      * @return 标识符
@@ -261,7 +278,7 @@ public class Process {
     }
 
     /**
-     * 返回昵称和签名
+     * 返回昵称和签名和头像id
      * @param message 消息
      * @return 昵称和个性签名
      */
@@ -271,8 +288,9 @@ public class Process {
         Information information = getDataFromDao.getinformationByUserid(userid);
         String nickName = information.getNickName();
         String signature = information.getSignNature();
+        int iconID = information.getIconID();
         getDataFromDao.modifyStatus(userid,"在线");
-        return EnMsgType.EN_MSG_GET_INFORMATION.toString() + " " + nickName + ":" + signature;
+        return EnMsgType.EN_MSG_GET_INFORMATION.toString() + " " + nickName + ":" + signature + ":" + iconID;
     }
 
     /**
@@ -427,7 +445,6 @@ public class Process {
         String userid = message.substring(index1 + 1,index2);
         String nickName = message.substring(index2 + 1,index3);
         String chatGroupName = message.substring(index3 + 1);
-
         Set<String> key = Server.groupMap.keySet();
         for (String keySet : key){
             if(keySet.equals(chatGroupName)){

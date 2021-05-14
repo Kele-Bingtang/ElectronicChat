@@ -202,6 +202,9 @@ public class Channel implements Runnable{
                     String realMassage = process.Processing(msg);
                     //发送消息给别人
                     sendMsgToOther(realMassage);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_SINGLE_CLOSE.toString())){
+                    //聊天窗口关闭，发送信息给主界面解除对当前聊天对象的窗口锁定
+                    sendMsgToMy(msg);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_EXIT.toString())){
                     String handleMessage = process.Processing(msg);
                     //发给好友，我已经下线
@@ -230,6 +233,8 @@ public class Channel implements Runnable{
                     int index = msg.indexOf(" ");
                     String realMessage = msg.substring(index + 1);
                     sendMsgToAll(realMessage,false);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_CLOSE.toString())){
+                    sendMsgToMy(msg);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString())){
                     String singleHistory = process.Processing(msg);
                     sendMsgToMy(singleHistory);

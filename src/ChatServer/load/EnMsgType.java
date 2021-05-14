@@ -26,4 +26,7 @@ public enum EnMsgType {
     EN_MSG_GROUP_EXIT,  //退出群
     EN_MSG_GET_SINGLE_HISTORY,  //获取与聊天对象的聊天历史记录
     EN_MSG_GET_GROUP_HISTORY,  //获取群的聊天历史记录
+    EN_MSG_MODIFY_ICON,    //修改头像ID
+    EN_MSG_SINGLE_CLOSE,   //关闭私聊聊天窗口
+    EN_MSG_GROUP_CLOSE,   //关闭私聊聊天窗口
 }

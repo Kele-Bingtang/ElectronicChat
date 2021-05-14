@@ -59,7 +59,7 @@ public class LoginFrame extends JFrame {
         JButton loginButton = new JButton("安全登录", new ImageIcon("src/ChatClient/Image/2.png"));
         //上沿显示标签
         JLabel topLabel1 = new JLabel(new ImageIcon("src/ChatClient/Image/topIcon.png"));
-        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/tx1.png"));
+        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/icon(10).jpg"));
         //账号标签
         useridLabel = new JLabel(new ImageIcon("src/ChatClient/Image/useridIcon1.png"));
         //密码标签
@@ -254,7 +254,7 @@ public class LoginFrame extends JFrame {
                         //关闭自己
                         if(code == 300 || code == 400){
                             dispose();
-                            MainFrame mainFrame = new MainFrame(socket,username,Handle.nickName,Handle.signature,Handle.friends,Handle.groups);
+                            MainFrame mainFrame = new MainFrame(socket,username,Handle.headIconID,Handle.nickName,Handle.signature,Handle.friends,Handle.groups);
                             mainFrame.init();
                             dialog.dispose();
                         }

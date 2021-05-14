@@ -1,5 +1,6 @@
 package ChatClient.controller;
 
+import ChatClient.Swing.Frame.MainFrame;
 import ChatClient.cons.EnMsgType;
 import ChatClient.Swing.Frame.TipMessageFrame;
 
@@ -11,6 +12,7 @@ public class Handle {
     public static SynchronousQueue<Object> queue = new SynchronousQueue<>();
     public static String nickName;
     public static String signature;
+    public static int headIconID;
     public static String[] friends;
     public static String[] groups;
     public static String[] groupMembers;
@@ -40,13 +42,19 @@ public class Handle {
             queue.offer(150);
             return true;
         } else if (message.startsWith(EnMsgType.EN_MSG_OPEN_CHAT.toString())) {
-            //一对一聊天
+            //打开聊天窗口
             int index1 = message.indexOf(" ");
             int index2 = message.indexOf(":");
             String chatName = message.substring(index1 + 1);
             isOpenChat = true;
             System.out.println(chatName + "打开和你的聊天窗口");
             new TipMessageFrame().sendMessageTip("提示", chatName + "打开和你的聊天窗口", false);
+            return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_SINGLE_CLOSE.toString())){
+            isOpenChat = false;
+            int index = message.indexOf(" ");
+            String closeIndex = message.substring(index + 1);
+            MainFrame.friendClose(Integer.parseInt(closeIndex));
             return true;
         } else if (message.equals(EnMsgType.EN_MSG_ADD_FRIEND.toString())) {
             //添加好友
@@ -84,8 +92,10 @@ public class Handle {
         } else if (message.startsWith(EnMsgType.EN_MSG_GET_INFORMATION.toString())) {
             int index1 = message.indexOf(" ");
             int index2 = message.indexOf(":");
+            int index3 = message.lastIndexOf(":");
             nickName = message.substring(index1 + 1, index2);
             signature = message.substring(index2 + 1);
+            headIconID= Integer.parseInt(message.substring(index3 + 1));
             return true;
         } else if (message.startsWith(EnMsgType.EN_MSG_GET_FRIEND.toString())) {
             int index1 = message.indexOf(" ");
@@ -94,8 +104,8 @@ public class Handle {
             queue.offer(300);
             return true;
         } else if (message.startsWith(EnMsgType.EN_MSG_EXIT.toString())) {
-            int index = message.indexOf(" ");
-            String friendName = message.substring(index + 1);
+            int index1 = message.indexOf(" ");
+            String friendName = message.substring(index1 + 1);
             System.out.println(friendName + "下线了");
             new TipMessageFrame().sendMessageTip("下线通知", friendName + "下线啦", false);
             return true;
@@ -110,6 +120,11 @@ public class Handle {
             message = message.substring(index + 1);
             groupMembers = message.split(":");
             queue.offer(500);
+            return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_GROUP_CLOSE.toString())){
+            int index = message.indexOf(" ");
+            String groupID = message.substring(index + 1);
+            MainFrame.groupClose(Integer.parseInt(groupID));
             return true;
         } else if (message.startsWith(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString())) {
 

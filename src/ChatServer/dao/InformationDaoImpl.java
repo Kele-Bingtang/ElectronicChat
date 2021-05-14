@@ -38,10 +38,11 @@ public class InformationDaoImpl implements InformationDao {
                 }else {
                     imformation.setSignNature(rs.getString("signature"));
                 }
+                imformation.setIconID(rs.getInt("iconid"));
             }
             if(null == imformation){
                 imformation = new Information();
-                imformation.setNickName("创建昵称");
+                imformation.setNickName("昵称");
                 imformation.setSignNature("编辑个性签名");
             }
         } catch (SQLException throwables) {
@@ -117,6 +118,28 @@ public class InformationDaoImpl implements InformationDao {
         try {
             pstt = conn.prepareStatement(sql);
             pstt.setString(1,signature);
+            pstt.setString(2,userid);
+            pstt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            JDBCUtils.close(pstt,conn);
+        }
+    }
+
+    /**
+     * 修改的头像ID存储到数据库
+     * @param iconID 个性签名
+     * @param userid 用户id
+     */
+    @Override
+    public void storeIconID(String userid, int iconID) {
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "UPDATE information SET iconID = ? WHERE userid = ?";
+        PreparedStatement pstt = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            pstt.setInt(1,iconID);
             pstt.setString(2,userid);
             pstt.executeUpdate();
         } catch (SQLException throwables) {

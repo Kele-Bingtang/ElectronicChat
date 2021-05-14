@@ -5,6 +5,7 @@ public class Information {
     private String nickName;
     private String signNature;
     private String status;
+    private int iconID;
 
     public String getUid() {
         return uid;
@@ -36,5 +37,13 @@ public class Information {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getIconID() {
+        return iconID;
+    }
+
+    public void setIconID(int iconID) {
+        this.iconID = iconID;
     }
 }
