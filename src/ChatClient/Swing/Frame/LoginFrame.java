@@ -5,7 +5,6 @@ import ChatClient.cons.EnMsgType;
 import ChatClient.controller.Handle;
 
 import javax.swing.*;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.Socket;
