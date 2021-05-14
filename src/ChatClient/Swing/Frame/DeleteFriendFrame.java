@@ -25,6 +25,10 @@ public class DeleteFriendFrame extends JFrame {
     String userid;
     Socket socket;
 
+
+    int width = 660;
+    int height = 530;
+
     public static void main(String[] args) {
         new DeleteFriendFrame(null,"kele");
     }
@@ -32,9 +36,10 @@ public class DeleteFriendFrame extends JFrame {
     public DeleteFriendFrame(Socket socket, String userid){
         this.socket = socket;
         this.userid = userid;
-        setTitle("查找");
+        setTitle("删除");
         container = getContentPane();
         container.setLayout(new BorderLayout());
+        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
 
         //初始化表格
         initTable();
@@ -48,8 +53,14 @@ public class DeleteFriendFrame extends JFrame {
         //加载数据
         loadData();
 
+        //更改字体大小格式和列名大小格式
+        table.setFont(new Font("宋体",Font.PLAIN,18));
+        table.getTableHeader().setFont(new Font("微软雅黑",Font.PLAIN,18));
+        //选中背景色
+        table.setSelectionBackground(Color.LIGHT_GRAY);
+
         setVisible(true);
-        setBounds(400,300,640,400);
+        setBounds(700,250,width,height);
         //关闭该窗口，不会整个程序关闭
         addWindowListener(new WindowAdapter() {
             @Override
@@ -90,6 +101,7 @@ public class DeleteFriendFrame extends JFrame {
         toolBar.setFloatable(false);
 
         searchButton = new JButton("查找");
+        searchButton.setFont(new Font("黑体",Font.PLAIN,16));
         toolBar.addSeparator(new Dimension(40,10));  //和前面远离一定距离
         toolBar.add(searchField);
         toolBar.add(searchButton);
@@ -122,6 +134,7 @@ public class DeleteFriendFrame extends JFrame {
         });
 
         deleteButton = new JButton("删除");
+        deleteButton.setFont(new Font("黑体",Font.PLAIN,16));
         toolBar.addSeparator(new Dimension(240,30));
         toolBar.add(deleteButton);
 

@@ -23,6 +23,7 @@ public class TipMessageFrame extends JFrame {
         setLayout(null);
         setSize(300,160);
         setLocation(800,350);
+        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
         setVisible(true);
         //无法更改窗口大小
         setResizable(false);

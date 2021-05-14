@@ -39,6 +39,15 @@ public class MainFrame extends JFrame {
     //打开窗口的个数
     int sum = 0;
 
+    int width = 320;
+    int height = 800;
+    int topPanelWidth = width;
+    int topPanelHeight = height - 650;  //  180
+    int centerPanelWidth = width;
+    int centerPanelHeight = height - 250;  //550
+    int buttomPanelWidth = width;
+    int buttomPanelHeight = height - 710;  //90
+
 
     String userid;
     String nickName;
@@ -66,29 +75,129 @@ public class MainFrame extends JFrame {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(null);
         topPanel.setLocation(0,0); //初始位置
-        topPanel.setBorder(BorderFactory.createTitledBorder("资料"));//标签
-        topPanel.setSize(new Dimension(295, 148));  //大小
+        topPanel.setSize(new Dimension(topPanelWidth, topPanelHeight));  //大小
         topPanel.setOpaque(false);//背景
 
         //初始化panel_3
         JPanel buttomPanel = new JPanel();
         buttomPanel.setLayout(null);
-        buttomPanel.setLocation(0,617);
-        buttomPanel.setSize(new Dimension(295,55));
+        buttomPanel.setLocation(0,height - 100);
+        buttomPanel.setSize(new Dimension(buttomPanelWidth,buttomPanelHeight));
         buttomPanel.setOpaque(false);
-
-        //设置label_1昵称
-        nickNameLabel = new JLabel(nickName);
-        nickNameLabel.setBounds(100,10,100,30);
-        nickNameLabel.setFont(new Font("宋体",Font.PLAIN,18));
-        nickNameLabel.setForeground(Color.WHITE);
-        topPanel.add(nickNameLabel);
 
         //设置label_2(头像)
         //标签
         JLabel label_2 = new JLabel(new ImageIcon("src/ChatClient/Image/tx1.png"));
-        label_2.setBounds(15,30,80,80);
+        label_2.setBounds(15,20,80,80);
         topPanel.add(label_2);
+
+        //设置label_1昵称
+        nickNameLabel = new JLabel(nickName);
+        nickNameLabel.setBounds(100,20,150,30);
+        nickNameLabel.setFont(new Font("宋体",Font.BOLD,18));
+        nickNameLabel.setForeground(Color.WHITE);
+        topPanel.add(nickNameLabel);
+
+        //设置在线状态bBox();
+        //状态框
+        JComboBox<String> box = new JComboBox<>();
+        box.setUI(new MyComBoxUIBackground());
+        box.addItem("✅在线");
+        box.addItem("\uD83D\uDCBF隐身");
+        box.addItem("\uD83D\uDCBB忙碌");
+        box.addItem("❎离线");
+        box.setBounds(centerPanelWidth - 100, height - 785, 80, 30);
+        box.setFont(new Font(null,Font.PLAIN,14));
+        topPanel.add(box);
+
+        //设置个性签名文本
+        signatureField = new JTextField(signature);
+        signatureField.setBounds(100, 65, width - 100, 30);
+        signatureField.setOpaque(false);
+        signatureField.setFont(new Font("宋体",Font.PLAIN,15));
+        signatureField.setForeground(Color.WHITE);
+        signatureField.setBorder(BorderFactory.createEmptyBorder());
+        signatureField.setText("编辑个性签名");
+        signatureField.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(signatureField.getText().equals("编辑个性签名")){
+                    signatureField.setText("");
+                }
+
+                signatureField.setForeground(Color.BLACK);
+                signatureField.setOpaque(true);
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                signatureField.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                signatureField.setBorder(BorderFactory.createEmptyBorder());
+            }
+        });
+        signatureField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(signatureField.getText().equals("")){
+                    signatureField.setText("编辑个性签名");
+                }
+                signatureField.setForeground(Color.WHITE);
+                signatureField.setOpaque(false);
+            }
+        });
+        topPanel.add(signatureField);
+
+        //搜索符号
+        JLabel searchlabel = new JLabel("\uD83D\uDD0D 搜索");
+        searchlabel.setFont(new Font(null,Font.PLAIN,16));
+        searchlabel.setForeground(new Color(255,255,255, 215));
+        searchlabel.setBounds(10, 120, 60, 20);
+        topPanel.add(searchlabel);
+
+        //设置搜索栏
+        JTextField searchField = new JTextField();
+        searchField.setToolTipText("按回车键进行查询，退出自动清空关键字");
+        searchField.setBounds(0, 120, topPanelWidth, 30);
+        searchField.setFont(new Font("宋体",Font.PLAIN,18));
+        searchField.setOpaque(false);
+        searchField.setForeground(Color.WHITE);
+        searchField.setBorder(BorderFactory.createEmptyBorder());
+        topPanel.add(searchField);
+
+        searchField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                searchField.setForeground(Color.BLACK);
+                searchField.setOpaque(true);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                searchField.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                searchField.setBorder(BorderFactory.createEmptyBorder());
+            }
+        });
+        searchField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                searchField.setForeground(Color.WHITE);
+                searchField.setOpaque(false);
+                searchField.setText("");
+            }
+        });
+
+        //回车键即可查询
+        searchField.addActionListener(e -> {
+            onSearch(searchField);
+
+        });
 
         //初始化好友列表
         initFriendList();
@@ -97,37 +206,49 @@ public class MainFrame extends JFrame {
         //初始化panel_2
         //初始化面板二
         CenterPanel = new JScrollPane();
+        //初始化好友列表面板
+        listPanel = new JScrollPane();
+        //好友
         JLabel frinedLabel = new JLabel("好友");
-        frinedLabel.setBounds(5,0,60,30);
         frinedLabel.setFont(new Font("宋体",Font.PLAIN,20));
+        frinedLabel.setForeground(Color.BLACK);
 
+        //群聊
         JLabel groupLabel = new JLabel("群聊");
-        groupLabel.setBounds(80,0,60,30);
         groupLabel.setFont(new Font("宋体",Font.PLAIN,20));
-        groupLabel.setBounds(45,0,30,20);
+        groupLabel.setForeground(new Color(0, 0, 0, 185));
 
-        //工具栏，存储中间面板的标题
+        //刷新
+        //刷新JList列表
+        JLabel fluashLabel = new JLabel("刷新");
+        fluashLabel.setFont(new Font("宋体",Font.PLAIN,18));
+        fluashLabel.setToolTipText("点击即可刷新好友或者群聊的列表");
+        fluashLabel.setForeground(new Color(0, 0, 0, 185));
+
+        //工具栏，存储中间面板的标题(好友和群聊)
         JToolBar titleBar = new JToolBar();
-        titleBar.setBounds(0,0,295,30);
+        titleBar.setBounds(0,0,centerPanelWidth,centerPanelHeight - 520);
         titleBar.setFloatable(false);
-        titleBar.addSeparator(new Dimension(50,30));
+        titleBar.addSeparator(new Dimension(50,centerPanelHeight -520));
         titleBar.add(frinedLabel);
-        titleBar.addSeparator(new Dimension(50,30));
+        titleBar.addSeparator(new Dimension(50,centerPanelHeight -520));
+        titleBar.add(groupLabel);
+        titleBar.addSeparator(new Dimension(50,centerPanelHeight -520));
+        titleBar.add(fluashLabel);
         titleBar.setOpaque(false);
         titleBar.setBorder(BorderFactory.createEmptyBorder());
-        titleBar.add(groupLabel);
 
         //线，放在标题下面
         JLabel lineOnTool = new JLabel();
-        lineOnTool.setBounds(0,30,295,1);
+        lineOnTool.setBounds(0,centerPanelHeight - 522,centerPanelWidth,1);
         lineOnTool.setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255)));
 
         JLabel line1 = new JLabel();
-        line1.setBounds(45,30,50,1);
+        line1.setBounds(45,centerPanelHeight - 522,50,1);
         line1.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
 
         JLabel line2 = new JLabel();
-        line2.setBounds(135,30,50,1);
+        line2.setBounds(135,centerPanelHeight - 522,50,1);
         line2.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
         line2.setVisible(false);
 
@@ -136,31 +257,15 @@ public class MainFrame extends JFrame {
         CenterPanel.add(lineOnTool);
         CenterPanel.add(titleBar);
 
-        //初始化好友列表面板
-        listPanel = new JScrollPane();
-
-        listPanel.setViewportView(friendJList);
-        listPanel.setBounds(0,40,80,20);
-        //listPanel存放list,根据list高度变化而变化，防止点击空白处，list自动获取最后一行
-        //CenterPanel存放listPanel，高度确定
-        CenterPanel.setLocation(0,147);
-        //高度自定义，防止点击空白处自动获取list的最后一行
-        listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
-        listPanel.getViewport().setOpaque(false);
-        listPanel.setOpaque(false);
-        listPanel.setBorder(BorderFactory.createEmptyBorder());
-
-        CenterPanel.setSize(new Dimension(295,470));
-        CenterPanel.getViewport().setOpaque(false);
-        CenterPanel.setOpaque(false);
-        CenterPanel.add(listPanel);
-
-
 
         frinedLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                line1.setVisible(true);
+                line2.setVisible(false);
                 listPanel.setViewportView(friendJList);
+                frinedLabel.setForeground(Color.BLACK);
+                groupLabel.setForeground(new Color(0, 0, 0, 185));
                 if(friendList.length != 0){
                     listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
                 }else {
@@ -172,7 +277,11 @@ public class MainFrame extends JFrame {
         groupLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                line1.setVisible(false);
+                line2.setVisible(true);
                 listPanel.setViewportView(groupJList);
+                groupLabel.setForeground(Color.BLACK);
+                frinedLabel.setForeground(new Color(0, 0, 0, 185));
                 if(groupList.length != 0){
                     listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
                 }else {
@@ -181,81 +290,47 @@ public class MainFrame extends JFrame {
             }
         });
 
-        //设置在线状态bBox();
-        //状态框
-        JComboBox<String> box = new JComboBox<>();
-        box.addItem("✅在线");
-        box.addItem("\uD83D\uDCBF隐身");
-        box.addItem("\uD83D\uDCBB忙碌");
-        box.addItem("❎离线");
-        box.setBounds(200, 10, 70, 30);
-        box.setFont(new Font(null,Font.PLAIN,14));
-        box.setForeground(Color.BLACK);
-        topPanel.add(box);
-
-        //设置个性签名的标签
-        JLabel label_4 = new JLabel("个性签名:");
-        label_4.setFont(new Font("宋体", Font.PLAIN, 16));
-        label_4.setForeground(Color.WHITE);
-        label_4.setBounds(100, 50, 100, 20);
-        topPanel.add(label_4);
-
-        //设置文本
-        signatureField = new JTextField(signature);
-        signatureField.setBounds(100, 80, 180, 30);
-        signatureField.setOpaque(false);
-        signatureField.setFont(new Font("宋体",Font.PLAIN,15));
-        signatureField.setForeground(Color.WHITE);
-        signatureField.setBorder(BorderFactory.createEmptyBorder());
-        signatureField.addMouseListener(new MouseAdapter() {
+        fluashLabel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                signatureField.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            public void mouseClicked(MouseEvent e) {
+                onFlush();
             }
 
             @Override
-            public void mouseClicked(MouseEvent e) {
-                signatureField.setOpaque(true);
+            public void mouseEntered(MouseEvent e) {
+                fluashLabel.setForeground(Color.BLACK);
+
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                signatureField.setBorder(BorderFactory.createEmptyBorder());
+                fluashLabel.setForeground(new Color(0, 0, 0, 185));
             }
         });
-        signatureField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                signatureField.setOpaque(false);
-            }
-        });
-        topPanel.add(signatureField);
 
-        //搜索符号
-        JLabel searchlabel = new JLabel("\uD83D\uDD0D");
-        searchlabel.setForeground(Color.RED);
-        searchlabel.setBounds(10, 122, 20, 20);
-        topPanel.add(searchlabel);
 
-        //设置搜索栏
-        JTextField searchField = new JTextField();
-        searchField.setBounds(30, 120, 250, 25);
-        searchField.setBorder(BorderFactory.createEmptyBorder());
-        topPanel.add(searchField);
-        //回车键即可查询
-        searchField.addActionListener(e -> {
-            onSearch(searchField);
+        listPanel.setViewportView(friendJList);
+        //高度自定义，防止点击空白处自动获取list的最后一行
+        //listPanel存放list,根据list高度变化而变化，防止点击空白处，list自动获取最后一行
+        listPanel.setBounds(0,centerPanelHeight - 510,centerPanelWidth,(friendModel.size())* friendJList.getFixedCellHeight() + 3);
 
-        });
-        //搜索符号也能点击查询
-        searchlabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                onSearch(searchField);
-            }
-        });
+        listPanel.getViewport().setOpaque(false);
+        listPanel.setOpaque(false);
+        listPanel.setBorder(BorderFactory.createEmptyBorder());
+
+        CenterPanel.setLocation(0,height - 650);
+        CenterPanel.setSize(new Dimension(centerPanelWidth,centerPanelHeight));
+        CenterPanel.getViewport().setOpaque(false);
+        CenterPanel.setOpaque(false);
+        CenterPanel.add(listPanel);
+
 
         JComboBox<String> box_1 = new JComboBox<>();
+        box_1.setUI(new MyComBoxUIBackground());
+        box_1.setBounds(8, 20, 120, 30);
+        box_1.setFont(new Font(null,Font.PLAIN,18));
+        box_1.setBorder(BorderFactory.createEmptyBorder());
+
         String Item0 = "\uD83D\uDD12\uD83D\uDD28\uD83D\uDD13";
         String Item1 = "修改密码";
         String Item2 = "修改昵称";
@@ -264,9 +339,8 @@ public class MainFrame extends JFrame {
         box_1.addItem(Item1);
         box_1.addItem(Item2);
         box_1.addItem(Item3);
-        box_1.setBounds(8, 20, 100, 25);
-        box_1.setFont(new Font(null,Font.PLAIN,18));
-        box_1.setForeground(Color.BLACK);
+
+
         buttomPanel.add(box_1);
 
         box_1.addActionListener(new ActionListener() {
@@ -285,6 +359,10 @@ public class MainFrame extends JFrame {
                             new TipMessageFrame().SuccOrFail("失败","您输入的新密码为空");
                         }else if(!oldPassword.equals(newPassword)){
                             //发送信息给服务端进行解析 修改密码
+
+
+
+
                             new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_PASSWORD.toString() + " " + userid + ":" + oldPassword + ":" + newPassword);
                         }else {
                             new TipMessageFrame().SuccOrFail("失败","您输入的新密码和旧密码相同");
@@ -328,15 +406,19 @@ public class MainFrame extends JFrame {
 
         //添加好友、删除好友
         JComboBox<String> box_2 = new JComboBox<>();
+        box_2.setFont(new Font(null,Font.PLAIN,18));
+        box_2.setBounds(width - 150, 20, 120, 30);
+        box_2.setUI(new MyComBoxUIBackground());
+
+
         String ItemIcon = "\uD83D\uDC65";
         String addFriend = "添加好友";
         String deleteFriend = "删除好友";
         box_2.addItem(ItemIcon);
         box_2.addItem(addFriend);
         box_2.addItem(deleteFriend);
-        box_2.setFont(new Font(null,Font.PLAIN,18));
-        box_2.setForeground(Color.BLACK);
-        box_2.setBounds(170, 20, 100, 25);
+
+
 
         box_2.addActionListener(new ActionListener() {
             @Override
@@ -355,26 +437,15 @@ public class MainFrame extends JFrame {
 
         buttomPanel.add(box_2);
 
-        //刷新JList列表
-        JLabel fluashLabel = new JLabel("刷新");
-        fluashLabel.setBounds(120,20,50,25);
-        buttomPanel.add(fluashLabel);
-        fluashLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-              onFlush();
-            }
-
-        });
-
         //容器
         frame = new JFrame();
         //设置窗体信息
         frame.setTitle("界面");
         //给窗体设置图片
-        frame.setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
+        frame.setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
 
         JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/mainbj3.png"));
+        label.setBounds(0, 0, width, height);
         //获取窗口的第二层，将label放入
         frame.getLayeredPane().add(label,new Integer(Integer.MIN_VALUE)); //MAX是覆盖，MIN是后置
 
@@ -383,14 +454,13 @@ public class MainFrame extends JFrame {
         panel.setOpaque(false);
         frame.setLayout(null);
         frame.setLocation(1200, 50);
-        frame.setSize(287, 700);
+        frame.setSize(width, height);
         //开局失去焦点
         frame.setFocusable(true);
         frame.setVisible(true);
         //无法调节窗口大小
         frame.setResizable(false);
 
-        label.setBounds(0, 0, 295, 700);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //点击面板给头像获得焦点，促使文本框失去焦点
         topPanel.addMouseListener(new MouseAdapter() {
@@ -500,8 +570,9 @@ public class MainFrame extends JFrame {
         ((JLabel)friendJList.getCellRenderer()).setOpaque(false);
         friendJList.setOpaque(false);
         //设置每个列表的高
-        friendJList.setFixedCellHeight(20);
+        friendJList.setFixedCellHeight(30);
         friendJList.setFont(new Font("宋体",Font.PLAIN,18));
+        friendJList.setForeground(Color.BLACK);
         friendJList.setSelectionBackground(new Color(0xBBFFFF));
         //打开聊天窗口
         friendJList.addListSelectionListener(new ListSelectionListener() {
@@ -533,8 +604,9 @@ public class MainFrame extends JFrame {
         ((JLabel)groupJList.getCellRenderer()).setOpaque(false);
         groupJList.setOpaque(false);
         //设置每个列表的高
-        groupJList.setFixedCellHeight(20);
+        groupJList.setFixedCellHeight(30);
         groupJList.setFont(new Font("宋体",Font.PLAIN,18));
+        groupJList.setForeground(Color.BLACK);
         groupJList.setSelectionBackground(new Color(0xBBFFFF));
         //打开聊天窗口
         groupJList.addListSelectionListener(new ListSelectionListener() {

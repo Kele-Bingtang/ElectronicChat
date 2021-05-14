@@ -24,6 +24,8 @@ public class LoginFrame extends JFrame {
     private JLabel lineLabel_2;
 
     int X,Y;
+    int width = 490;
+    int height = 380;
 
     private JComboBox<String> useridBox;
 
@@ -188,7 +190,7 @@ public class LoginFrame extends JFrame {
         //设置窗体的标题
         setTitle("第八组");
         //给标题设置图片
-        setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
+        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
         //窗口不可变
         setResizable(false);
         //开局失去焦点
@@ -196,7 +198,7 @@ public class LoginFrame extends JFrame {
         //置顶
         setAlwaysOnTop(true);
         //初始化窗体位置大小
-        setBounds(X,Y,490,380);
+        setBounds(X,Y,width,height);
         //窗口可见
         setVisible(true);
 
@@ -279,10 +281,14 @@ public class LoginFrame extends JFrame {
     }
 
     public void initComBox(){
+        //去掉箭头边框
+        useridBox.setUI(new MyComBoxUI());
+
         //设置下拉框
         useridBox.setBounds(140,169,235,30);
         useridBox.setFont(new Font(null,Font.PLAIN,18));
         useridBox.setBackground(Color.WHITE);
+        useridBox.setForeground(Color.LIGHT_GRAY);
         useridBox.setBorder(BorderFactory.createEmptyBorder());
         useridBox.setOpaque(false);
 
@@ -291,12 +297,14 @@ public class LoginFrame extends JFrame {
         String item2 = "bing";
         String item3 = "lsb";
         String item4 = "myq";
-        //去掉箭头边框
-        useridBox.setUI(new MyComboBoxUI());
+
         useridBox.addItem(item1);
         useridBox.addItem(item2);
         useridBox.addItem(item3);
         useridBox.addItem(item4);
+
+        //添加选择项背景色
+        useridBox.setRenderer(new MyCellRenderer());
 
         useridBox.addActionListener(new ActionListener() {
             @Override
@@ -320,17 +328,3 @@ public class LoginFrame extends JFrame {
 
 
 
-
-/**
- * 隐藏下拉框的箭头的边框
- */
-class MyComboBoxUI extends MetalComboBoxUI {
-
-    @Override
-    public void configureArrowButton() {
-        super.configureArrowButton();
-        if (arrowButton != null) {
-            arrowButton.setBorder(BorderFactory.createEmptyBorder());
-        }
-    }
-}

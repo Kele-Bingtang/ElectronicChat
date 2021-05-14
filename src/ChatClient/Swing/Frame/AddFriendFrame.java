@@ -4,6 +4,8 @@ import ChatClient.Client.Send;
 import ChatServer.load.EnMsgType;
 import ChatServer.load.GetDataFromDao;
 import ChatServer.bean.Information;
+import Utils.JDBCUtils;
+import Utils.SxUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -27,6 +29,9 @@ public class AddFriendFrame extends JFrame {
     String userid;
     Socket socket;
 
+    int width = 660;
+    int height = 530;
+
     public static void main(String[] args) {
         new AddFriendFrame(null,"kele");
     }
@@ -35,9 +40,10 @@ public class AddFriendFrame extends JFrame {
         this.socket = socket;
         this.userid = userid;
         getDataFromDao = new GetDataFromDao();
-        setTitle("查找");
+        setTitle("添加");
         container = getContentPane();
         container.setLayout(new BorderLayout());
+        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
 
         //初始化表格
         initTable();
@@ -51,8 +57,14 @@ public class AddFriendFrame extends JFrame {
         //加载数据
         loadData();
 
+        //更改字体大小格式和列名大小格式
+        table.setFont(new Font("宋体",Font.PLAIN,18));
+        table.getTableHeader().setFont(new Font("微软雅黑",Font.PLAIN,17));
+        //选中背景色
+        table.setSelectionBackground(Color.LIGHT_GRAY);
+
         setVisible(true);
-        setBounds(400,300,640,400);
+        setBounds(700,250,width,height);
         //关闭该窗口，不会整个程序关闭
         addWindowListener(new WindowAdapter() {
             @Override
@@ -93,6 +105,7 @@ public class AddFriendFrame extends JFrame {
         toolBar.setFloatable(false);
 
         searchButton = new JButton("查找");
+        searchButton.setFont(new Font("黑体",Font.PLAIN,16));
         toolBar.addSeparator(new Dimension(40,10));  //和前面远离一定距离
         toolBar.add(searchField);
         toolBar.add(searchButton);
@@ -125,6 +138,7 @@ public class AddFriendFrame extends JFrame {
         });
 
         addButton = new JButton("添加");
+        addButton.setFont(new Font("黑体",Font.PLAIN,16));
         toolBar.addSeparator(new Dimension(240,30));
         toolBar.add(addButton);
 
@@ -162,7 +176,6 @@ public class AddFriendFrame extends JFrame {
                 }
             }
         });
-
     }
 
     /**
@@ -205,6 +218,8 @@ public class AddFriendFrame extends JFrame {
      * @param in 用户类
      */
     public void addTableRow(Information in) {
+
+
         Vector<Object> rowData = new Vector<>();
         rowData.add(in.getUid());
         rowData.add(in.getNickName());
@@ -221,6 +236,7 @@ public class AddFriendFrame extends JFrame {
         String []friendid = getDataFromDao.getFriendid(userid);
 
         for (Information information : dataList) {
+
             Vector<Object> rowData = new Vector<>();
             rowData.add(information.getUid());
             rowData.add(information.getNickName());

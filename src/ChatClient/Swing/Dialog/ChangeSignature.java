@@ -13,39 +13,49 @@ public class ChangeSignature extends JDialog{
 
     JTextArea newSignatrueField;
 
+    int width = 400;
+    int height = 350;
     public ChangeSignature(MainFrame mainFrame, String signature){
         super(mainFrame,"修改签名",true);
         setLayout(null);
-        setSize(400,350);
+        setSize(width,height);
         Container container = getContentPane();
 
         JLabel label1 = new JLabel("当前的签名：");
-        label1.setBounds(20,25,100,20);
+        label1.setFont(new Font("宋体",Font.PLAIN,18));
+        label1.setBounds(20,25,150,20);
         container.add(label1);
 
         JTextArea oldSignatrueField = new JTextArea();
-        oldSignatrueField.setBounds(20,50,300,65);
-        oldSignatrueField.setFont(new Font("黑体",Font.PLAIN,18));
+        oldSignatrueField.setBounds(20,50,340,75);
+        oldSignatrueField.setFont(new Font("宋体",Font.PLAIN,20));
         oldSignatrueField.setText(signature);
         oldSignatrueField.setLineWrap(true);
         oldSignatrueField.setWrapStyleWord(true);
-        oldSignatrueField.setEditable(false);
         container.add(oldSignatrueField);
 
         JLabel label2 = new JLabel("修改的签名：");
-        label2.setBounds(20,120,100,20);
+        label2.setFont(new Font("宋体",Font.PLAIN,18));
+        label2.setBounds(20,135,150,20);
         container.add(label2);
 
         newSignatrueField = new JTextArea();
-        newSignatrueField.setBounds(20,150,300,65);
-        newSignatrueField.setFont(new Font("黑体",Font.PLAIN,18));
+        newSignatrueField.setBounds(20,160,340,75);
+        newSignatrueField.setFont(new Font("宋体",Font.PLAIN,20));
         newSignatrueField.setLineWrap(true);
         newSignatrueField.setWrapStyleWord(true);
         container.add(newSignatrueField);
 
         JButton sureButton = new JButton("确定");
-        sureButton.setBounds(250,250,80,30);
+        sureButton.setFont(new Font("宋体",Font.PLAIN,18));
+        sureButton.setBounds(280,250,80,30);
+        sureButton.setOpaque(false);
+        sureButton.setBackground(Color.GRAY);
         container.add(sureButton);
+
+        JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/changeSignaure.png"));
+        label.setBounds(0, 0, width, height);
+        container.add(label,new Integer(Integer.MIN_VALUE));
 
         addWindowListener(new WindowAdapter() {
             @Override

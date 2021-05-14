@@ -5,7 +5,6 @@ import ChatClient.cons.EnMsgType;
 import ChatClient.controller.Handle;
 
 import javax.swing.*;
-import javax.xml.bind.annotation.XmlList;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +26,8 @@ public class RegisterFrame extends JFrame {
     private JLabel lineLabel_2;
 
     int X,Y;
+    int width = 490;
+    int height = 380;
 
     public RegisterFrame(Socket socket,int X,int Y){
         this.socket = socket;
@@ -155,7 +156,7 @@ public class RegisterFrame extends JFrame {
         //设置窗体的标题
         setTitle("第八组");
         //给标题设置图片
-        setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
+        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
         //窗口不可变
         setResizable(false);
         //开局失去焦点
@@ -163,7 +164,7 @@ public class RegisterFrame extends JFrame {
         //置顶
         setAlwaysOnTop(true);
         //初始化窗体位置大小
-        setBounds(X,Y,490,380);
+        setBounds(X,Y,width,height);
         //窗口可见
         setVisible(true);
 

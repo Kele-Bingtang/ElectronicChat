@@ -37,6 +37,9 @@ public class ChatFrame extends JFrame{
     //与jTextPaneMap对应，key相同，根据key将消息放到指定聊天窗口
     public static Map<String,StringBuilder> messageToFrame = new HashMap<>();
 
+    int width = 600;
+    int height = 600;
+
     Send send;
     public ChatFrame(Socket socket,String nickName,String chatName){
         this.socket = socket;
@@ -49,13 +52,26 @@ public class ChatFrame extends JFrame{
 
     public void init(){
         setLayout(new BorderLayout());
-        setSize(550, 500);
-        setLocation(700,250);
+        setSize(width, height);
+        setLocation(650,200);
         //设置窗口不能调节大小
         setResizable(false);
         //设置聊天窗口总是前置
         setAlwaysOnTop(true);
-        setTitle(nickName + "与" + chatName + "聊天");
+        //标题字体样式和居中
+        String title = nickName + "与" + chatName + "聊天";
+        setFont(new Font("微软雅黑",Font.PLAIN,18));
+        Font f = getFont();
+        //获得一个新的 FontMetrics用于找出的高度和宽度信息有关指定对象 Font在和特定字符字形的 Font
+        FontMetrics fm = getFontMetrics(f);
+        int x = fm.stringWidth(title);
+        int y = fm.stringWidth(" ");
+        int z = getWidth()/2 - (x/2);
+        int w = z/y;
+        String pad ="";
+        // \s为空白字符,把pad转为w个长度的空白字符
+        pad = String.format("%"+w+"s", pad);
+        setTitle(pad + title);
         //聊天信息框不可编辑
         displayTextPanel = new JTextPane();
         displayTextPanel.setEditable(false);
@@ -70,7 +86,7 @@ public class ChatFrame extends JFrame{
         displayPanel.getViewport().setOpaque(false);
         displayPanel.setOpaque(false);
         displayTextPanel.setOpaque(false);
-        displayTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,15));
+        displayTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,18));
 
         JTextPane inputTextPanel = new JTextPane();
         //输入聊天文本面板
@@ -78,7 +94,7 @@ public class ChatFrame extends JFrame{
         inputPanel.setOpaque(false);
         inputPanel.getViewport().setOpaque(false);
         inputPanel.setPreferredSize(new Dimension(100,100));
-        inputTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,15));
+        inputTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,18));
         inputTextPanel.setOpaque(false);
 
         //发送按钮初始化
@@ -87,6 +103,7 @@ public class ChatFrame extends JFrame{
         sendButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
         sendButton.setFocusable(false);//刚开始没有焦点
         sendButton.setOpaque(false);
+        sendButton.setBackground(Color.GRAY);
 
         sendButton.addActionListener(e -> {
             String msg = inputTextPanel.getText();
@@ -108,10 +125,14 @@ public class ChatFrame extends JFrame{
         JButton emjioButton = new JButton("表情");
         emjioButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
         emjioButton.setFocusable(false);
+        emjioButton.setOpaque(false);
+        emjioButton.setBackground(Color.GRAY);
 
         //查看历史记录
         JButton historyButtuon = new JButton("历史记录");
         historyButtuon.setFont(new Font("微软雅黑",Font.PLAIN,18));
+        historyButtuon.setOpaque(false);
+        historyButtuon.setBackground(Color.GRAY);
         historyButtuon.addActionListener(e -> {
             new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString() + " " + nickName + ":" + chatName);
 
@@ -122,22 +143,25 @@ public class ChatFrame extends JFrame{
         SouthPanel.setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
         toolBar.setOpaque(false);
+        toolBar.addSeparator(new Dimension(20,20));
         toolBar.add(sendButton);
+        toolBar.addSeparator(new Dimension(20,20));
         toolBar.add(emjioButton);
-        toolBar.addSeparator(new Dimension(300,20));
+        toolBar.addSeparator(new Dimension(width - 240,20));
         toolBar.add(historyButtuon);
         //工具栏位于底部Panel的顶部
         SouthPanel.add(toolBar,BorderLayout.NORTH);
         SouthPanel.add(inputPanel,BorderLayout.CENTER);
         SouthPanel.setOpaque(false);
 
-        label = new JLabel(/*new ImageIcon("src/ChatClient/Image/聊天背景1.png")*/);
+        label = new JLabel(new ImageIcon("src/ChatClient/Image/singleChat.png"));
+        label.setSize(width,height);
         label.setLayout(new BorderLayout());
         label.setOpaque(false);
         label.add(displayPanel,BorderLayout.CENTER);
         label.add(SouthPanel,BorderLayout.SOUTH);
         add(label,BorderLayout.CENTER);
-        setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
+        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
         setVisible(true);
 
         addWindowListener(new WindowAdapter() {

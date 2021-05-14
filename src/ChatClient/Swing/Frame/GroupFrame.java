@@ -47,6 +47,9 @@ public class GroupFrame extends JFrame{
     public static Map<String, JTextPane> showUserNamePaneMap = new HashMap<>();
 
     Send send;
+
+    int width = 600;
+    int height = 600;
     public GroupFrame(Socket socket, String userid, String nickName, String chatGroupName,String[] groupMembers){
         this.socket = socket;
         this.userid = userid;
@@ -60,13 +63,26 @@ public class GroupFrame extends JFrame{
 
     public void init(){
         setLayout(new BorderLayout());
-        setSize(550, 500);
-        setLocation(700,250);
+        setSize(width, height);
+        setLocation(650,200);
         //设置窗口不能调节大小
         setResizable(false);
         //设置聊天窗口总是前置
         setAlwaysOnTop(true);
-        setTitle("\t" + chatGroupName);
+        //标题字体样式和居中
+        String title = chatGroupName;
+        setFont(new Font("微软雅黑",Font.PLAIN,18));
+        Font f = getFont();
+        //获得一个新的 FontMetrics用于找出的高度和宽度信息有关指定对象 Font在和特定字符字形的 Font
+        FontMetrics fm = getFontMetrics(f);
+        int x = fm.stringWidth(title);
+        int y = fm.stringWidth(" ");
+        int z = getWidth() / 2 - (x / 2);
+        int w = z/y;
+        String pad ="";
+        // \s为空白字符,把pad转为w个长度的空白字符
+        pad = String.format("%"+w+"s", pad);
+        setTitle(pad + title);
         //聊天信息框不可编辑
         displayTextPanel = new JTextPane();
         displayTextPanel.setEditable(false);
@@ -85,7 +101,7 @@ public class GroupFrame extends JFrame{
         showMemberPanel.getViewport().setOpaque(false);
         showMemberPanel.setOpaque(false);
         showMemberTextPanel.setOpaque(false);
-        showMemberTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,15));
+        showMemberTextPanel.setFont(new Font("黑体",Font.PLAIN,18));
         showMemberTextPanel.setPreferredSize(new Dimension(150,300));
         //获取聊天窗口的key(成员信息)
         Set<String> set = showUserNamePaneMap.keySet();
@@ -106,7 +122,7 @@ public class GroupFrame extends JFrame{
         displayPanel.getViewport().setOpaque(false);
         displayPanel.setOpaque(false);
         displayTextPanel.setOpaque(false);
-        displayTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,15));
+        displayTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,18));
 
         JTextPane inputTextPanel = new JTextPane();
         //输入聊天文本面板
@@ -114,7 +130,7 @@ public class GroupFrame extends JFrame{
         inputPanel.setOpaque(false);
         inputPanel.getViewport().setOpaque(false);
         inputPanel.setPreferredSize(new Dimension(100,100));
-        inputTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,15));
+        inputTextPanel.setFont(new Font("微软雅黑",Font.PLAIN,18));
         inputTextPanel.setOpaque(false);
 
         //发送按钮初始化
@@ -123,6 +139,7 @@ public class GroupFrame extends JFrame{
         sendButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
         sendButton.setFocusable(false);//刚开始没有焦点
         sendButton.setOpaque(false);
+        sendButton.setBackground(Color.GRAY);
 
         sendButton.addActionListener(e -> {
             String msg = inputTextPanel.getText();
@@ -130,26 +147,30 @@ public class GroupFrame extends JFrame{
             String message = nickName + "  " + sf.format(new Date()) + "\n" + "    " + msg;  //消息格式
             //获取聊天窗口的key(聊天对象)
             Set<String> keySet = TextPaneMap.keySet();
-            for (String key: keySet) {
+            for (String key : keySet) {
                 if(key.equals(chatGroupName)){
                     messageToFrame.get(key).append(message).append("\n");
                     TextPaneMap.get(key).setText(messageToFrame.get(key).toString());
                 }
             }
-            //发送消息出去(告诉服务都这是群聊)
+            //发送消息出去(告诉服务器这是群聊)
             sendMsg(EnMsgType.EN_MSG_GROUP_CHAT.toString() + " " + message + ":" + chatGroupName);
+
         });
 
         //表情按钮初始化
         JButton emjioButton = new JButton("表情");
         emjioButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
         emjioButton.setFocusable(false);
+        emjioButton.setOpaque(false);
+        emjioButton.setBackground(Color.GRAY);
 
         //查看历史记录
         JButton historyButtuon = new JButton("历史记录");
         historyButtuon.setFont(new Font("微软雅黑",Font.PLAIN,18));
+        historyButtuon.setOpaque(false);
+        historyButtuon.setBackground(Color.GRAY);
         historyButtuon.addActionListener(e -> {
-
             new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString() + " " + chatGroupName);
         });
 
@@ -158,23 +179,26 @@ public class GroupFrame extends JFrame{
         SouthPanel.setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
         toolBar.setOpaque(false);
+        toolBar.addSeparator(new Dimension(20,20));
         toolBar.add(sendButton);
+        toolBar.addSeparator(new Dimension(20,20));
         toolBar.add(emjioButton);
-        toolBar.addSeparator(new Dimension(300,20));
+        toolBar.addSeparator(new Dimension(width - 240,20));
         toolBar.add(historyButtuon);
         //工具栏位于底部Panel的顶部
         SouthPanel.add(toolBar,BorderLayout.NORTH);
         SouthPanel.add(inputPanel,BorderLayout.CENTER);
         SouthPanel.setOpaque(false);
 
-        label = new JLabel(/*new ImageIcon("src/ChatClient/Image/聊天背景1.png")*/);
+        label = new JLabel(new ImageIcon("src/ChatClient/Image/singleChat.png"));
+        label.setSize(width,height);
         label.setLayout(new BorderLayout());
         label.setOpaque(false);
         label.add(displayPanel,BorderLayout.CENTER);
         label.add(SouthPanel,BorderLayout.SOUTH);
         label.add(showMemberPanel,BorderLayout.EAST);
         add(label,BorderLayout.CENTER);
-        setIconImage(new ImageIcon("src/ChatClient/Image/3.png").getImage());
+        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
         setVisible(true);
 
         addWindowListener(new WindowAdapter() {
