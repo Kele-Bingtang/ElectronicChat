@@ -62,7 +62,7 @@ public class LoginFrame extends JFrame {
         JButton loginButton = new JButton("安全登录", new ImageIcon("src/ChatClient/Image/2.png"));
         //上沿显示标签
         JLabel topLabel1 = new JLabel(new ImageIcon("src/ChatClient/Image/topIcon.png"));
-        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/icon(10).jpg"));
+        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/Icon/icon(10).jpg"));
         //账号标签
         useridLabel = new JLabel(new ImageIcon("src/ChatClient/Image/useridIcon1.png"));
         //密码标签
@@ -206,6 +206,7 @@ public class LoginFrame extends JFrame {
                             public void run() {
                                 Main main = new Main();
                                 main.test_trade_precreate(priceField.getText());
+
                                 //按时间顺序显示E盘下的所有png的图片( join()命令)
                                 //在t1线程中把最后一个图片路径拿到，然后作为参数传入
                                 List<File> qrCodeList = ShowQRCode.getFileSort("E:\\二维码");
