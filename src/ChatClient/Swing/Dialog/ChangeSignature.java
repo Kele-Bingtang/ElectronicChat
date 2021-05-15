@@ -29,6 +29,7 @@ public class ChangeSignature extends JDialog{
         JTextArea oldSignatrueField = new JTextArea();
         oldSignatrueField.setBounds(20,50,340,75);
         oldSignatrueField.setFont(new Font("宋体",Font.PLAIN,20));
+        oldSignatrueField.setEditable(false);
         oldSignatrueField.setText(signature);
         oldSignatrueField.setLineWrap(true);
         oldSignatrueField.setWrapStyleWord(true);

@@ -26,6 +26,8 @@ public class AddFriendFrame extends JFrame {
 
     GetDataFromDao getDataFromDao;
 
+    String []friendid;
+
     String userid;
     Socket socket;
 
@@ -43,7 +45,7 @@ public class AddFriendFrame extends JFrame {
         setTitle("添加");
         container = getContentPane();
         container.setLayout(new BorderLayout());
-        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
 
         //初始化表格
         initTable();
@@ -219,49 +221,39 @@ public class AddFriendFrame extends JFrame {
      */
     public void addTableRow(Information in) {
 
-
         Vector<Object> rowData = new Vector<>();
         rowData.add(in.getUid());
         rowData.add(in.getNickName());
         rowData.add(in.getSignNature());
         rowData.add(in.getStatus());
-        tableModel.addRow(rowData);
+        //判断是不是好友
+        if(friendid.length != 0){
+            for (String s : friendid) {
+                if (in.getUid().equals(s)) {
+                    rowData.remove("陌生人");
+                    rowData.add("好友");
+                    break;
+                }else {
+                    rowData.remove("陌生人");
+                    rowData.add("陌生人");
+                }
+            }
+        }else {
+            rowData.add("陌生人");
+        }
+        //如果是自己的id，则不添加进去
+        if(!userid.equals(in.getUid())){
+            tableModel.addRow(rowData);
+        }
     }
 
     /**
      * 初始加载全部用户信息
      */
     public void loadData() {
-
-        String []friendid = getDataFromDao.getFriendid(userid);
-
-        for (Information information : dataList) {
-
-            Vector<Object> rowData = new Vector<>();
-            rowData.add(information.getUid());
-            rowData.add(information.getNickName());
-            rowData.add(information.getSignNature());
-            rowData.add(information.getStatus());
-            //判断是不是好友
-            if(friendid.length != 0){
-                for (String s : friendid) {
-                    if (information.getUid().equals(s)) {
-                        rowData.remove("陌生人");
-                        rowData.add("好友");
-                        break;
-                    }else {
-                        rowData.remove("陌生人");
-                        rowData.add("陌生人");
-                    }
-                }
-            }else {
-                rowData.add("陌生人");
-            }
-            //如果是自己的id，则不添加进去
-            if(!userid.equals(information.getUid())){
-                tableModel.addRow(rowData);
-            }
-
+        friendid = getDataFromDao.getFriendid(userid);
+        for (Information in : dataList) {
+           addTableRow(in);
         }
     }
 

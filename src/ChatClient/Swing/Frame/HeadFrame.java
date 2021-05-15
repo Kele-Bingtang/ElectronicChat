@@ -45,6 +45,8 @@ public class HeadFrame extends JFrame{
         setLocation(500,250);
         //界面大小
         setSize(new Dimension(500,500));
+        //设置标题图片
+        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
         //获取头像图片
         GetIcon(icons,"src/ChatClient/Image/icon",50,50,this.getWidth(),40,50,50);
         //遍历存储头像的列表，响应点击某图像的操作

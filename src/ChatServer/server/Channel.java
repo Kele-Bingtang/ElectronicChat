@@ -143,6 +143,7 @@ public class Channel implements Runnable{
             if (other == this) {
                 sendMsg(msg);
             }
+
         }
     }
 

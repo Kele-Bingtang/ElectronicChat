@@ -39,7 +39,7 @@ public class DeleteFriendFrame extends JFrame {
         setTitle("删除");
         container = getContentPane();
         container.setLayout(new BorderLayout());
-        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
 
         //初始化表格
         initTable();

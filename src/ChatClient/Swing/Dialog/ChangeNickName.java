@@ -16,7 +16,7 @@ public class ChangeNickName extends JDialog {
     int width = 400;
     int height = 350;
 
-    public ChangeNickName(MainFrame mainFrame, String NickName){
+    public ChangeNickName(MainFrame mainFrame, String nickName){
         super(mainFrame,"修改昵称",true);
         setLayout(null);
         setSize(width,height);
@@ -30,6 +30,8 @@ public class ChangeNickName extends JDialog {
         JTextField oldNameField = new JTextField(20);
         oldNameField.setFont(new Font("宋体",Font.PLAIN,20));
         oldNameField.setBounds(85,50,200,40);
+        oldNameField.setEditable(false);
+        oldNameField.setText(nickName);
         container.add(oldNameField);
 
         JLabel label2 = new JLabel("修改的昵称：");

@@ -2,12 +2,16 @@ package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
+import ChatClient.cons.ShowQRCode;
 import ChatClient.controller.Handle;
+import trade.Main;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.net.Socket;
+import java.util.List;
 
 public class LoginFrame extends JFrame {
 
@@ -70,7 +74,7 @@ public class LoginFrame extends JFrame {
         //注册账号
         JLabel registerLabel = new JLabel("注册账号");
         //二维码
-        JLabel twoCodeLabel = new JLabel("二维码");
+        JLabel twoCodeLabel = new JLabel("打赏");
         //一条线
         lineLabel_1 = new JLabel();
         lineLabel_2 = new JLabel();
@@ -157,20 +161,98 @@ public class LoginFrame extends JFrame {
 
         registerLabel.setFont(new Font("宋体",Font.PLAIN,15));
         registerLabel.setForeground(Color.GRAY);
-        registerLabel.setBounds(10,315,80,20);
+        registerLabel.setBounds(5,325,80,20);
         //添加设置二维码
         twoCodeLabel.setFont(new Font("宋体",Font.PLAIN,15));
         twoCodeLabel.setForeground(Color.GRAY);
-        twoCodeLabel.setBounds(430,320,80,25);
+        twoCodeLabel.setBounds(450,325,80,25);
         container.add(twoCodeLabel);
+
+        twoCodeLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                JFrame frame = new JFrame();
+                frame.setLayout(null);
+                frame.setAlwaysOnTop(true);
+                frame.setLocation(750,325);
+                frame.setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+                frame.setSize(400,350);
+                JLabel priceLabel = new JLabel("打赏金额：");
+                priceLabel.setSize(100,50);
+                priceLabel.setLocation(25,100);
+                priceLabel.setFont(new Font("微软雅黑",Font.PLAIN,18));
+                JTextField priceField = new JTextField(20);
+                priceField.setFont(new Font("微软雅黑",Font.PLAIN,18));
+                priceField.setSize(200,50);
+                priceField.setLocation(125,100);
+                frame.add(priceField);
+                frame.add(priceLabel);
+
+                JButton sureButton = new JButton("确定");
+                sureButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
+                sureButton.setOpaque(false);
+                sureButton.setBackground(Color.GRAY);
+                sureButton.setSize(100,50);
+                sureButton.setLocation(225,200);
+                frame.add(sureButton);
+                frame.setVisible(true);
+
+                sureButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Thread t1 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Main main = new Main();
+                                main.test_trade_precreate(priceField.getText());
+                                //按时间顺序显示E盘下的所有png的图片( join()命令)
+                                //在t1线程中把最后一个图片路径拿到，然后作为参数传入
+                                List<File> qrCodeList = ShowQRCode.getFileSort("E:\\二维码");
+                                new RewardFrame(qrCodeList.get(qrCodeList.size() - 1).getAbsolutePath());
+                            }
+                        }
+                        );
+                        Thread t2=new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //等待二维码生成后，才能调用下面的类去显示二维码
+                            }
+                        }
+                        );
+                        t1.start();
+                        try {
+                            t1.join();//必须等t1执行完毕
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        t2.start();
+                    }
+                });
+                    }
+                });
+
         //添加标签
         container.add(registerLabel);
         container.add(forgetPwdLabel);
         //设置边框信息
-        loginButton.setBorderPainted(false);//无边框
+        loginButton.setBorder(BorderFactory.createEmptyBorder());
         loginButton.setBounds(110,280,270,45);
         //添加按钮
         container.add(loginButton);
+
+        loginButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                loginButton.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                loginButton.setBorder(BorderFactory.createEmptyBorder());
+                //loginButton.setIcon(new ImageIcon("src/ChatClient/Image/2.png"));
+            }
+        });
 
         //设置、添加复选框的位置大小
         autoLoginCheckBox.setFont(new Font("宋体", Font.PLAIN,13));

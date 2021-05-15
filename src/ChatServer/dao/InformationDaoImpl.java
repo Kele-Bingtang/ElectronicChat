@@ -32,7 +32,12 @@ public class InformationDaoImpl implements InformationDao {
             rs = pstt.executeQuery();
             while(rs.next()){
                 imformation = new Information();
-                imformation.setNickName(rs.getString("nickName"));
+
+                if(rs.getString("nickName") == null){
+                    imformation.setNickName("昵称");
+                }else {
+                    imformation.setNickName(rs.getString("nickName"));
+                }
                 if(rs.getString("signature") == null){
                     imformation.setSignNature("编辑个性签名");
                 }else {
@@ -158,6 +163,22 @@ public class InformationDaoImpl implements InformationDao {
             pstt = conn.prepareStatement(sql);
             pstt.setString(1,status);
             pstt.setString(2,userid);
+            pstt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            JDBCUtils.close(pstt,conn);
+        }
+    }
+
+    @Override
+    public void registerUserid(String userid) {
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "INSERT INTO information(userid) VALUES(?)";
+        PreparedStatement pstt = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            pstt.setString(1,userid);
             pstt.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();

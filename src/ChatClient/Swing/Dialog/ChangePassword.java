@@ -33,6 +33,7 @@ public class ChangePassword extends JDialog{
         container.add(oldPasswordField);
 
         JLabel label2 = new JLabel("输人新的的密码：");
+        label2.setFont(new Font("宋体",Font.PLAIN,18));
         label2.setBounds(85,125,150,20);
         container.add(label2);
 

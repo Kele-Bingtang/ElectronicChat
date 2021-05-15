@@ -405,7 +405,9 @@ public class MainFrame extends JFrame {
                     ChangeSignature changeSignature = new ChangeSignature(MainFrame.this,signature);
                     if(changeSignature.isClick()){
                         String newSignature = changeSignature.getValues();
-                        if(newSignature.equals("") || newSignature.contains(" ") || newSignature.contains(":")){
+                        if(newSignature.equals("")){
+                            signatureField.setText("编辑个性签名");
+                        } else if(newSignature.contains(" ") || newSignature.contains(":")){
                             new TipMessageFrame().sendMessageTip("失败","您的签名非法",true);
                         }else if(!signature.equals(newSignature)){
                             signatureField.setText(newSignature);

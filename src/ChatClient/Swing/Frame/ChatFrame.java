@@ -6,6 +6,8 @@ import ChatClient.controller.Handle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.Socket;
@@ -130,6 +132,14 @@ public class ChatFrame extends JFrame{
         emjioButton.setFocusable(false);
         emjioButton.setOpaque(false);
         emjioButton.setBackground(Color.GRAY);
+        emjioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new EmojiFrame(getX(),getY() + 115,inputTextPanel);
+
+            }
+        });
+
 
         //查看历史记录
         JButton historyButtuon = new JButton("历史记录");
@@ -165,7 +175,7 @@ public class ChatFrame extends JFrame{
         label.add(displayPanel,BorderLayout.CENTER);
         label.add(SouthPanel,BorderLayout.SOUTH);
         add(label,BorderLayout.CENTER);
-        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
         setVisible(true);
 
         addWindowListener(new WindowAdapter() {

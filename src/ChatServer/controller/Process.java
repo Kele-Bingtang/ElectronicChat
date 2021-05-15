@@ -145,7 +145,10 @@ public class Process {
         int index2 = message.indexOf(":");
         String userid = message.substring(index1 + 1,index2);
         String password = message.substring(index2 + 1);
+        //用户表插入
         getDataFromDao.register(userid,password);
+        //信息表插入
+        getDataFromDao.registerUserid(userid);
 
         return EnMsgType.EN_MSG_REGISTER.toString();
     }

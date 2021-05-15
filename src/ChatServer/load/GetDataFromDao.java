@@ -195,5 +195,8 @@ public class GetDataFromDao {
         return groupChatDaompl.getGroupid(groupName);
     }
 
+    public void registerUserid(String userid){
+        informationDaompl.registerUserid(userid);
+    }
 
 }

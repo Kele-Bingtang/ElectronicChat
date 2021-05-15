@@ -156,7 +156,7 @@ public class RegisterFrame extends JFrame {
         //设置窗体的标题
         setTitle("第八组");
         //给标题设置图片
-        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
         //窗口不可变
         setResizable(false);
         //开局失去焦点
