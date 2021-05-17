@@ -1,5 +1,8 @@
 package ChatServer.load;
 
+/**
+ * 服务器处理端识别的自定义命令
+ */
 public enum EnMsgType {
     EN_MSG_LOGIN, //用户登录消息
     EN_MSG_LOGIN_Fail, //用户登录失败
@@ -29,4 +32,5 @@ public enum EnMsgType {
     EN_MSG_MODIFY_ICON,    //修改头像ID
     EN_MSG_SINGLE_CLOSE,   //关闭私聊聊天窗口
     EN_MSG_GROUP_CLOSE,   //关闭私聊聊天窗口
+
 }

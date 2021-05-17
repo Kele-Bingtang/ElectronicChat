@@ -13,26 +13,36 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * 删除好友界面
+ */
 public class DeleteFriendFrame extends JFrame {
+    //主界面
     Container container;
+    //显示数据
     DefaultTableModel tableModel = new DefaultTableModel();
+    //表
     JTable table;
+    //搜索按钮，删除按钮
     JButton searchButton,deleteButton;
+    //搜索文本框
     JTextField searchField = new JTextField(50);
+    //存储好友信息
     List<Information> dataList;
-
-    boolean isDelete = false;
+    //是否删除
     String userid;
+    //通信
     Socket socket;
 
-
+    //大小
     int width = 660;
     int height = 530;
 
-    public static void main(String[] args) {
-        new DeleteFriendFrame(null,"kele");
-    }
-
+    /**
+     * 初始化删除好友界面
+     * @param socket 通信
+     * @param userid 自己的userid
+     */
     public DeleteFriendFrame(Socket socket, String userid){
         this.socket = socket;
         this.userid = userid;
@@ -81,12 +91,15 @@ public class DeleteFriendFrame extends JFrame {
                 return false;
             }
         };
-
+        //滚动面板
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.getViewport().setBackground(new Color(0xFCFCFC));//设置颜色
+        //设置颜色
+        scrollPane.getViewport().setBackground(new Color(0xFCFCFC));
+        //每一行之间的高度
         table.setRowHeight(30);
 
         container.add(scrollPane,BorderLayout.CENTER);
+        //初始化tablemodel
         initTableModel();
 
     }
@@ -102,12 +115,16 @@ public class DeleteFriendFrame extends JFrame {
 
         searchButton = new JButton("查找");
         searchButton.setFont(new Font("黑体",Font.PLAIN,16));
-        toolBar.addSeparator(new Dimension(40,10));  //和前面远离一定距离
+        //和前面远离一定距离
+        toolBar.addSeparator(new Dimension(40,10));
         toolBar.add(searchField);
         toolBar.add(searchButton);
+        //鼠标悬停提示
         searchButton.setToolTipText("点击查找即可编辑，双击查找可禁止输入");
         searchField.setToolTipText("点击查找即可编辑，双击查找可禁止输入");
+        //设为不可编辑
         searchField.setEditable(false);
+        //最大尺寸
         searchField.setMaximumSize(new Dimension(120,30));
 
         //双击查询按钮可禁止输入
@@ -141,9 +158,10 @@ public class DeleteFriendFrame extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                isDelete = true;
-                int rows[] = table.getSelectedRows();
+                //存储选择的单行或者多行
+                int[] rows = table.getSelectedRows();
                 for (int i = 0; i < rows.length; i++) {
+                    //获取每一行的userid
                     String deleteUserid = (String) tableModel.getValueAt(rows[i],0);
                     //发送到服务端
                     new Send(socket).sendMsg(EnMsgType.EN_MSG_DEL_FRIEND.toString() + " " + userid + ":" + deleteUserid);
@@ -221,6 +239,7 @@ public class DeleteFriendFrame extends JFrame {
      * 初始加载全部用户信息
      */
     public void loadData() {
+        //一个rowData是一行
         for (int i = 0;i < dataList.size();i++){
             Vector<Object> rowData = new Vector<>();
             rowData.add(dataList.get(i).getUid());

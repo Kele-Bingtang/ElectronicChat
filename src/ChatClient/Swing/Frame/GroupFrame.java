@@ -17,14 +17,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 聊天窗口
+ * 群聊窗口
  */
 public class GroupFrame extends JFrame{
     //背景
     JLabel label;
     //显示消息的窗口，进行Map包装，一个聊天对象对应一个窗口(displayTextPanel)
     public JTextPane displayTextPanel,showMemberTextPanel;
-
     //暂时存放消息，防止覆盖
     StringBuilder sb = new StringBuilder();
     //时间的格式
@@ -48,9 +47,9 @@ public class GroupFrame extends JFrame{
 
     //显示群成员的列表
     public static Map<String, JTextPane> showUserNamePaneMap = new HashMap<>();
-
+    //发送端实例
     Send send;
-
+    //大小
     int width = 600;
     int height = 600;
     public GroupFrame(Socket socket, String userid, String nickName, String chatGroupName,String[] groupMembers,int listIndex){
@@ -65,9 +64,14 @@ public class GroupFrame extends JFrame{
         init();
     }
 
+    /**
+     * 初始化群窗聊天口
+     */
     public void init(){
         setLayout(new BorderLayout());
+        //大小
         setSize(width, height);
+        //位置
         setLocation(650,200);
         //设置窗口不能调节大小
         setResizable(false);
@@ -108,6 +112,7 @@ public class GroupFrame extends JFrame{
         showMemberTextPanel.setFont(new Font("黑体",Font.PLAIN,18));
         showMemberTextPanel.setPreferredSize(new Dimension(150,300));
         //获取聊天窗口的key(成员信息)
+
         Set<String> set = showUserNamePaneMap.keySet();
         for (String key: set) {
             if(key.equals(chatGroupName)){
@@ -148,6 +153,8 @@ public class GroupFrame extends JFrame{
             String msg = inputTextPanel.getText();
             inputTextPanel.setText("");
             String message = nickName + "  " + sf.format(new Date()) + "\n" + "    " + msg;  //消息格式
+
+
             //获取聊天窗口的key(聊天对象)
             Set<String> keySet = TextPaneMap.keySet();
             for (String key : keySet) {
@@ -156,6 +163,7 @@ public class GroupFrame extends JFrame{
                     TextPaneMap.get(key).setText(messageToFrame.get(key).toString());
                 }
             }
+
             //发送消息出去(告诉服务器这是群聊)
             sendMsg(EnMsgType.EN_MSG_GROUP_CHAT.toString() + " " + message + ":" + chatGroupName);
 
@@ -170,6 +178,7 @@ public class GroupFrame extends JFrame{
         emjioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // //打开emoji窗口
                 new EmojiFrame(getX(),getY() + 115,inputTextPanel);
             }
         });
@@ -180,6 +189,7 @@ public class GroupFrame extends JFrame{
         historyButtuon.setOpaque(false);
         historyButtuon.setBackground(Color.GRAY);
         historyButtuon.addActionListener(e -> {
+            //发送给服务器
             new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString() + " " + chatGroupName);
         });
 
@@ -220,7 +230,10 @@ public class GroupFrame extends JFrame{
         });
 
     }
-
+    /**
+     * 发送给发送端，进行发送服务器
+     * @param message 消息
+     */
     public void sendMsg(String message){
         send.sendMsg(message);
     }

@@ -2,7 +2,7 @@ package ChatServer.dao;
 
 
 import Utils.JDBCUtils;
-import Utils.SxUtils;
+import Utils.IOUtils;
 import ChatServer.bean.Information;
 
 import java.sql.Connection;
@@ -12,17 +12,77 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 实现InformationDao接口
+ */
 public class InformationDaoImpl implements InformationDao {
 
     /**
-     * 查询昵称和个性签名
+     * 注册后的userid存入数据库
+     * @param userid
+     */
+    @Override
+    public void registerUserid(String userid) {
+        //数据库的连接(封装)
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "INSERT INTO information(userid) VALUES(?)";
+        PreparedStatement pstt = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            pstt.setString(1,userid);
+            pstt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            //关闭资源(封装方法)
+            JDBCUtils.close(pstt,conn);
+        }
+    }
+
+    /**
+     * 获取全部用户信息
+     * @return informationList 存储用户信息的集合
+     */
+    public List<Information> getAllImformation() {
+        Information information;
+        List<Information> informationList = new ArrayList<>();
+        String sql = "SELECT * FROM information";
+        //数据库的连接(封装)
+        Connection conn = JDBCUtils.getConnection();
+        PreparedStatement pstt = null;
+        ResultSet rs = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            rs = pstt.executeQuery();
+            //循环
+            while(rs.next()){
+                //information为一行，存入列的值
+                information = new Information();
+                information.setUid(rs.getString("userid"));
+                information.setNickName(rs.getString("nickName"));
+                information.setSignNature(rs.getString("signature"));
+                information.setStatus(rs.getString("status"));
+                informationList.add(information);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }finally {
+            //关闭资源(封装方法)
+            JDBCUtils.close(rs,pstt,conn);
+        }
+        return informationList;
+    }
+
+    /**
+     * 根据用户id获得用户的信息(昵称、签名、状态)
      * @param userid 用户名
      * @return imformation
      */
     @Override
-    public Information getImformation(String userid) {
-        Information imformation = null;
+    public Information getImformationByUserid(String userid) {
+        Information information = null;
         String sql = "SELECT * FROM information WHERE userid = ?";
+        //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         PreparedStatement pstt = null;
         ResultSet rs = null;
@@ -31,40 +91,49 @@ public class InformationDaoImpl implements InformationDao {
             pstt.setString(1,userid);
             rs = pstt.executeQuery();
             while(rs.next()){
-                imformation = new Information();
-
+                information = new Information();
+                //昵称为空，则默认初始值
                 if(rs.getString("nickName") == null){
-                    imformation.setNickName("昵称");
+                    information.setNickName("昵称");
                 }else {
-                    imformation.setNickName(rs.getString("nickName"));
+                    //不为空，则获取昵称
+                    information.setNickName(rs.getString("nickName"));
                 }
+                //签名为空，则默认初始值
                 if(rs.getString("signature") == null){
-                    imformation.setSignNature("编辑个性签名");
+                    information.setSignNature("编辑个性签名");
                 }else {
-                    imformation.setSignNature(rs.getString("signature"));
+                    //不为空，则获取签名
+                    information.setSignNature(rs.getString("signature"));
                 }
-                imformation.setIconID(rs.getInt("iconid"));
+                information.setIconID(rs.getInt("iconid"));
             }
-            if(null == imformation){
-                imformation = new Information();
-                imformation.setNickName("昵称");
-                imformation.setSignNature("编辑个性签名");
+            //全为空，则默认初始值
+            if(null == information){
+                information = new Information();
+                information.setNickName("昵称");
+                information.setSignNature("编辑个性签名");
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }finally {
-            SxUtils.close(rs,pstt,conn);
+            //关闭资源(封装方法)
+            JDBCUtils.close(rs,pstt,conn);
         }
-        return imformation;
+        return information;
     }
+
     /**
      * 通过昵称获取用户名
      * 昵称没有重复情况下
+     * @param nickName 昵称
+     * @return information的userid
      */
     @Override
     public Information getUserIDByNickName(String nickName) {
         Information information = null;
         String sql = "SELECT * FROM information WHERE nickName = ?";
+        //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         PreparedStatement pstt = null;
         ResultSet rs = null;
@@ -82,6 +151,7 @@ public class InformationDaoImpl implements InformationDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }finally {
+            //关闭资源(封装方法)
             JDBCUtils.close(rs,pstt,conn);
         }
         return information;
@@ -89,11 +159,12 @@ public class InformationDaoImpl implements InformationDao {
 
     /**
      * 修改的昵称存储到数据库
-     * @param nickName 昵称
      * @param userid 用户id
+     * @param nickName 昵称
      */
     @Override
-    public void storeNickName(String userid,String nickName) {
+    public void modifyNickName(String userid,String nickName) {
+        //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         String sql = "UPDATE information SET nickName = ? WHERE userid = ?";
         PreparedStatement pstt = null;
@@ -106,17 +177,19 @@ public class InformationDaoImpl implements InformationDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }finally {
+            //关闭资源(封装方法)
             JDBCUtils.close(pstt,conn);
         }
     }
 
     /**
      * 修改的个性签名存储到数据库
-     * @param signature 个性签名
      * @param userid 用户id
+     * @param signature 个性签名
      */
     @Override
-    public void storeSignature(String userid,String signature) {
+    public void modifySignature(String userid,String signature) {
+        //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         String sql = "UPDATE information SET signature = ? WHERE userid = ?";
         PreparedStatement pstt = null;
@@ -128,17 +201,19 @@ public class InformationDaoImpl implements InformationDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }finally {
+            //关闭资源(封装方法)
             JDBCUtils.close(pstt,conn);
         }
     }
 
     /**
      * 修改的头像ID存储到数据库
-     * @param iconID 个性签名
      * @param userid 用户id
+     * @param iconID 头像ID
      */
     @Override
-    public void storeIconID(String userid, int iconID) {
+    public void modifyIconID(String userid, int iconID) {
+        //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         String sql = "UPDATE information SET iconID = ? WHERE userid = ?";
         PreparedStatement pstt = null;
@@ -150,12 +225,19 @@ public class InformationDaoImpl implements InformationDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }finally {
+            //关闭资源(封装方法)
             JDBCUtils.close(pstt,conn);
         }
     }
 
+    /**
+     * 修改用户状态(在线、离线等)
+     * @param userid  用户id
+     * @param status 状态
+     */
     @Override
     public void modifyStatus(String userid,String status) {
+        //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         String sql = "UPDATE information SET status = ? WHERE userid = ?";
         PreparedStatement pstt = null;
@@ -167,55 +249,9 @@ public class InformationDaoImpl implements InformationDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }finally {
+            //关闭资源(封装方法)
             JDBCUtils.close(pstt,conn);
         }
-    }
-
-    @Override
-    public void registerUserid(String userid) {
-        Connection conn = JDBCUtils.getConnection();
-        String sql = "INSERT INTO information(userid) VALUES(?)";
-        PreparedStatement pstt = null;
-        try {
-            pstt = conn.prepareStatement(sql);
-            pstt.setString(1,userid);
-            pstt.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }finally {
-            JDBCUtils.close(pstt,conn);
-        }
-    }
-
-
-    /**
-     * 获取全部用户信息
-     * @return 存储用户信息的集合
-     */
-    public List<Information> getAllImformation() {
-        Information information;
-        List<Information> informationList = new ArrayList<>();
-        String sql = "SELECT * FROM information";
-        Connection conn = JDBCUtils.getConnection();
-        PreparedStatement pstt = null;
-        ResultSet rs = null;
-        try {
-            pstt = conn.prepareStatement(sql);
-            rs = pstt.executeQuery();
-            while(rs.next()){
-                information = new Information();
-                information.setUid(rs.getString("userid"));
-                information.setNickName(rs.getString("nickName"));
-                information.setSignNature(rs.getString("signature"));
-                information.setStatus(rs.getString("status"));
-                informationList.add(information);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }finally {
-            SxUtils.close(rs,pstt,conn);
-        }
-        return informationList;
     }
 
 }

@@ -12,12 +12,10 @@ import java.security.NoSuchAlgorithmException;
 public class MD5 {
 
     public static void main(String[] args) {
-        String str = "bing1234";
+        String str = "psj1234";
         try {
             System.out.println(encoderByMd5(str));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }

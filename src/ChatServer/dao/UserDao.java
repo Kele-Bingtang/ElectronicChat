@@ -1,9 +1,11 @@
 package ChatServer.dao;
 
-
+/**
+ * 与数据库的users表交互
+ */
 public interface UserDao {
 
-    //判断是否成功登录
+    //判断用户名和密码是否正确
     boolean verifyUseridAndPassword(String userid,String password);
 
     //注册用户名和密码

@@ -1,7 +1,9 @@
 package ChatServer.bean;
 
 public class User {
+    //用户名
     private String userid;
+    //密码
     private String password;
 
     public String getUserid() {

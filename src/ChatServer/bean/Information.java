@@ -1,10 +1,15 @@
 package ChatServer.bean;
 
 public class Information {
+    //用户名
     private String uid;
+    //昵称
     private String nickName;
+    //签名
     private String signNature;
+    //状态
     private String status;
+    //头像ID
     private int iconID;
 
     public String getUid() {

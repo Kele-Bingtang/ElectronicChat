@@ -4,6 +4,9 @@ import ChatServer.bean.Information;
 
 import java.util.List;
 
+/**
+ * 与数据库的firend表交互
+ */
 public interface FriendDao {
 
     //获取好友列表

@@ -4,8 +4,6 @@ import ChatClient.Client.Send;
 import ChatServer.load.EnMsgType;
 import ChatServer.load.GetDataFromDao;
 import ChatServer.bean.Information;
-import Utils.JDBCUtils;
-import Utils.SxUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,29 +13,39 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * 添加好友界面
+ */
 public class AddFriendFrame extends JFrame {
+    //主界面
     Container container;
+    //显示数据
     DefaultTableModel tableModel = new DefaultTableModel();
+    //表
     JTable table;
+    //搜索按钮，添加按钮
     JButton searchButton,addButton;
+    //搜索文本框
     JTextField searchField = new JTextField(50);
-
+    //存储用户信息
     List<Information> dataList;
-
+    //Get层实例
     GetDataFromDao getDataFromDao;
-
+    //存储好友的userid
     String []friendid;
-
+    //自己的userid
     String userid;
+    //通信
     Socket socket;
-
+    //大小
     int width = 660;
     int height = 530;
 
-    public static void main(String[] args) {
-        new AddFriendFrame(null,"kele");
-    }
-
+    /**
+     * 初始化添加好友界面
+     * @param socket 通信
+     * @param userid 自己的userid
+     */
     public AddFriendFrame(Socket socket,String userid){
         this.socket = socket;
         this.userid = userid;
@@ -54,7 +62,7 @@ public class AddFriendFrame extends JFrame {
         initToolBar();
 
         //获取数据
-        dataList = getDataFromDao.getAllData();
+        dataList = getDataFromDao.getAllImformation();
 
         //加载数据
         loadData();
@@ -81,18 +89,23 @@ public class AddFriendFrame extends JFrame {
      * 初始化表格
      */
     public void initTable(){
+        //显示数据到表中
         table = new JTable(tableModel){
+            //列不可编辑
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-
+        //滚动面板
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.getViewport().setBackground(new Color(0xFCFCFC));//设置颜色
+        //设置颜色
+        scrollPane.getViewport().setBackground(new Color(0xFCFCFC));
+        //每一行之间的高度
         table.setRowHeight(30);
 
         container.add(scrollPane,BorderLayout.CENTER);
+        //初始化tablemodel
         initTableModel();
 
     }
@@ -108,12 +121,16 @@ public class AddFriendFrame extends JFrame {
 
         searchButton = new JButton("查找");
         searchButton.setFont(new Font("黑体",Font.PLAIN,16));
-        toolBar.addSeparator(new Dimension(40,10));  //和前面远离一定距离
+        //和前面远离一定距离
+        toolBar.addSeparator(new Dimension(40,10));
         toolBar.add(searchField);
         toolBar.add(searchButton);
+        //鼠标悬停提示
         searchButton.setToolTipText("点击查找即可编辑，双击查找可禁止输入");
         searchField.setToolTipText("点击查找即可编辑，双击查找可禁止输入");
+        //设为不可编辑
         searchField.setEditable(false);
+        //最大尺寸
         searchField.setMaximumSize(new Dimension(120,30));
 
         //双击查询按钮可禁止输入
@@ -141,6 +158,7 @@ public class AddFriendFrame extends JFrame {
 
         addButton = new JButton("添加");
         addButton.setFont(new Font("黑体",Font.PLAIN,16));
+        //设置一定间距
         toolBar.addSeparator(new Dimension(240,30));
         toolBar.add(addButton);
 
@@ -149,6 +167,7 @@ public class AddFriendFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String relation = "";
+                //存储选择的单行或者多行
                 int[] rows = table.getSelectedRows();
                 for(int row : rows){
                     //第五行为关系，如果是好友则禁用添加
@@ -166,12 +185,14 @@ public class AddFriendFrame extends JFrame {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                //存储选择的单行或者多行
                 int[] row = table.getSelectedRows();
                 for (int i = 0; i < row.length; i++) {
+                    //获取每一行的userid
                     String addUserid = (String) tableModel.getValueAt(row[i],0);
-                    //添加完后 变成好友
+                    //清空选项
                     table.clearSelection();
+                    //添加完后 变成好友
                     tableModel.setValueAt("好友",row[i],4);
                     //发送到服务端
                     new Send(socket).sendMsg(EnMsgType.EN_MSG_ADD_FRIEND.toString() + " " + userid + ":" + addUserid);
@@ -220,7 +241,7 @@ public class AddFriendFrame extends JFrame {
      * @param in 用户类
      */
     public void addTableRow(Information in) {
-
+        //一个rowData是一行
         Vector<Object> rowData = new Vector<>();
         rowData.add(in.getUid());
         rowData.add(in.getNickName());
@@ -251,6 +272,7 @@ public class AddFriendFrame extends JFrame {
      * 初始加载全部用户信息
      */
     public void loadData() {
+        //获取好友数据
         friendid = getDataFromDao.getFriendid(userid);
         for (Information in : dataList) {
            addTableRow(in);

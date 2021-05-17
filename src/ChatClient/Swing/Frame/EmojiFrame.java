@@ -6,16 +6,15 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmojiFrame extends JFrame {
-
-    public static List<JLabel> emojiList = new ArrayList<>();
-
+    //存储emoji表情的集合
+    List<JLabel> emojiList = new ArrayList<>();
+    //窗口出现位置
     int X,Y;
-
+    //显示聊天消息的面板
     JTextPane textPane;
 
     public EmojiFrame(int X,int Y,JTextPane textPane){
@@ -25,38 +24,45 @@ public class EmojiFrame extends JFrame {
         init();
     }
 
+    /**
+     * 初始化emoji表情
+     */
     public void init(){
+        //滚动面板
         JScrollPane scrollPane = new JScrollPane();
         this.setContentPane(scrollPane);
         setLayout(null);
+        //设置聊天窗口总是前置
+        setAlwaysOnTop(true);
         setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
         setSize(530,344);
         setLocation(X,Y);
         scrollPane.setSize(527,344);
+        //存储所有emoji表情
         String[] emojis = initEmoji();
-
+        //获取所有emoji表情
         getEmoji(emojiList,emojis,15,10,this.getWidth(),5,5);
-
-        for(int i = 0;i < emojiList.size();i++){
-            scrollPane.add(emojiList.get(i));
-            JLabel emojiIcon = emojiList.get(i);
+        //在面板显示emoji表情
+        for (JLabel jLabel : emojiList) {
+            scrollPane.add(jLabel);
             //响应点击操作
-            emojiIcon.addMouseListener(new MouseAdapter() {
+            jLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    textPane.setText(emojiIcon.getText());
+                    //显示到聊天面板
+                    textPane.setText(jLabel.getText());
                     setVisible(false);
                     dispose();
                 }
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    emojiIcon.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+                    jLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    emojiIcon.setBorder(BorderFactory.createEmptyBorder());
+                    jLabel.setBorder(BorderFactory.createEmptyBorder());
                 }
             });
 
@@ -72,6 +78,40 @@ public class EmojiFrame extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * 获取emoji表情
+     * 从emojis中获取到emojiList
+     * @param emojiList 存储emoji表情的集合
+     * @param emojis 初始状态的emoji表情空间
+     * @param initX 初始X位置
+     * @param initY 初始Y位置
+     * @param width 初始宽度
+     * @param span 初始每一个emoji的间隔
+     * @param bk_LR /左宽度
+     */
+    public void getEmoji(List<JLabel> emojiList,String[] emojis, int initX, int initY, int width, int span, int bk_LR){
+        int x = initX;
+        int y = initY;
+        for(String s : emojis){
+            JLabel emojiLabel = new JLabel(s);
+            emojiLabel.setFont(new Font(null,Font.PLAIN,40));
+            emojiLabel.setBounds(x,y,50,50);
+            emojiList.add(emojiLabel);
+            if(x + emojiLabel.getWidth() < width - emojiLabel.getWidth()) {
+                x += (span + emojiLabel.getWidth());
+            }
+            else {
+                x = initX;
+                y += (span + emojiLabel.getHeight());
+            }
+
+        }
+    }
+
+    /**
+     * 初始化emoji表情
+     * @return 存储emoji表情的数组
+     */
     public String[] initEmoji(){
         String[] emoji = new String[34];
         //微笑😀
@@ -144,25 +184,6 @@ public class EmojiFrame extends JFrame {
         emoji[33] = "\uD83D\uDE2E\u200D\uD83D\uDCA8";
 
         return emoji;
-    }
-
-    public void getEmoji(List<JLabel> emojiList,String[] emojis, int initX, int initY, int width, int span, int bk_LR){
-        int x = initX;
-        int y = initY;
-        for(String s : emojis){
-            JLabel emojiLabel = new JLabel(s);
-            emojiLabel.setFont(new Font(null,Font.PLAIN,40));
-            emojiLabel.setBounds(x,y,50,30);
-            emojiList.add(emojiLabel);
-            if(x + emojiLabel.getWidth() < width - emojiLabel.getWidth()) {
-                x += (span + emojiLabel.getWidth());
-            }
-            else {
-                x = initX;
-                y += (span + emojiLabel.getHeight());
-            }
-
-        }
     }
 
 }

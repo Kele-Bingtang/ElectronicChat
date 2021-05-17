@@ -21,6 +21,7 @@ import java.util.HashMap;
  * 主界面
  */
 public class MainFrame extends JFrame {
+    //主界面
     JFrame frame = new JFrame();
     //昵称
     public static JLabel nickNameLabel;
@@ -46,18 +47,25 @@ public class MainFrame extends JFrame {
     //打开窗口的个数
     int sum = 0;
 
+    //界面宽度
     int width = 320;
+    //界面高度
     int height = 800;
+    //顶部面板大小
     int topPanelWidth = width;
     int topPanelHeight = height - 650;  //  180
+    //中间面板大小
     int centerPanelWidth = width;
     int centerPanelHeight = height - 250;  //550
+    //底部面板大小
     int buttomPanelWidth = width;
     int buttomPanelHeight = height - 710;  //90
 
-
+    //自己的userid
     String userid;
+    //自己的昵称
     String nickName;
+    //自己的个性签名
     String signature;
 
     public MainFrame(Socket socket,String userid,int headIconID,String nickName,String signature,String[] friendList,String[] groupList){
@@ -74,12 +82,14 @@ public class MainFrame extends JFrame {
         this.friendList = friendList;
         this.groupList = groupList;
         System.out.println("------" + nickName + "客户端------");
-        //new Send(socket).sendMsg(nickName);
     }
 
+    /**
+     * 初始化主界面
+     */
     public void init(){
 
-        //初始化panel_1
+        //初始化topPanel
         //面板
         JPanel topPanel = new JPanel();
         topPanel.setLayout(null);
@@ -87,7 +97,7 @@ public class MainFrame extends JFrame {
         topPanel.setSize(new Dimension(topPanelWidth, topPanelHeight));  //大小
         topPanel.setOpaque(false);//背景
 
-        //初始化panel_3
+        //初始化buttomPanel
         JPanel buttomPanel = new JPanel();
         buttomPanel.setLayout(null);
         buttomPanel.setLocation(0,height - 100);
@@ -98,7 +108,7 @@ public class MainFrame extends JFrame {
         //标签
         JButton headButton = new JButton();
         headButton.setBounds(15,20,80,80);
-        headButton.setToolTipText("点击更换头像");
+        headButton.setToolTipText("点击可更换头像");
         HeadFrame headFrame = new HeadFrame(socket,userid,headIconID,headButton);
         //初始化头像，从数据库获取头像ID
         headButton.setIcon(HeadFrame.ChangeImgSize((ImageIcon) (HeadFrame.icons.get(headIconID).getIcon()),headButton));
@@ -107,7 +117,7 @@ public class MainFrame extends JFrame {
         });
         topPanel.add(headButton);
 
-        //设置label_1昵称
+        //设置nickNameLabel昵称
         nickNameLabel = new JLabel(nickName);
         nickNameLabel.setBounds(100,20,150,30);
         nickNameLabel.setFont(new Font("宋体",Font.BOLD,18));
@@ -127,21 +137,25 @@ public class MainFrame extends JFrame {
         topPanel.add(box);
 
         //设置个性签名文本
-        signatureField = new JTextField(signature);
+        signatureField = new JTextField();
         signatureField.setBounds(100, 65, width - 100, 30);
         signatureField.setOpaque(false);
         signatureField.setFont(new Font("宋体",Font.PLAIN,15));
         signatureField.setForeground(Color.WHITE);
         signatureField.setBorder(BorderFactory.createEmptyBorder());
-        signatureField.setText("编辑个性签名");
+        if(signature.equals("")){
+            signatureField.setText("编辑个性签名");
+        }else {
+            signatureField.setText(signature);
+        }
         signatureField.addMouseListener(new MouseAdapter() {
-
+            //编辑个性文本框点击、鼠标以入、鼠标移出事件监听器
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(signatureField.getText().equals("编辑个性签名")){
                     signatureField.setText("");
                 }
-
+                //设置背景和透明
                 signatureField.setForeground(Color.BLACK);
                 signatureField.setOpaque(true);
             }
@@ -154,9 +168,11 @@ public class MainFrame extends JFrame {
                 signatureField.setBorder(BorderFactory.createEmptyBorder());
             }
         });
+
         signatureField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
+                //签名文本框失去焦点
                 if(signatureField.getText().equals("")){
                     signatureField.setText("编辑个性签名");
                 }
@@ -182,7 +198,7 @@ public class MainFrame extends JFrame {
         searchField.setForeground(Color.WHITE);
         searchField.setBorder(BorderFactory.createEmptyBorder());
         topPanel.add(searchField);
-
+        //搜索文本框监听器
         searchField.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -200,9 +216,11 @@ public class MainFrame extends JFrame {
                 searchField.setBorder(BorderFactory.createEmptyBorder());
             }
         });
+
         searchField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
+                //搜索文本框失去焦点
                 searchField.setForeground(Color.WHITE);
                 searchField.setOpaque(false);
                 searchField.setText("");
@@ -219,7 +237,7 @@ public class MainFrame extends JFrame {
         initFriendList();
         initGroupList();
 
-        //初始化panel_2
+        //初始化CenterPanel
         //初始化面板二
         CenterPanel = new JScrollPane();
         //初始化好友列表面板
@@ -258,11 +276,11 @@ public class MainFrame extends JFrame {
         JLabel lineOnTool = new JLabel();
         lineOnTool.setBounds(0,centerPanelHeight - 522,centerPanelWidth,1);
         lineOnTool.setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255)));
-
+        //好友下划线
         JLabel line1 = new JLabel();
         line1.setBounds(45,centerPanelHeight - 522,50,1);
         line1.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
-
+        //群聊下划线
         JLabel line2 = new JLabel();
         line2.setBounds(135,centerPanelHeight - 522,50,1);
         line2.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
@@ -273,18 +291,21 @@ public class MainFrame extends JFrame {
         CenterPanel.add(lineOnTool);
         CenterPanel.add(titleBar);
 
-
         frinedLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                //显示好友下的线，隐藏群聊下的线
                 line1.setVisible(true);
                 line2.setVisible(false);
+                //列表为好友
                 listPanel.setViewportView(friendJList);
                 frinedLabel.setForeground(Color.BLACK);
                 groupLabel.setForeground(new Color(0, 0, 0, 185));
                 if(friendList.length != 0){
+                    //创建高度与好友列表高度一致
                     listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
                 }else {
+                    //高度为空
                     listPanel.setSize(new Dimension(295,0));
                 }
             }
@@ -293,14 +314,18 @@ public class MainFrame extends JFrame {
         groupLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                //显示群聊下的线，隐藏好友下的线
                 line1.setVisible(false);
                 line2.setVisible(true);
+                //列表为群聊
                 listPanel.setViewportView(groupJList);
                 groupLabel.setForeground(Color.BLACK);
                 frinedLabel.setForeground(new Color(0, 0, 0, 185));
                 if(groupList.length != 0){
+                    //创建高度与群聊列表高度一致
                     listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
                 }else {
+                    //高度为空
                     listPanel.setSize(new Dimension(295,0));
                 }
             }
@@ -340,8 +365,9 @@ public class MainFrame extends JFrame {
         CenterPanel.setOpaque(false);
         CenterPanel.add(listPanel);
 
-
+        //下拉列表
         JComboBox<String> box_1 = new JComboBox<>();
+        //重写UI，美化UI
         box_1.setUI(new MyComBoxUIBackground());
         box_1.setBounds(8, 20, 120, 30);
         box_1.setFont(new Font(null,Font.PLAIN,18));
@@ -356,7 +382,6 @@ public class MainFrame extends JFrame {
         box_1.addItem(Item2);
         box_1.addItem(Item3);
 
-
         buttomPanel.add(box_1);
 
         box_1.addActionListener(new ActionListener() {
@@ -368,17 +393,14 @@ public class MainFrame extends JFrame {
                     //修改密码
                     ChangePassword changePassword = new ChangePassword(MainFrame.this);
                     if(changePassword.isClick()){
+                        //响应点击确定事件
                         String oldPassword = changePassword.getOldtValues();
                         String newPassword = changePassword.getNewValues();
-
+                        //判断旧密码和新密码是否为空或者相同
                         if(newPassword.equals("") || newPassword.contains(" ") || newPassword.contains(":")){
                             new TipMessageFrame().SuccOrFail("失败","您输入的新密码为空");
                         }else if(!oldPassword.equals(newPassword)){
                             //发送信息给服务端进行解析 修改密码
-
-
-
-
                             new Send(socket).sendMsg(EnMsgType.EN_MSG_MODIFY_PASSWORD.toString() + " " + userid + ":" + oldPassword + ":" + newPassword);
                         }else {
                             new TipMessageFrame().SuccOrFail("失败","您输入的新密码和旧密码相同");
@@ -388,7 +410,9 @@ public class MainFrame extends JFrame {
                     //修改昵称
                     ChangeNickName changeNickName = new ChangeNickName(MainFrame.this,nickName);
                     if(changeNickName.isClick()){
+                        //响应点击确定事件
                         String newNickName = changeNickName.getValues();
+                        //判断旧昵称和新昵称是否为空或者非法或者一致
                         if(newNickName.equals("") || newNickName.contains(" ") || newNickName.contains(":")){
                             new TipMessageFrame().sendMessageTip("失败","您的昵称非法",true);
                         }else if(!nickName.equals(newNickName)){
@@ -404,7 +428,9 @@ public class MainFrame extends JFrame {
                     //修改签名
                     ChangeSignature changeSignature = new ChangeSignature(MainFrame.this,signature);
                     if(changeSignature.isClick()){
+                        //响应点击确定事件
                         String newSignature = changeSignature.getValues();
+                        //判断旧签名和新签名是否为空或者非法
                         if(newSignature.equals("")){
                             signatureField.setText("编辑个性签名");
                         } else if(newSignature.contains(" ") || newSignature.contains(":")){
@@ -428,15 +454,12 @@ public class MainFrame extends JFrame {
         box_2.setBounds(width - 150, 20, 120, 30);
         box_2.setUI(new MyComBoxUIBackground());
 
-
         String ItemIcon = "\uD83D\uDC65";
         String addFriend = "添加好友";
         String deleteFriend = "删除好友";
         box_2.addItem(ItemIcon);
         box_2.addItem(addFriend);
         box_2.addItem(deleteFriend);
-
-
 
         box_2.addActionListener(new ActionListener() {
             @Override
@@ -511,14 +534,17 @@ public class MainFrame extends JFrame {
                 new Send(socket).sendMsg(EnMsgType.EN_MSG_EXIT.toString() + " " + userid + ":" + nickName);
             }
         });
-
-
-
     }
 
+    /**
+     * 刷新好友列表
+     * 添加好友，删除好友后进行刷新，获取新好友的信息
+     * 好友上线后进行刷新，获取好友的新状态
+     */
     public void flushFriendList(){
         int i = 0;
         friendList = Handle.friends;
+        //判断是否为空
         if(Arrays.toString(friendList).trim().length() != 0){
             for (String s : friendList) {
                 if(!s.equals("")){
@@ -529,9 +555,14 @@ public class MainFrame extends JFrame {
             }
         }
     }
+    /**
+     * 刷新群聊列表
+     * 添加群聊，删除群聊后进行刷新，获取新好友的信息
+     */
     public void flushGroupList(){
         int i = 0;
         groupList = Handle.groups;
+        //判断是否为空
         if(Arrays.toString(groupList).trim().length() != 0){
             for (String s : groupList) {
                 if(!s.equals("")) {
@@ -541,40 +572,59 @@ public class MainFrame extends JFrame {
                 }
             }
         }
-
     }
 
+    /**
+     * 查询功能，根据好友昵称进行查询
+     * @param searchField 查询文本框
+     */
     public void onSearch(JTextField searchField){
+        //判断当前列表是好友列表还是群聊列表
         if(listPanel.getViewport().getView().equals(friendJList)){
             String msg = searchField.getText().trim();
+            //查询关键词为空，获取全部好友信息
             if(msg.length() == 0){
                 friendModel.clear();
                 flushFriendList();
                 return;
             }
+            //根据查询关键词，获取相应的好友信息
             friendModel.clear();
-            onsearchID(msg,friendModel,friendList);
-        }else if(listPanel.getViewport().getView().equals(groupJList)){
+            onsearchByNickName(msg,friendModel,friendList);
+        }
+        //判断当前列表是好友列表还是群聊列表
+        else if(listPanel.getViewport().getView().equals(groupJList)){
             String msg = searchField.getText().trim();
+            //查询关键词为空，获取全部好友信息
             if(msg.length() == 0){
                 groupModel.clear();
                 flushGroupList();
                 return;
             }
+            //根据查询关键词，获取相应的好友信息
             groupModel.clear();
-            onsearchID(msg,groupModel,groupList);
+            onsearchByNickName(msg,groupModel,groupList);
         }
     }
 
-    public void onsearchID(String msg,DefaultListModel<String> model,String[] list){
+    /**
+     * 根据好友昵称进行查询
+     * @param msg 好友昵称
+     * @param model 显示数据的表
+     * @param list 好友列表或者群聊列表
+     */
+    public void onsearchByNickName(String msg,DefaultListModel<String> model,String[] list){
+        //如果是好友列表
         if(list == friendList){
             for (String s : friendList) {
                 int index =s.indexOf(" ");
+                //获取好友昵称
                 String friendNames = s.substring(0,index);
                 if(msg.startsWith(friendNames)){
                     model.addElement(s);
                 }
             }
+            //如果是群聊列表
         }else if(list == groupList){
             for (String s : groupList) {
                 if(msg.equals(s)){
@@ -584,6 +634,9 @@ public class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * 初始化好友列表
+     */
     public void initFriendList(){
         //初始化model
         friendModel = new DefaultListModel<>();
@@ -602,17 +655,26 @@ public class MainFrame extends JFrame {
         friendJList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                //相应点击事件
                 if(e.getValueIsAdjusting()){
+                    //判断点击的是哪个
                     for(int i = 0;i < friendModel.size();i++){
                         if(friendModel.get(i).equals(friendJList.getSelectedValue())){
+                            //获取" "的索引
                             int index = friendJList.getSelectedValue().indexOf(" ");
+                            //判断是否打开窗口(打开了无法再次打开相同的窗口)
                             if(!isopenFriend.get(friendJList.getSelectedIndex())) {
+                                //打开新的窗口，并且当该窗口没有关闭，禁止再次打开该窗口
                                 isopenFriend.put(friendJList.getSelectedIndex(), true);
+                                //获取聊天对象昵称
                                 String chatName = friendJList.getSelectedValue().substring(0, index);
+                                //打开聊天窗口，把相应的数据传入
                                 new ChatFrame(socket, nickName, chatName,friendJList.getSelectedIndex());
+                                //发送给服务器
                                 new Send(socket).sendMsg(EnMsgType.EN_MSG_OPEN_CHAT.toString() + " " + nickName + ":" + chatName);
                                 System.out.println("创建了第" + ++sum + "个聊天窗口");
                             }
+                            //点击完清空点击选项
                             friendJList.clearSelection();
                         }
                     }
@@ -621,6 +683,9 @@ public class MainFrame extends JFrame {
         });
     }
 
+    /**
+     * 初始群聊列表
+     */
     public void initGroupList(){
         //初始化model
         groupModel = new DefaultListModel<>();
@@ -639,20 +704,29 @@ public class MainFrame extends JFrame {
         groupJList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                //相应点击事件
                 if(e.getValueIsAdjusting()){
+                    //判断点击的是哪个
                     for(int i = 0;i < groupModel.size();i++){
                         if(groupModel.get(i).equals(groupJList.getSelectedValue())){
+                            //判断是否打开窗口(打开了无法再次打开相同的窗口)
                             if(!isopenGroup.get(groupJList.getSelectedIndex())) {
+                                //打开新的窗口，并且当该窗口没有关闭，禁止再次打开该窗口
                                 isopenGroup.put(groupJList.getSelectedIndex(), true);
+                                //获取群聊对象昵称
                                 String chatGroupName = groupJList.getSelectedValue();
+                                //发送给服务器
                                 new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString() + " " + userid + ":" + nickName + ":" + chatGroupName);
                                 try {
+                                    //等待获取群成员信息
                                     Handle.queue.take();
                                 } catch (InterruptedException interruptedException) {
                                     interruptedException.printStackTrace();
                                 }
+                                //获取群成员信息，打开群聊窗口，传入相应的数据
                                 new GroupFrame(socket, userid, nickName, chatGroupName, Handle.groupMembers,groupJList.getSelectedIndex());
                             }
+                            //点击完清空点击选项
                             groupJList.clearSelection();
                         }
                     }
@@ -661,29 +735,35 @@ public class MainFrame extends JFrame {
         });
     }
 
+    /**
+     * 刷新功能的实现
+     */
     public void onFlush(){
         //如果是好友列表
         if(listPanel.getViewport().getView().equals(friendJList)){
             int code = 0;
             friendJList.removeAll();
             friendModel = new DefaultListModel<>();
+            //发送给服务器
             new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_FRIEND.toString() + " " + userid);
             try {
                 //阻塞线程，等待发送的消息接收并且处理后
                 code = (int) Handle.queue.take();
-                System.out.println("刷新的：" + code);
             } catch (InterruptedException interruptedException) {
                 interruptedException.printStackTrace();
             }
             if(code == 300){
+                //实现刷新
                 flushFriendList();
             }
             //高度自定义，防止点击空白处自动获取list的最后一行
             if(friendList.length != 0){
                 listPanel.setSize(new Dimension(295, (friendModel.size())* friendJList.getFixedCellHeight() + 3));
             }else {
+                //高度为0
                 listPanel.setSize(new Dimension(295, 0));
             }
+            //重新填入model显示数据
             friendJList.setModel(friendModel);
             //如果是群列表
         }else if(listPanel.getViewport().getView().equals(groupJList)){
@@ -694,19 +774,21 @@ public class MainFrame extends JFrame {
             try {
                 //阻塞线程，等待发送的消息接收并且处理后
                 code = (int) Handle.queue.take();
-                System.out.println("刷新的：" + code);
             } catch (InterruptedException interruptedException) {
                 interruptedException.printStackTrace();
             }
             if(code == 400){
+                //实现刷新
                 flushGroupList();
             }
             //高度自定义，防止点击空白处自动获取list的最后一行
             if(groupList.length != 0){
                 listPanel.setSize(new Dimension(295, (groupModel.size())* groupJList.getFixedCellHeight() + 3));
             }else {
+                //高度为0
                 listPanel.setSize(new Dimension(295, 0));
             }
+            //重新填入model显示数据
             groupJList.setModel(groupModel);
         }
     }

@@ -2,14 +2,12 @@ package ChatServer.server;
 
 import ChatServer.controller.Process;
 import ChatServer.load.EnMsgType;
-import Utils.SxUtils;
+import Utils.IOUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 管道
@@ -18,12 +16,19 @@ import java.util.Map;
  * 返回客户端发给另一个客户端的消息
  */
 public class Channel implements Runnable{
+    //通信
     Socket server;
+    //输出流，读消息
     DataInputStream dis = null;
+    //输入流，写消息
     DataOutputStream dos = null;
+    //判断是否运行
     boolean isRunning;
+    //用户id(一个用户id一个Chanel)
     String userid;
+    //用户id的昵称
     String nickName;
+    //处理端实例
     Process process;
 
     public Channel(Socket server){
@@ -50,7 +55,8 @@ public class Channel implements Runnable{
             msg = dis.readUTF();
 
         } catch (IOException e) {  //无法消息会报错
-            this.release();     //不打印e.printStackTrace，因为可以直接在服务端打印xxx离开聊天室而不报错
+            //不打印e.printStackTrace，因为可以直接在服务端打印xxx离开聊天室而不报错
+            this.release();
         }
         return msg;
     }
@@ -75,6 +81,7 @@ public class Channel implements Runnable{
         int index = msg.lastIndexOf(":");
         String chatName = msg.substring(index + 1);
         String realMessage = msg.substring(0,index);
+        //不发给自己
         for(Channel other : Server.all){
             if(other == this){
                 continue;
@@ -98,7 +105,8 @@ public class Channel implements Runnable{
         //去掉前面的空格
         String realMessage = msg.substring(index1 + 1).trim();
         boolean isPrivte = realMessage.contains("@");
-        if(isPrivte){  //是否为私聊
+        //是否为私聊
+        if(isPrivte){
             //把前面的日期和昵称截取
             String nickNameAndDate = msg.substring(0,index1);
             int index2 = realMessage.indexOf(" ");
@@ -107,6 +115,7 @@ public class Channel implements Runnable{
             String groupName = realMessage.substring(index3 + 1);
             realMessage = realMessage.substring(index2 + 1,index3);
             for(Channel other : Server.all){
+                //指定每个人
                 if(other.nickName.equals(targetName)){
                     other.sendMsg(EnMsgType.EN_MSG_GROUP_SINGLE_CHAT.toString() + " " + nickNameAndDate + "   悄悄对您说：\n    " + realMessage + ":" + groupName);
                     break;
@@ -118,15 +127,18 @@ public class Channel implements Runnable{
                     continue;
                 }
                 if(!isSys){
+                    //全部人，除自己
                     other.sendMsg(EnMsgType.EN_MSG_GROUP_CHAT.toString() + " " + msg);  //群聊消息
                 }else {
                     if(msg.startsWith(EnMsgType.EN_MSG_OPEN_GROUP.toString())){
                         int index = msg.indexOf(" ");
                         String realMassage = msg.substring(index + 1);
-                        other.sendMsg(EnMsgType.EN_MSG_OPEN_GROUP.toString() + " " + "系统消息：" + realMassage);  //系统消息
+                        //进入的系统消息
+                        other.sendMsg(EnMsgType.EN_MSG_OPEN_GROUP.toString() + " " + "系统消息：" + realMassage);
                     }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
                         int index = msg.indexOf(" ");
                         String realMassage = msg.substring(index + 1);
+                        //退出的系统消息
                         other.sendMsg(EnMsgType.EN_MSG_GROUP_EXIT.toString() + " " + "系统消息：" + realMassage);
                     }
                 }
@@ -170,10 +182,15 @@ public class Channel implements Runnable{
         }
     }
 
+    /**
+     * 重写run方法，多线程执行的核心
+     */
     @Override
     public void run() {
         while(isRunning){
+            //获取客户端发来的消息
             String msg = getMsg();
+            //消息不为空
             if(!msg.equals("")){
                 if(msg.startsWith(EnMsgType.EN_MSG_LOGIN.toString())){
                     //处理登陆消息，如果密码正确则执行else语句，否则执行if语句
@@ -196,21 +213,21 @@ public class Channel implements Runnable{
                         sendMsgToFriend(handleMessage);
                     }
                 }else if(msg.startsWith(EnMsgType.EN_MSG_OPEN_CHAT.toString())){
+                    //打开私聊窗口
                     String realMessage = process.Processing(msg);
                     //告诉其他人我打开和你的聊天窗口
                     sendMsgToOther(realMessage);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
+                    //私聊
                     String realMassage = process.Processing(msg);
                     //发送消息给别人
                     sendMsgToOther(realMassage);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_SINGLE_CLOSE.toString())){
+                    //关闭私聊窗口
                     //聊天窗口关闭，发送信息给主界面解除对当前聊天对象的窗口锁定
                     sendMsgToMy(msg);
-                }else if(msg.startsWith(EnMsgType.EN_MSG_EXIT.toString())){
-                    String handleMessage = process.Processing(msg);
-                    //发给好友，我已经下线
-                    sendMsgToFriend(handleMessage);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString())){
+                    //EN_MSG_GET_GROUP_MENBER + " " + userid + ":" + nickName + ":" + chatGroupName
                     int index3 = msg.lastIndexOf(":");
                     String chatGroupName = msg.substring(index3 + 1);
                     String message = process.Processing(msg);
@@ -223,25 +240,34 @@ public class Channel implements Runnable{
                     }
                     //发送给自己，在群里的其他人信息
                     sendMsgToMy(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString() + " " + sb.toString());
-                }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
-                    String message = process.Processing(msg);
-                    //告诉其他人我已经退群
-                    sendMsgToAll(message,true);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_CHAT.toString())){
+                    //EN_MSG_GROUP_CHAT + " " + message + ":" + chatGroupName
                     //存储群的聊天记录
                     process.Processing(msg);
                     //群聊标识
                     int index = msg.indexOf(" ");
                     String realMessage = msg.substring(index + 1);
                     sendMsgToAll(realMessage,false);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_EXIT.toString())){
+                    String message = process.Processing(msg);
+                    //告诉其他人我已经退群
+                    sendMsgToAll(message,true);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GROUP_CLOSE.toString())){
+                    //告诉自己退群，可再次进群，否则无法重复进群
                     sendMsgToMy(msg);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString())){
+                    //私聊历史聊天记录
                     String singleHistory = process.Processing(msg);
                     sendMsgToMy(singleHistory);
                 }else if(msg.startsWith(EnMsgType.EN_MSG_GET_GROUP_HISTORY.toString())){
+                    //群聊历史聊天记录
                     String groupHistory = process.Processing(msg);
                     sendMsgToMy(groupHistory);
+                }else if(msg.startsWith(EnMsgType.EN_MSG_EXIT.toString())){
+                    //退出客户端
+                    String handleMessage = process.Processing(msg);
+                    //发给好友，我已经下线
+                    sendMsgToFriend(handleMessage);
                 }else if(msg.startsWith("EN_MSG")){
                     //处理响应按钮 发送的消息
                     String result = process.Processing(msg);
@@ -254,13 +280,11 @@ public class Channel implements Runnable{
         }
     }
 
-
-
     /**
      * 释放资源
      */
     public void release(){
         isRunning = false;
-        SxUtils.close(dis,dos,server);
+        IOUtils.close(dis,dos,server);
     }
 }

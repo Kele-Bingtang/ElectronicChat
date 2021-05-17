@@ -2,30 +2,39 @@ package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
+import ChatClient.cons.ShowQRCode;
 import ChatClient.controller.Handle;
+import trade.Main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
+import java.io.File;
 import java.net.Socket;
+import java.util.List;
 
+/**
+ * 注册界面
+ */
 public class RegisterFrame extends JFrame {
-
+    //通信
     Socket socket;
     //账号文本
     private JTextField userField;
     //密码文本框
     JPasswordField passField;
-    //标签
+    //用户标签
     private JLabel useridLabel;
+    //密码标签
     private JLabel passwordLabel;
+    //用户标签下的线
     private JLabel lineLabel_1;
+    //密码标签的线
     private JLabel lineLabel_2;
 
+    //位置
     int X,Y;
+    //大小
     int width = 490;
     int height = 380;
 
@@ -36,7 +45,9 @@ public class RegisterFrame extends JFrame {
         initLogin();
     }
 
-    //存储图形用户界面
+    /**
+     * 初始化登录界面
+     */
     public void initLogin(){
         //容器
         Container container = getContentPane();
@@ -59,7 +70,7 @@ public class RegisterFrame extends JFrame {
         //密码标签
         passwordLabel = new JLabel(new ImageIcon("src/ChatClient/Image/pwdIcon1.png"));
         //二维码
-        JLabel twoCodeLabel = new JLabel("二维码");
+        JLabel twoCodeLabel = new JLabel("打赏");
         //一条线
         lineLabel_1 = new JLabel();
         lineLabel_2 = new JLabel();
@@ -139,12 +150,84 @@ public class RegisterFrame extends JFrame {
         twoCodeLabel.setForeground(Color.GRAY);
         twoCodeLabel.setBounds(430,320,80,25);
         container.add(twoCodeLabel);
+
+        twoCodeLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                JFrame frame = new JFrame();
+                frame.setLayout(null);
+                frame.setAlwaysOnTop(true);
+                frame.setLocation(750,325);
+                frame.setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+                frame.setSize(400,350);
+                JLabel priceLabel = new JLabel("打赏金额：");
+                priceLabel.setSize(100,50);
+                priceLabel.setLocation(25,100);
+                priceLabel.setFont(new Font("微软雅黑",Font.PLAIN,18));
+                JTextField priceField = new JTextField(20);
+                priceField.setFont(new Font("微软雅黑",Font.PLAIN,18));
+                priceField.setSize(200,50);
+                priceField.setLocation(125,100);
+                frame.add(priceField);
+                frame.add(priceLabel);
+
+                JButton sureButton = new JButton("确定");
+                sureButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
+                sureButton.setOpaque(false);
+                sureButton.setBackground(Color.GRAY);
+                sureButton.setSize(100,50);
+                sureButton.setLocation(225,200);
+                frame.add(sureButton);
+                frame.setVisible(true);
+
+                sureButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Thread t1 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //生成二维码
+                                Main main = new Main();
+                                main.test_trade_precreate(priceField.getText());
+
+                                //按时间顺序显示E盘下的所有png的图片( join()命令)
+                                //在t1线程中把最后一个图片路径拿到，然后作为参数传入
+                                List<File> qrCodeList = ShowQRCode.getFileSort("E:\\二维码");
+                                new RewardFrame(qrCodeList.get(qrCodeList.size() - 1).getAbsolutePath());
+                            }
+                        }
+                        );
+                        Thread t2=new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //等待二维码生成后，才能调用下面的类去显示二维码
+                            }
+                        }
+                        );
+                        t1.start();
+                        try {
+                            t1.join();//必须等t1执行完毕
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        t2.start();
+                    }
+                });
+            }
+        });
         //设置边框信息
         returnButton.setBorderPainted(false);//无边框
+        returnButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
+        returnButton.setBackground(Color.GRAY);
+        returnButton.setOpaque(false);
         returnButton.setBounds(110,280,70,45);
 
 
         registerButton.setBorderPainted(false);//无边框
+        registerButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
+        registerButton.setBackground(Color.GRAY);
+        registerButton.setOpaque(false);
         registerButton.setBounds(305,280,70,45);
 
         //添加按钮
@@ -169,8 +252,7 @@ public class RegisterFrame extends JFrame {
         setVisible(true);
 
 
-        //设置窗体的关闭方式
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //注册按钮
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -191,10 +273,19 @@ public class RegisterFrame extends JFrame {
                 dispose();
             }
         });
-
+        //返回按钮
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                new LoginFrame(socket,getX(),getY());
+                setVisible(false);
+                dispose();
+            }
+        });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
                 new LoginFrame(socket,getX(),getY());
                 setVisible(false);
                 dispose();

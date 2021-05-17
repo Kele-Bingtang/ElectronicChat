@@ -5,6 +5,9 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
 
+/**
+ * 重写下拉列表的UI
+ */
 public class MyComBoxUI extends MetalComboBoxUI {
 
     @Override

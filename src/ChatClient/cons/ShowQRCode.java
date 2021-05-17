@@ -5,12 +5,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * 显示二维码
+ */
 public class ShowQRCode {
     /**
-     * Getting files from Folder(Time Sorting by Modify time)
+     * 把文件以日期格式排序，升序
      *
-     * @param path
-     * @return
+     * @param path 路径
+     * @return list
      */
     public static List<File> getFileSort(String path) {
         List<File> list = getFiles(path, new ArrayList<File>());
@@ -31,7 +34,7 @@ public class ShowQRCode {
     }
 
     /**
-     * Get all the file from folders(img/{drivesid})
+     * 获得所有的目录下的文件
      *
      * @param realpath
      * @param files

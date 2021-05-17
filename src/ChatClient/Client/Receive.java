@@ -2,8 +2,7 @@ package ChatClient.Client;
 
 
 import ChatClient.controller.Handle;
-import ChatServer.load.EnMsgType;
-import Utils.SxUtils;
+import Utils.IOUtils;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -13,10 +12,15 @@ import java.net.Socket;
  * 接收端
  */
 public class Receive implements Runnable{
+    //通信
     Socket socket;
+    //接收消息
     DataInputStream dis = null;
-    boolean isRunning;  //判断是否继续多线程
+    //判断是否继续多线程
+    boolean isRunning;
+    //发送端对象
     Send send;
+    //处理端对象
     Handle handle;
 
     /**
@@ -42,7 +46,8 @@ public class Receive implements Runnable{
      */
     public String getMsg(){
         try {
-            return dis.readUTF();  //返回读出的值
+            //返回读出的值
+            return dis.readUTF();
         } catch (IOException e) {
             //当服务器停止运行，会报错，不打印e.printStackTrace()，执行提示
             System.out.println("服务终端停止运行，请刷新或者等待终端重启，再次输出消息会停止运行您的客户端");
@@ -51,14 +56,21 @@ public class Receive implements Runnable{
         return "";
     }
 
+    /**
+     * 写run方法，多线程执行的核心
+     */
     @Override
     public void run() {
         String msg = "";
         while(isRunning){
-            msg = getMsg();  //获取消息
+            //获取消息
+            msg = getMsg();
+            //判断消息是否有EN_MSG开头
             if(msg.startsWith("EN_MSG")){
+                //传入处理端处理
                 boolean isHandle = handle.handling(msg);
                 if(!isHandle){
+                    //发送给聊天界面
                     send.sendMsgToChat(msg);
                 }
             }else {
@@ -73,6 +85,6 @@ public class Receive implements Runnable{
      */
     public void release(){
         isRunning = false;
-        SxUtils.close(dis,socket);
+        IOUtils.close(dis,socket);
     }
 }

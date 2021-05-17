@@ -24,7 +24,7 @@ public class JDBCUtils {
         return conn;
     }
 
-    public static void close(ResultSet rs, PreparedStatement pstt,Connection conn){
+    public static void close(ResultSet rs, PreparedStatement pstt, Connection conn) {
         try {
             if(null != rs){
                 rs.close();
@@ -35,12 +35,12 @@ public class JDBCUtils {
             if(null != conn){
                 conn.close();
             }
-        } catch (SQLException throwables) {
+        }catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
-    public static void close(PreparedStatement pstt,Connection conn){
+    public static void close(PreparedStatement pstt, Connection conn) {
         try {
             if(null != pstt){
                 pstt.close();
@@ -48,7 +48,7 @@ public class JDBCUtils {
             if(null != conn){
                 conn.close();
             }
-        } catch (SQLException throwables) {
+        }catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }

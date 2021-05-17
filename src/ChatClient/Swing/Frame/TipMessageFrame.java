@@ -16,9 +16,13 @@ public class TipMessageFrame extends JFrame {
 
     /**
      * 修改密码错误提示
+     * @param title 标题
+     * @param tipMessage 内容
      */
     public void SuccOrFail(String title,String tipMessage){
+        //这是标题
         setTitle(title);
+        //置顶
         setAlwaysOnTop(true);
         setLayout(null);
         setSize(300,160);
@@ -49,14 +53,19 @@ public class TipMessageFrame extends JFrame {
 
     /**
      * 有人发送消息给你 提示
-     * @param tipMessage 提示
+     * @param title 标题
+     * @param tipMessage 内容
+     * @param isCenter 是否居中
      */
     public void sendMessageTip(String title,String tipMessage,boolean isCenter){
+        //设置标题
         setTitle(title);
+        //置顶
         setAlwaysOnTop(true);
         setLayout(null);
         setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
         setSize(300,160);
+        //居中位置和右下底部
         if(isCenter){
             setLocation(800,350);
         }else {
@@ -79,18 +88,6 @@ public class TipMessageFrame extends JFrame {
         sureButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-                try {
-                    Thread.sleep(800);
-                } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
-                }
                 dispose();
             }
         });

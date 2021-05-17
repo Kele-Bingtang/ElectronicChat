@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * @author 1
+ * 显示二维码界面
  */
 public class RewardFrame extends JFrame {
     public RewardFrame(String qrCodePath) {
@@ -31,7 +31,6 @@ public class RewardFrame extends JFrame {
 
         setVisible(true);
         contentPane.setLayout(null);
-
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
@@ -48,8 +47,6 @@ public class RewardFrame extends JFrame {
         }
 
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-
-
 
     }
     public void setBak(String qrCodePath) {

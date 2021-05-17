@@ -6,6 +6,9 @@ import ChatClient.Swing.Frame.LoginFrame;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * 客户端
+ */
 public class Client {
 
     public static void main(String[] args) {
@@ -14,7 +17,9 @@ public class Client {
 
     public void startClient(){
         Socket socket = getConnect();
+        //创建登录界面
         new LoginFrame(socket);
+        //创建接收端
         new Thread(new Receive(socket)).start();
     }
 
@@ -25,6 +30,7 @@ public class Client {
     public static Socket getConnect(){
         Socket socket = null;
         try {
+            //连接8888端口
             socket = new Socket("localhost",8888);
         } catch (IOException e) {
             //e.printStackTrace();

@@ -2,7 +2,6 @@ package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
-import ChatClient.controller.Handle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +21,6 @@ public class ChatFrame extends JFrame{
     JLabel label;
     //显示消息的窗口，进行Map包装，一个聊天对象对应一个窗口(displayTextPanel)
     public JTextPane displayTextPanel;
-
     //暂时存放消息，防止覆盖
     StringBuilder sb = new StringBuilder();
     //时间的格式
@@ -41,10 +39,19 @@ public class ChatFrame extends JFrame{
     //与jTextPaneMap对应，key相同，根据key将消息放到指定聊天窗口
     public static Map<String,StringBuilder> messageToFrame = new HashMap<>();
 
+    //大小
     int width = 600;
     int height = 600;
-
+    //发送端实例
     Send send;
+
+    /**
+     * 构造函数
+     * @param socket 通信
+     * @param nickName 昵称
+     * @param chatName 聊天对象
+     * @param listIndex 聊天对象在好友列表的索引
+     */
     public ChatFrame(Socket socket,String nickName,String chatName,int listIndex){
         this.socket = socket;
         this.chatName = chatName;
@@ -55,9 +62,14 @@ public class ChatFrame extends JFrame{
         init();
     }
 
+    /**
+     * 初始化聊天窗口
+     */
     public void init(){
         setLayout(new BorderLayout());
+        //大小
         setSize(width, height);
+        //位置
         setLocation(650,200);
         //设置窗口不能调节大小
         setResizable(false);
@@ -73,7 +85,7 @@ public class ChatFrame extends JFrame{
         int y = fm.stringWidth(" ");
         int z = getWidth()/2 - (x/2);
         int w = z/y;
-        String pad ="";
+        String pad = "";
         // \s为空白字符,把pad转为w个长度的空白字符
         pad = String.format("%"+w+"s", pad);
         setTitle(pad + title);
@@ -106,13 +118,17 @@ public class ChatFrame extends JFrame{
         //按钮
         JButton sendButton = new JButton("发送");
         sendButton.setFont(new Font("微软雅黑",Font.PLAIN,18));
-        sendButton.setFocusable(false);//刚开始没有焦点
+        //刚开始没有焦点
+        sendButton.setFocusable(false);
         sendButton.setOpaque(false);
         sendButton.setBackground(Color.GRAY);
 
         sendButton.addActionListener(e -> {
+            //从输入框获取消息
             String msg = inputTextPanel.getText();
+            //清空输入框
             inputTextPanel.setText("");
+            //指定消息格式
             String message = nickName + "  " + sf.format(new Date()) + "\n" + "    " + msg;  //消息格式
             //获取聊天窗口的key(聊天对象)
             Set<String> set = TextPaneMap.keySet();
@@ -135,8 +151,8 @@ public class ChatFrame extends JFrame{
         emjioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //打开emoji窗口
                 new EmojiFrame(getX(),getY() + 115,inputTextPanel);
-
             }
         });
 
@@ -147,8 +163,8 @@ public class ChatFrame extends JFrame{
         historyButtuon.setOpaque(false);
         historyButtuon.setBackground(Color.GRAY);
         historyButtuon.addActionListener(e -> {
+            //发送给服务器
             new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_SINGLE_HISTORY.toString() + " " + nickName + ":" + chatName);
-
         });
 
         //聊天窗口底部Panel
@@ -186,6 +202,10 @@ public class ChatFrame extends JFrame{
         });
     }
 
+    /**
+     * 发送给发送端，进行发送服务器
+     * @param message 消息
+     */
     public void sendMsg(String message){
         send.sendMsg(message);
     }

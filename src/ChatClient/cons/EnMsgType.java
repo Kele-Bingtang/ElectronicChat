@@ -1,5 +1,8 @@
 package ChatClient.cons;
 
+/**
+ * 客户端处理端识别的自定义命令
+ */
 public enum EnMsgType {
     EN_MSG_LOGIN, //用户登录消息
     EN_MSG_LOGIN_Fail, //用户登录失败
