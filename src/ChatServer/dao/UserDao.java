@@ -11,6 +11,9 @@ public interface UserDao {
     //注册用户名和密码
     void register(String userid,String password);
 
+    //判断用户名是否存在(注册时)
+    boolean verifyUserid(String userid);
+
     //修改密码
     void modifyPassword(String userid,String password);
 

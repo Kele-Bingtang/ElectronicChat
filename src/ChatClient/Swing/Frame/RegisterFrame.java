@@ -258,19 +258,29 @@ public class RegisterFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText().trim();
                 String password = new String(passField.getPassword());
-                if(username.equals("") || username.contains(" ") || password.equals("") || password.contains(" ")){
-                    new TipMessageFrame().SuccOrFail("错误","用户名或者密码为空");
+                if(username.equals("") || username.contains(" ") || username.contains(":") || password.equals("") || password.contains(" ")){
+                    //发送给服务器
+                    new TipMessageFrame().SuccOrFail("错误","用户名或者密码非法(空或者特殊字符串)");
                 }else {
+                    int code = 0;
+                    //发送给服务器
                     new Send(socket).sendMsg(EnMsgType.EN_MSG_REGISTER.toString() + " " +username + ":" + password);
                     try {
-                        Handle.queue.take();
+                        //获取处理发送消息后的code
+                        code = (int) Handle.queue.take();
                     } catch (InterruptedException interruptedException) {
                         interruptedException.printStackTrace();
                     }
+                    //注册成功
+                    if(code == 150){
+                        new LoginFrame(socket,getX(),getY());
+                        new TipMessageFrame().SuccOrFail("成功", "注册成功，请记住您的用户名密码");
+                        setVisible(false);
+                        //关闭自己
+                        dispose();
+                    }
                 }
-                new LoginFrame(socket,getX(),getY());
-                setVisible(false);
-                dispose();
+
             }
         });
         //返回按钮
@@ -279,6 +289,7 @@ public class RegisterFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 new LoginFrame(socket,getX(),getY());
                 setVisible(false);
+                //关闭自己
                 dispose();
             }
         });
@@ -288,6 +299,7 @@ public class RegisterFrame extends JFrame {
             public void windowClosing(WindowEvent e) {
                 new LoginFrame(socket,getX(),getY());
                 setVisible(false);
+                //关闭自己
                 dispose();
             }
         });

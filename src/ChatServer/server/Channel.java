@@ -86,7 +86,6 @@ public class Channel implements Runnable{
             if(other == this){
                 continue;
             } else if(other.nickName.equals(chatName)){
-                System.out.println("消息：" + realMessage);
                 other.sendMsg(realMessage);
                 break;
             }
@@ -192,10 +191,11 @@ public class Channel implements Runnable{
             String msg = getMsg();
             //消息不为空
             if(!msg.equals("")){
+                System.out.println("消息或操作：" + msg);
                 if(msg.startsWith(EnMsgType.EN_MSG_LOGIN.toString())){
                     //处理登陆消息，如果密码正确则执行else语句，否则执行if语句
                     String handleMessage = process.Processing(msg);
-                    if(handleMessage.equals(EnMsgType.EN_MSG_LOGIN_Fail.toString())){
+                    if(handleMessage.equals(EnMsgType.EN_MSG_LOGIN_FAIL.toString())){
                         //告诉自己登陆失败，密码错误
                         sendMsgToMy(handleMessage);
                     }else {

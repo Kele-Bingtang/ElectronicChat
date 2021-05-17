@@ -35,7 +35,7 @@ public class TipMessageFrame extends JFrame {
 
         JLabel sendTip = new JLabel(tipMessage);
         sendTip.setFont(new Font("黑体",Font.PLAIN,15));
-        sendTip.setBounds(15,18,300,80);
+        sendTip.setBounds(15,15,300,80);
         container.add(sendTip);
         JButton sureButton = new JButton("确定");
         sureButton.setBounds(110,90,75,25);
@@ -78,8 +78,8 @@ public class TipMessageFrame extends JFrame {
         Container container = getContentPane();
 
         JLabel sendTip = new JLabel(tipMessage);
-        sendTip.setFont(new Font("黑体",Font.PLAIN,18));
-        sendTip.setBounds(30,15,200,80);
+        sendTip.setFont(new Font("黑体",Font.PLAIN,16));
+        sendTip.setBounds(30,15,300,100);
         container.add(sendTip);
         JButton sureButton = new JButton("确定");
         sureButton.setBounds(110,90,75,25);

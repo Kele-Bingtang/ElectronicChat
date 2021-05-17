@@ -60,6 +60,9 @@ public class Process {
         }else if (message.startsWith(EnMsgType.EN_MSG_SINGLE_CHAT.toString())){
             //发消息聊天
             return sendMsgToOtherAndStorageHistory(message);
+        }else if(message.startsWith(EnMsgType.EN_MSG_CREATE_GROUP.toString())){
+            //创建群聊
+           return createGroup(message);
         }else if(message.startsWith(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString())){
             //返回群成员信息
             return getGroupMember(message);
@@ -104,7 +107,7 @@ public class Process {
             return EnMsgType.EN_MSG_LOGIN + " " + userid + ":" + nickName;
         }else {
             //不正确则返回失败
-            return EnMsgType.EN_MSG_LOGIN_Fail.toString();
+            return EnMsgType.EN_MSG_LOGIN_FAIL.toString();
         }
 
     }
@@ -178,12 +181,19 @@ public class Process {
         int index2 = message.indexOf(":");
         String userid = message.substring(index1 + 1,index2);
         String password = message.substring(index2 + 1);
-        //在数据库用户表插入注册信息
-        getDataFromDao.register(userid,password);
-        //在数据库信息表插入注册信息
-        getDataFromDao.registerUserid(userid);
-        //没有失败，假设必定成功
-        return EnMsgType.EN_MSG_REGISTER.toString();
+
+        boolean isRight = getDataFromDao.verifyUserid(userid);
+
+        if(!isRight){
+            //在数据库用户表插入注册信息
+            getDataFromDao.register(userid,password);
+            //在数据库信息表插入注册信息
+            getDataFromDao.registerUserid(userid);
+            return EnMsgType.EN_MSG_REGISTER_SUCC.toString();
+        }else {
+            return EnMsgType.EN_MSG_REGISTER_FAIL.toString();
+        }
+
     }
 
     /**
@@ -206,7 +216,7 @@ public class Process {
             return EnMsgType.EN_MSG_ADD_FRIEND.toString();
         }else {
             //没有失败，假设必定成功
-            return EnMsgType.EN_MSG_ADD_FRIEND_Fail.toString();
+            return EnMsgType.EN_MSG_ADD_FRIEND_FAIL.toString();
         }
     }
 
@@ -374,6 +384,33 @@ public class Process {
         doubleNameMap.put(nickName,chatName);
         //存放服务器
         Server.singleHistory.put(doubleNameMap,chatMessageBuil);
+    }
+
+    /**
+     * 创建群聊
+     * @param message 消息
+     * @return 成功消息
+     */
+    public String createGroup(String message){
+        // //EN_MSG_CREATE_GROUP.toString() + " " + userid + ":" + groupID + ":" + groupName
+        int index1 = message.indexOf(" ");
+        int index2 = message.indexOf(":");
+        int index3 = message.lastIndexOf(":");
+        String userid = message.substring(index1 + 1,index2);
+        String groupid = message.substring(index2 + 1,index3);
+        String groupName = message.substring(index3 + 1);
+
+        //判断是否存在群id
+        boolean isRight = getDataFromDao.verifyGroup(groupid);
+
+        if(!isRight){
+            //不存在则创建成功
+            getDataFromDao.createrGroup(userid,groupid,groupName);
+            return EnMsgType.EN_MSG_CREATE_GROUP_SUCC.toString();
+        }else {
+            //存在则创建失败
+            return EnMsgType.EN_MSG_CREATE_GROUP_FAIL.toString();
+        }
     }
 
     /**

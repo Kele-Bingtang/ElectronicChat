@@ -78,6 +78,37 @@ public class UserDaoImpl implements UserDao{
     }
 
     /**
+     * 判断用户名是否存在(注册时)
+     * @param userid 用户名
+     * @return true or false
+     */
+    @Override
+    public boolean verifyUserid(String userid) {
+        //数据库的连接(封装)
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "SELECT * FROM users WHERE userid = ?";
+        //判断查询成功标记，初始化默认为false
+        boolean flag = false;
+        PreparedStatement pstt = null;
+        ResultSet rs = null;
+        try {
+            pstt = conn.prepareStatement(sql);
+            pstt.setString(1,userid);
+            rs = pstt.executeQuery();
+            if(rs.next()){
+                //存在则改为true
+                flag = true;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            //关闭资源(封装方法)
+            JDBCUtils.close(rs,pstt,conn);
+        }
+        return flag;
+    }
+
+    /**
      * 修改密码
      * @param userid 用户id
      * @param password 密码

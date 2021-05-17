@@ -29,7 +29,7 @@ public class Handle {
 
 
     public boolean handling(String message) {
-        if (message.equals(EnMsgType.EN_MSG_LOGIN_Fail.toString())) {
+        if (message.equals(EnMsgType.EN_MSG_LOGIN_FAIL.toString())) {
             //EN_MSG_LOGIN_Fail
             //登录失败，返回offer，取消阻塞
             System.out.println("用户名或密码错误，或者用户名不存在，请注册");
@@ -55,13 +55,21 @@ public class Handle {
             System.out.println(nickName + "已经上线啦");
             new TipMessageFrame().sendMessageTip("上线通知", nickName + "已经上线啦", false);
             return true;
-        } else if (message.startsWith(EnMsgType.EN_MSG_REGISTER.toString())) {
-            //注册
-            //EN_MSG_REGISTER
+        } else if (message.startsWith(EnMsgType.EN_MSG_REGISTER_SUCC.toString())) {
+            //注册成功
+            //EN_MSG_REGISTER_SUCC
             System.out.println("注册成功");
-            new TipMessageFrame().SuccOrFail("成功", "注册成功，请记住您的用户名密码");
+            //成功弹窗在登陆界面出现后(RegisterFrame里)出现，防止无法置顶
             //返回offer，取消阻塞
             queue.offer(150);
+            return true;
+        } else if (message.startsWith(EnMsgType.EN_MSG_REGISTER_FAIL.toString())) {
+            //注册失败
+            //EN_MSG_REGISTER_FAIL
+            System.out.println("注册失败");
+            new TipMessageFrame().SuccOrFail("失败", "用户名已经存在，重新输入！");
+            //返回offer，取消阻塞
+            queue.offer(250);
             return true;
         }  else if (message.startsWith(EnMsgType.EN_MSG_GET_INFORMATION.toString())) {
             //EN_MSG_GET_INFORMATION + " " + nickName + ":" + signature + ":" + headIconiD
@@ -141,7 +149,7 @@ public class Handle {
             System.out.println("添加好友成功");
             new TipMessageFrame().sendMessageTip("提示", "添加好友成功", true);
             return true;
-        } else if (message.equals(EnMsgType.EN_MSG_ADD_FRIEND_Fail.toString())) {
+        } else if (message.equals(EnMsgType.EN_MSG_ADD_FRIEND_FAIL.toString())) {
             //EN_MSG_ADD_FRIEND_Fail
             //添加好友失败
             System.out.println("添加好友失败");
@@ -152,6 +160,18 @@ public class Handle {
             //删除好友
             System.out.println("删除好友成功");
             new TipMessageFrame().sendMessageTip("提示", "删除好友成功", true);
+            return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_CREATE_GROUP_SUCC.toString())){
+            //EN_MSG_CREATE_GROUP_SUCC
+            //创建群聊成功
+            System.out.println("创建群聊成功");
+            new TipMessageFrame().sendMessageTip("成功","创建群聊成功",true);
+            return true;
+        }else if(message.startsWith(EnMsgType.EN_MSG_CREATE_GROUP_FAIL.toString())){
+            //EN_MSG_CREATE_GROUP_FAIL
+            //创建群聊失败
+            System.out.println("创建群聊失败");
+            new TipMessageFrame().sendMessageTip("失败","群聊id已经存在，重新输入！",true);
             return true;
         } else if (message.startsWith(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString())) {
             //EN_MSG_GET_GROUP_MENBER + " " + message

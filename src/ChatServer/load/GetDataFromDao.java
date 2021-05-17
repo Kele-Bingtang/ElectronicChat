@@ -52,6 +52,15 @@ public class GetDataFromDao {
     }
 
     /**
+     * 判断用户名是否存在(注册时)
+     * @param userid 用户名
+     * @return true or false
+     */
+    public boolean verifyUserid(String userid) {
+        return userDaompl.verifyUserid(userid);
+    }
+
+    /**
      * 修改密码
      * @param userid 用户id
      * @param password 密码
@@ -180,7 +189,7 @@ public class GetDataFromDao {
         String []friendName = new String[list.size()];
         for(int i =0;i < list.size();i++){
             //自定义格式
-            friendName[i] = list.get(i).getNickName() + "     (" + list.get(i).getStatus() + ")";
+            friendName[i] = list.get(i).getNickName() + "         (" + list.get(i).getStatus() + ")";
         }
         return friendName;
     }
@@ -206,6 +215,25 @@ public class GetDataFromDao {
     /*------------------------------------GroupDao------------------------------------*/
 
     /**
+     * 创建群聊
+     * @param userid 用户id
+     * @param groupid 群id
+     * @param groupName 群名字
+     */
+    public void createrGroup(String userid,String groupid,String groupName){
+        groupChatDaompl.createrGroup(userid,groupid,groupName);
+    }
+
+    /**
+     * 判断群聊是否存在(创建时判断)
+     * @param groupid 群id
+     * @return true or false
+     */
+    public boolean verifyGroup(String groupid){
+        return groupChatDaompl.verifyGroup(groupid);
+    }
+
+    /**
      * 获取群的全部信息
      * @return 群的信息
      */
@@ -223,7 +251,8 @@ public class GetDataFromDao {
         List<Group> groupList = getGroupInformation();
         String []groupName = new String[groupList.size()];
         for(int i =0;i < groupList.size();i++){
-            groupName[i] = groupList.get(i).getGroupName();
+            Information information = getImformationByUserid(groupList.get(i).getUserid());
+            groupName[i] = groupList.get(i).getGroupName() + "         (群主：" + information.getNickName() + ")";
         }
         return groupName;
     }

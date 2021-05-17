@@ -457,9 +457,11 @@ public class MainFrame extends JFrame {
         String ItemIcon = "\uD83D\uDC65";
         String addFriend = "添加好友";
         String deleteFriend = "删除好友";
+        String createGroup = "创建群聊";
         box_2.addItem(ItemIcon);
         box_2.addItem(addFriend);
         box_2.addItem(deleteFriend);
+        box_2.addItem(createGroup);
 
         box_2.addActionListener(new ActionListener() {
             @Override
@@ -472,6 +474,9 @@ public class MainFrame extends JFrame {
                 }else if(box_2.getSelectedItem().equals(deleteFriend)){
                     //删除好友
                     new DeleteFriendFrame(socket,userid);
+                }else if(box_2.getSelectedItem().equals(createGroup)){
+                    //创建群聊
+                    new CeateGroupFrame(socket,userid);
                 }
             }
         });
@@ -709,12 +714,14 @@ public class MainFrame extends JFrame {
                     //判断点击的是哪个
                     for(int i = 0;i < groupModel.size();i++){
                         if(groupModel.get(i).equals(groupJList.getSelectedValue())){
+                            //获取" "的索引
+                            int index = groupJList.getSelectedValue().indexOf(" ");
                             //判断是否打开窗口(打开了无法再次打开相同的窗口)
                             if(!isopenGroup.get(groupJList.getSelectedIndex())) {
                                 //打开新的窗口，并且当该窗口没有关闭，禁止再次打开该窗口
                                 isopenGroup.put(groupJList.getSelectedIndex(), true);
                                 //获取群聊对象昵称
-                                String chatGroupName = groupJList.getSelectedValue();
+                                String chatGroupName = groupJList.getSelectedValue().substring(0, index);
                                 //发送给服务器
                                 new Send(socket).sendMsg(EnMsgType.EN_MSG_GET_GROUP_MENBER.toString() + " " + userid + ":" + nickName + ":" + chatGroupName);
                                 try {

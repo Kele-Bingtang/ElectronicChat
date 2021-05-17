@@ -117,7 +117,7 @@ public class GroupFrame extends JFrame{
         for (String key: set) {
             if(key.equals(chatGroupName)){
                 StringBuilder members = new StringBuilder();
-                members.append("群成员：").append("\n");
+                members.append("在线群成员：").append("\n");
                 if(null != groupMembers){
                     for (String groupMember : groupMembers) {
                         members.append(groupMember).append("\n");
