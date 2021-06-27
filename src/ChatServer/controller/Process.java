@@ -181,9 +181,9 @@ public class Process {
         int index2 = message.indexOf(":");
         String userid = message.substring(index1 + 1,index2);
         String password = message.substring(index2 + 1);
-
+        //判断注册的用户名是否存在
         boolean isRight = getDataFromDao.verifyUserid(userid);
-
+        //不存在
         if(!isRight){
             //在数据库用户表插入注册信息
             getDataFromDao.register(userid,password);
@@ -191,6 +191,7 @@ public class Process {
             getDataFromDao.registerUserid(userid);
             return EnMsgType.EN_MSG_REGISTER_SUCC.toString();
         }else {
+            //存在
             return EnMsgType.EN_MSG_REGISTER_FAIL.toString();
         }
 
