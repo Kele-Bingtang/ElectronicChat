@@ -4,6 +4,7 @@ import ChatClient.Client.Send;
 import ChatServer.load.EnMsgType;
 import ChatServer.load.GetDataFromDao;
 import ChatServer.bean.Information;
+import Utils.ImageUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -49,7 +50,7 @@ public class DeleteFriendFrame extends JFrame {
         setTitle("删除");
         container = getContentPane();
         container.setLayout(new BorderLayout());
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
 
         //初始化表格
         initTable();

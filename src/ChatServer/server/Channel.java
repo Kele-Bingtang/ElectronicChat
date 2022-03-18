@@ -81,6 +81,8 @@ public class Channel implements Runnable{
         int index = msg.lastIndexOf(":");
         String chatName = msg.substring(index + 1);
         String realMessage = msg.substring(0,index);
+        System.out.println(msg);
+        System.out.println(chatName);
         //不发给自己
         for(Channel other : Server.all){
             if(other == this){

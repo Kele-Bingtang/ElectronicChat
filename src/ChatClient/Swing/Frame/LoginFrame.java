@@ -4,14 +4,24 @@ import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
 import ChatClient.cons.ShowQRCode;
 import ChatClient.controller.Handle;
+import Utils.ImageUtils;
+import sun.net.www.protocol.jar.JarURLConnection;
 import trade.Main;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * 登录界面
@@ -51,7 +61,7 @@ public class LoginFrame extends JFrame {
         this.X = X;
         this.Y = Y;
         initLogin();
-    }
+    }   
 
     /**
      * 初始化登录界面
@@ -68,14 +78,14 @@ public class LoginFrame extends JFrame {
         passField = new JPasswordField();
         //初始化登录按钮
         //登录按钮
-        JButton loginButton = new JButton("安全登录", new ImageIcon("src/ChatClient/Image/2.png"));
+        JButton loginButton = new JButton("安全登录", new ImageIcon(ImageUtils.getImageUrl("2.png")));
         //上沿显示标签
-        JLabel topLabel1 = new JLabel(new ImageIcon("src/ChatClient/Image/topIcon.png"));
-        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/Icon/icon(10).jpg"));
+        JLabel topLabel1 = new JLabel(new ImageIcon(ImageUtils.getImageUrl("topIcon.png")));
+        JLabel topLabel2 = new JLabel(new ImageIcon(ImageUtils.getImageUrl("icon/icon(10).jpg")));
         //账号标签
-        useridLabel = new JLabel(new ImageIcon("src/ChatClient/Image/useridIcon1.png"));
+        useridLabel = new JLabel(new ImageIcon(ImageUtils.getImageUrl("useridIcon1.png")));
         //密码标签
-        passwordLabel = new JLabel(new ImageIcon("src/ChatClient/Image/pwdIcon1.png"));
+        passwordLabel = new JLabel(new ImageIcon(ImageUtils.getImageUrl("pwdIcon1.png")));
         //下拉框
         useridBox = new JComboBox<String>();
         //忘记密码
@@ -124,13 +134,13 @@ public class LoginFrame extends JFrame {
         userField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                useridLabel.setIcon(new ImageIcon("src/ChatClient/Image/useridIcon2.png"));
+                useridLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("useridIcon2.png")));
                 lineLabel_1.setBorder(BorderFactory.createLineBorder(new Color(30,144,255)));
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                useridLabel.setIcon(new ImageIcon("src/ChatClient/Image/useridIcon1.png"));
+                useridLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("useridIcon1.png")));
                 lineLabel_1.setBorder(BorderFactory.createLineBorder( new Color(186, 186, 186, 171)));
             }
         });
@@ -141,13 +151,13 @@ public class LoginFrame extends JFrame {
         passField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                passwordLabel.setIcon(new ImageIcon("src/ChatClient/Image/pwdIcon2.png"));
+                passwordLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("pwdIcon2.png")));
                 lineLabel_2.setBorder(BorderFactory.createLineBorder(new Color(30,144,255)));
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                passwordLabel.setIcon(new ImageIcon("src/ChatClient/Image/pwdIcon1.png"));
+                passwordLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("pwdIcon1.png")));
                 lineLabel_2.setBorder(BorderFactory.createLineBorder( new Color(186, 186, 186, 171)));
             }
         });
@@ -184,7 +194,7 @@ public class LoginFrame extends JFrame {
                 frame.setLayout(null);
                 frame.setAlwaysOnTop(true);
                 frame.setLocation(750,325);
-                frame.setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+                frame.setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
                 frame.setSize(400,350);
                 //打赏标签
                 JLabel priceLabel = new JLabel("打赏金额：");
@@ -285,7 +295,7 @@ public class LoginFrame extends JFrame {
         //设置窗体的标题
         setTitle("第八组");
         //给标题设置图片
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         //窗口不可变
         setResizable(false);
         //开局失去焦点

@@ -4,6 +4,7 @@ import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
 import ChatClient.cons.ShowQRCode;
 import ChatClient.controller.Handle;
+import Utils.ImageUtils;
 import trade.Main;
 
 import javax.swing.*;
@@ -63,12 +64,12 @@ public class RegisterFrame extends JFrame {
         JButton registerButton = new JButton("注册");
         JButton returnButton = new JButton("返回");
         //上沿显示标签
-        JLabel topLabel1 = new JLabel(new ImageIcon("src/ChatClient/Image/topIcon.png"));
-        JLabel topLabel2 = new JLabel(new ImageIcon("src/ChatClient/Image/icon(10).jpg"));
+        JLabel topLabel1 = new JLabel(new ImageIcon(ImageUtils.getImageUrl("topIcon.png")));
+        JLabel topLabel2 = new JLabel(new ImageIcon(ImageUtils.getImageUrl("icon(10).jpg")));
         //账号标签
-        useridLabel = new JLabel(new ImageIcon("src/ChatClient/Image/useridIcon1.png"));
+        useridLabel = new JLabel(new ImageIcon(ImageUtils.getImageUrl("useridIcon1.png")));
         //密码标签
-        passwordLabel = new JLabel(new ImageIcon("src/ChatClient/Image/pwdIcon1.png"));
+        passwordLabel = new JLabel(new ImageIcon(ImageUtils.getImageUrl("pwdIcon1.png")));
         //二维码
         JLabel twoCodeLabel = new JLabel("打赏");
         //一条线
@@ -105,13 +106,13 @@ public class RegisterFrame extends JFrame {
         userField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                useridLabel.setIcon(new ImageIcon("src/ChatClient/Image/useridIcon2.png"));
+                useridLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("useridIcon2.png")));
                 lineLabel_1.setBorder(BorderFactory.createLineBorder(new Color(30,144,255)));
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                useridLabel.setIcon(new ImageIcon("src/ChatClient/Image/useridIcon1.png"));
+                useridLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("useridIcon1.png")));
                 lineLabel_1.setBorder(BorderFactory.createLineBorder( new Color(186, 186, 186, 171)));
             }
         });
@@ -122,13 +123,13 @@ public class RegisterFrame extends JFrame {
         passField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                passwordLabel.setIcon(new ImageIcon("src/ChatClient/Image/pwdIcon2.png"));
+                passwordLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("pwdIcon2.png")));
                 lineLabel_2.setBorder(BorderFactory.createLineBorder(new Color(30,144,255)));
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                passwordLabel.setIcon(new ImageIcon("src/ChatClient/Image/pwdIcon1.png"));
+                passwordLabel.setIcon(new ImageIcon(ImageUtils.getImageUrl("pwdIcon1.png")));
                 lineLabel_2.setBorder(BorderFactory.createLineBorder( new Color(186, 186, 186, 171)));
             }
         });
@@ -159,7 +160,7 @@ public class RegisterFrame extends JFrame {
                 frame.setLayout(null);
                 frame.setAlwaysOnTop(true);
                 frame.setLocation(750,325);
-                frame.setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+                frame.setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
                 frame.setSize(400,350);
                 JLabel priceLabel = new JLabel("打赏金额：");
                 priceLabel.setSize(100,50);
@@ -240,7 +241,7 @@ public class RegisterFrame extends JFrame {
         //设置窗体的标题
         setTitle("第八组");
         //给标题设置图片
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         //窗口不可变
         setResizable(false);
         //开局失去焦点

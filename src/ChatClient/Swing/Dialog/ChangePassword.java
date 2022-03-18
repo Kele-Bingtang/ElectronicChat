@@ -1,6 +1,7 @@
 package ChatClient.Swing.Dialog;
 
 import ChatClient.Swing.Frame.MainFrame;
+import Utils.ImageUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +32,7 @@ public class ChangePassword extends JDialog{
         setSize(400,350);
         //获取最大的面板
         Container container = getContentPane();
-        setIconImage(new ImageIcon("src/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
 
         JLabel label1 = new JLabel("输人当前的密码：");
         //字体格式
@@ -74,7 +75,7 @@ public class ChangePassword extends JDialog{
         sureButton.setOpaque(false);
         container.add(sureButton);
 
-        JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/modifyPassword.png"));
+        JLabel label = new JLabel(new ImageIcon(ImageUtils.getImageUrl("modifyPassword.png")));
         label.setBounds(0, 0, width, height);
         container.add(label,new Integer(Integer.MIN_VALUE));
 

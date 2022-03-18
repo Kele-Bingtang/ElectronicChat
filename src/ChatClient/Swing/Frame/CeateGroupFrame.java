@@ -3,6 +3,7 @@ package ChatClient.Swing.Frame;
 import ChatClient.Client.Send;
 import ChatClient.Swing.Frame.MainFrame;
 import ChatClient.cons.EnMsgType;
+import Utils.ImageUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,7 +76,7 @@ public class CeateGroupFrame extends JFrame {
         sureButton.setOpaque(false);
         container.add(sureButton);
 
-        JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/createGroup.png"));
+        JLabel label = new JLabel(new ImageIcon(ImageUtils.getImageUrl("createGroup.png")));
         label.setBounds(0, 0, width, height);
         container.add(label,new Integer(Integer.MIN_VALUE));
 

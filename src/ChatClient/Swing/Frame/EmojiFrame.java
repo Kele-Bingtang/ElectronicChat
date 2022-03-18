@@ -1,5 +1,7 @@
 package ChatClient.Swing.Frame;
 
+import Utils.ImageUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
@@ -34,7 +36,7 @@ public class EmojiFrame extends JFrame {
         setLayout(null);
         //设置聊天窗口总是前置
         setAlwaysOnTop(true);
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         setSize(530,344);
         setLocation(X,Y);
         scrollPane.setSize(527,344);

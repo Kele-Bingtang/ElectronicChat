@@ -2,6 +2,7 @@ package ChatClient.Swing.Frame;
 
 import ChatClient.Client.Send;
 import ChatClient.cons.EnMsgType;
+import Utils.ImageUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -210,7 +211,7 @@ public class GroupFrame extends JFrame{
         SouthPanel.add(inputPanel,BorderLayout.CENTER);
         SouthPanel.setOpaque(false);
 
-        label = new JLabel(new ImageIcon("src/ChatClient/Image/singleChat.png"));
+        label = new JLabel(new ImageIcon(ImageUtils.getImageUrl("singleChat.png")));
         label.setSize(width,height);
         label.setLayout(new BorderLayout());
         label.setOpaque(false);
@@ -218,7 +219,7 @@ public class GroupFrame extends JFrame{
         label.add(SouthPanel,BorderLayout.SOUTH);
         label.add(showMemberPanel,BorderLayout.EAST);
         add(label,BorderLayout.CENTER);
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         setVisible(true);
 
         addWindowListener(new WindowAdapter() {

@@ -1,6 +1,7 @@
 package ChatClient.Swing.Dialog;
 
 import ChatClient.Swing.Frame.MainFrame;
+import Utils.ImageUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -86,7 +87,7 @@ public class ChangeSignature extends JDialog{
         sureButton.setOpaque(false);
         container.add(sureButton);
 
-        JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/changeSignaure.png"));
+        JLabel label = new JLabel(new ImageIcon(ImageUtils.getImageUrl("changeSignaure.png")));
         label.setBounds(0, 0, width, height);
         container.add(label,new Integer(Integer.MIN_VALUE));
 

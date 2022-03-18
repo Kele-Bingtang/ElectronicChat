@@ -1,5 +1,7 @@
 package ChatClient.Swing.Frame;
 
+import Utils.ImageUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -27,7 +29,7 @@ public class TipMessageFrame extends JFrame {
         setLayout(null);
         setSize(300,160);
         setLocation(800,350);
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         setVisible(true);
         //无法更改窗口大小
         setResizable(false);
@@ -63,7 +65,7 @@ public class TipMessageFrame extends JFrame {
         //置顶
         setAlwaysOnTop(true);
         setLayout(null);
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         setSize(300,160);
         //居中位置和右下底部
         if(isCenter){

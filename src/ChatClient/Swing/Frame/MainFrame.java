@@ -7,6 +7,7 @@ import ChatClient.controller.Handle;
 import ChatClient.Swing.Dialog.ChangeNickName;
 import ChatClient.Swing.Dialog.ChangePassword;
 import ChatClient.Swing.Dialog.ChangeSignature;
+import Utils.ImageUtils;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -488,9 +489,9 @@ public class MainFrame extends JFrame {
         //设置窗体信息
         frame.setTitle("界面");
         //给窗体设置图片
-        frame.setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        frame.setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
 
-        JLabel label = new JLabel(new ImageIcon("src/ChatClient/Image/mainbj3.png"));
+        JLabel label = new JLabel(new ImageIcon(ImageUtils.getImageUrl("mainbj3.png")));
         label.setBounds(0, 0, width, height);
         //获取窗口的第二层，将label放入
         frame.getLayeredPane().add(label,new Integer(Integer.MIN_VALUE)); //MAX是覆盖，MIN是后置

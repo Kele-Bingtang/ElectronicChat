@@ -3,6 +3,8 @@
  */
 package ChatClient.Swing.Frame;
 
+import Utils.ImageUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -20,7 +22,7 @@ public class RewardFrame extends JFrame {
         jp.setOpaque(false); // 把JPanel设置为透明 这样就不会遮住后面的背景
         setSize(300, 300);
         setLocation(800,350);
-        setIconImage(new ImageIcon("src/ChatClient/Image/8Icon.png").getImage());
+        setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         setAlwaysOnTop(true);
         setVisible(false);
         //======== this ========
