@@ -1,0 +1,47 @@
+--
+create table users(
+  userid VARCHAR2(30),
+  password VARCHAR2(30)
+);
+create table information(
+  userid VARCHAR2(30),
+  nickName VARCHAR2(30),
+  signature VARCHAR2(100),
+  status VARCHAR2(30) default '离线',
+  iconid number(10) default 0
+);
+create table friend(
+  userid VARCHAR2(30),
+  friendid VARCHAR2(30)
+);
+create table groupChat(
+  userid VARCHAR2(30),
+  groupid VARCHAR2(30),
+  groupName VARCHAR2(30),
+  groupuserid VARCHAR2(30) default null
+);
+ALTER TABLE users  ADD CONSTRAINTS user_pk  PRIMARY KEY(userid);
+ALTER TABLE information  ADD CONSTRAINTS information_pk  PRIMARY KEY(userid);
+ALTER TABLE information  ADD CONSTRAINTS  information_fk  FOREIGN KEY(userid) REFERENCES users(userid);
+ALTER TABLE friend  ADD CONSTRAINTS friend_pk  PRIMARY KEY(userid,friendid);
+ALTER TABLE friend  ADD CONSTRAINTS  friend_fk  FOREIGN KEY(userid) REFERENCES users(userid);
+ALTER TABLE groupChat  ADD CONSTRAINTS groupChat_pk  PRIMARY KEY(userid,groupid);
+ALTER TABLE groupChat  ADD CONSTRAINTS  groupChat_fk  FOREIGN KEY(userid) REFERENCES users(userid);
+
+insert into users values('kele','WuqeWGKH6pkWWZK8Nk92Hw==');  --kele1234
+insert into users values('bing','r878T7A1vvTZT4XA1iuRlA=='); --bing1234
+insert into users values('lsb','BXQn8sKGd35lxgpUrkmKsw==');  --lsb1234
+insert into users values('myq','ijE5qN3u9NoOSF4Z7iWaKg==');  --myq1234
+insert into users values('psj','1flj+b8L2za8vzF0Dh4fyA==');  --psj1234
+
+insert into information values('kele','可乐','天空是蓝色的画卷','离线',0);
+insert into information values('bing','冰糖','冰糖是夏天的味道','离线',0);
+insert into information values('lsb','师傅','码农辛酸泪','离线',0);
+insert into information values('myq','马永强','学习，不可能的','离线',0);
+
+insert into friend values('kele','bing');
+insert into friend values('bing','kele');
+insert into friend values('kele','lsb');
+insert into friend values('lsb','kele');
+
+insert into groupChat values('kele','group1','第八组',null);

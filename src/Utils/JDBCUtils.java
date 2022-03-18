@@ -8,13 +8,24 @@ import java.sql.*;
  */
 public class JDBCUtils {
 
+    /**
+     * 测试数据库连接是否成功
+     * @param args
+     */
+    public static void main(String[] args) {
+        Connection connection = getConnection();
+        System.out.println(connection);
+    }
+
     public static Connection getConnection(){
-        String userName = "kele";
-        String passWord = "kele1234";
+        String driveName = "com.mysql.cj.jdbc.Driver";
+        String url = "jdbc:mysql://localhost:3306/electronic_chat?useSSL-=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
+        String userName = "root";
+        String passWord = "123456";
         Connection conn = null;
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            conn = DriverManager.getConnection("jdbc:oracle:thin:@112.74.169.231:1521:orcl",userName,passWord);
+            Class.forName(driveName);
+            conn = DriverManager.getConnection(url,userName,passWord);
             if(null == conn){
                 System.out.println("数据库连接失败");
             }
