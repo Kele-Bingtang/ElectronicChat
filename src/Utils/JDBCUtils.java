@@ -19,9 +19,9 @@ public class JDBCUtils {
 
     public static Connection getConnection(){
         String driveName = "com.mysql.cj.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/electronic_chat?useSSL-=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
+        String url = "jdbc:mysql://112.74.169.231:3306/electronic_chat?useSSL-=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
         String userName = "root";
-        String passWord = "123456";
+        String passWord = "YoungKbt1234";
         Connection conn = null;
         try {
             Class.forName(driveName);

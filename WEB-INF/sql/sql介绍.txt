@@ -14,7 +14,7 @@ create table friend(
   userid VARCHAR2(30),
   friendid VARCHAR2(30)
 );
-create table groupChat(
+create table groupchat(
   userid VARCHAR2(30),
   groupid VARCHAR2(30),
   groupName VARCHAR2(30),
@@ -25,8 +25,8 @@ ALTER TABLE information  ADD CONSTRAINTS information_pk  PRIMARY KEY(userid);
 ALTER TABLE information  ADD CONSTRAINTS  information_fk  FOREIGN KEY(userid) REFERENCES users(userid);
 ALTER TABLE friend  ADD CONSTRAINTS friend_pk  PRIMARY KEY(userid,friendid);
 ALTER TABLE friend  ADD CONSTRAINTS  friend_fk  FOREIGN KEY(userid) REFERENCES users(userid);
-ALTER TABLE groupChat  ADD CONSTRAINTS groupChat_pk  PRIMARY KEY(userid,groupid);
-ALTER TABLE groupChat  ADD CONSTRAINTS  groupChat_fk  FOREIGN KEY(userid) REFERENCES users(userid);
+ALTER TABLE groupchat  ADD CONSTRAINTS groupchat  PRIMARY KEY(userid,groupid);
+ALTER TABLE groupchat  ADD CONSTRAINTS  groupchat  FOREIGN KEY(userid) REFERENCES users(userid);
 
 insert into users values('kele','WuqeWGKH6pkWWZK8Nk92Hw==');  --kele1234
 insert into users values('bing','r878T7A1vvTZT4XA1iuRlA=='); --bing1234
@@ -44,4 +44,4 @@ insert into friend values('bing','kele');
 insert into friend values('kele','lsb');
 insert into friend values('lsb','kele');
 
-insert into groupChat values('kele','group1','第八组',null);
+insert into groupchat values('kele','group1','第八组',null);

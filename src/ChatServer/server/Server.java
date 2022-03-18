@@ -40,7 +40,7 @@ public class Server {
         System.out.println("----服务端----");
         try {
             //连接8888端口
-            serverSocket = new ServerSocket(8888);
+            serverSocket = new ServerSocket(9087);
             while(true){
                 //连接客户端
                 Socket client = serverSocket.accept();

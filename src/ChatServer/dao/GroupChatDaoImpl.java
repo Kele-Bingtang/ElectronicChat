@@ -26,7 +26,7 @@ public class GroupChatDaoImpl implements GroupChatDao {
     public void createrGroup(String userid,String groupid,String groupName) {
         //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
-        String sql = "INSERT INTO groupChat(userid,groupid,groupName) VALUES(?,?,?)";
+        String sql = "INSERT INTO groupchat(userid,groupid,groupName) VALUES(?,?,?)";
         PreparedStatement pstt = null;
         try {
             pstt = conn.prepareStatement(sql);
@@ -50,7 +50,7 @@ public class GroupChatDaoImpl implements GroupChatDao {
     public boolean verifyGroup(String groupid) {
         //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
-        String sql = "SELECT * FROM groupChat WHERE groupid = ?";
+        String sql = "SELECT * FROM groupchat WHERE groupid = ?";
         PreparedStatement pstt = null;
         ResultSet rs = null;
         //是否存在群id的判断符
@@ -82,7 +82,7 @@ public class GroupChatDaoImpl implements GroupChatDao {
     public List<Group> getGroupInformation() {
         Group group;
         List<Group> groupList = new ArrayList<>();
-        String sql = "SELECT * FROM groupChat";
+        String sql = "SELECT * FROM groupchat";
         //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         PreparedStatement pstt = null;
@@ -116,7 +116,7 @@ public class GroupChatDaoImpl implements GroupChatDao {
     @Override
     public Group getGroupidByName(String groupName) {
         Group group = new Group();
-        String sql = "SELECT * FROM groupChat WHERE groupName = ?";
+        String sql = "SELECT * FROM groupchat WHERE groupName = ?";
         //数据库的连接(封装)
         Connection conn = JDBCUtils.getConnection();
         PreparedStatement pstt = null;

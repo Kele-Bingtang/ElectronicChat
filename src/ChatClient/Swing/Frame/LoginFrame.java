@@ -175,7 +175,6 @@ public class LoginFrame extends JFrame {
         twoCodeLabel.setForeground(Color.GRAY);
         twoCodeLabel.setBounds(450,325,80,25);
         container.add(twoCodeLabel);
-
         twoCodeLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -212,16 +211,17 @@ public class LoginFrame extends JFrame {
                 sureButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        boolean mkdirs = new File("D:\\二维码").mkdirs();
                         Thread t1 = new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 //生成二维码
                                 Main main = new Main();
                                 main.test_trade_precreate(priceField.getText());
-
+                                
                                 //按时间顺序显示E盘下的所有png的图片( join()命令)
                                 //在t1线程中把最后一个图片路径拿到，然后作为参数传入
-                                List<File> qrCodeList = ShowQRCode.getFileSort("E:\\二维码");
+                                List<File> qrCodeList = ShowQRCode.getFileSort("D:\\二维码");
                                 new RewardFrame(qrCodeList.get(qrCodeList.size() - 1).getAbsolutePath());
                             }
                         }
