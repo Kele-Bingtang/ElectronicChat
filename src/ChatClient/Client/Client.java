@@ -31,7 +31,7 @@ public class Client {
         Socket socket = null;
         try {
             //连接8888端口
-            socket = new Socket("localhost",9087);
+            socket = new Socket("112.74.169.231",9087);
         } catch (IOException e) {
             //e.printStackTrace();
             System.out.println("服务器没有启动，无法进行登录操作");
