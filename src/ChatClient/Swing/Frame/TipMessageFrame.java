@@ -27,7 +27,7 @@ public class TipMessageFrame extends JFrame {
         //置顶
         setAlwaysOnTop(true);
         setLayout(null);
-        setSize(300,160);
+        setSize(320,180);
         setLocation(800,350);
         setIconImage(new ImageIcon(ImageUtils.getImageUrl("8Icon.png")).getImage());
         setVisible(true);

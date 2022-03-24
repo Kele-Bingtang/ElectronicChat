@@ -44,8 +44,8 @@ public class LoginFrame extends JFrame {
     //位置
     int X,Y;
     //大小
-    int width = 490;
-    int height = 380;
+    int width = 510;
+    int height = 400;
     //下拉列表，存储userid
     private JComboBox<String> useridBox;
 

@@ -36,8 +36,8 @@ public class RegisterFrame extends JFrame {
     //位置
     int X,Y;
     //大小
-    int width = 490;
-    int height = 380;
+    int width = 510;
+    int height = 400;
 
     public RegisterFrame(Socket socket,int X,int Y){
         this.socket = socket;
@@ -65,7 +65,7 @@ public class RegisterFrame extends JFrame {
         JButton returnButton = new JButton("返回");
         //上沿显示标签
         JLabel topLabel1 = new JLabel(new ImageIcon(ImageUtils.getImageUrl("topIcon.png")));
-        JLabel topLabel2 = new JLabel(new ImageIcon(ImageUtils.getImageUrl("icon(10).jpg")));
+        JLabel topLabel2 = new JLabel(new ImageIcon(ImageUtils.getImageUrl("icon/icon(10).jpg")));
         //账号标签
         useridLabel = new JLabel(new ImageIcon(ImageUtils.getImageUrl("useridIcon1.png")));
         //密码标签
