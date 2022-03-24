@@ -53,7 +53,7 @@ public class Channel implements Runnable{
         String msg = "";
         try {
             msg = dis.readUTF();
-
+            
         } catch (IOException e) {  //无法消息会报错
             //不打印e.printStackTrace，因为可以直接在服务端打印xxx离开聊天室而不报错
             this.release();
@@ -69,7 +69,8 @@ public class Channel implements Runnable{
             dos.writeUTF(msg);
             dos.flush();
         } catch (IOException e) {
-            System.out.println("重新启动一个客户端");
+            System.out.println("发送消息给客户端失败，原因：");
+            e.printStackTrace();
             this.release();
         }
     }
@@ -81,12 +82,10 @@ public class Channel implements Runnable{
         int index = msg.lastIndexOf(":");
         String chatName = msg.substring(index + 1);
         String realMessage = msg.substring(0,index);
-        System.out.println(msg);
-        System.out.println(chatName);
         //不发给自己
         for(Channel other : Server.all){
-            if(other == this){
-                continue;
+            if(other == this || other == null || other.nickName == null){
+                
             } else if(other.nickName.equals(chatName)){
                 other.sendMsg(realMessage);
                 break;

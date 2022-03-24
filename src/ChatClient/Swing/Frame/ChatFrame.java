@@ -75,7 +75,7 @@ public class ChatFrame extends JFrame{
         //设置窗口不能调节大小
         setResizable(false);
         //设置聊天窗口总是前置
-        setAlwaysOnTop(true);
+        // setAlwaysOnTop(true);
         //标题字体样式和居中
         String title = nickName + "与" + chatName + "聊天";
         setFont(new Font("微软雅黑",Font.PLAIN,18));
