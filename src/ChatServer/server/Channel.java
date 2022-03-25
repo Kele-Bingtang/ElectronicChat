@@ -269,6 +269,7 @@ public class Channel implements Runnable{
                     String handleMessage = process.Processing(msg);
                     //发给好友，我已经下线
                     sendMsgToFriend(handleMessage);
+                    Server.all.remove(this);
                 }else if(msg.startsWith("EN_MSG")){
                     //处理响应按钮 发送的消息
                     String result = process.Processing(msg);
@@ -276,7 +277,6 @@ public class Channel implements Runnable{
                         sendMsgToMy(result);
                     }
                 }
-
             }
         }
     }
