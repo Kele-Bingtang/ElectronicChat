@@ -69,7 +69,8 @@ public class Channel implements Runnable{
             dos.writeUTF(msg);
             dos.flush();
         } catch (IOException e) {
-            System.out.println("重新启动一个客户端");
+            System.out.println("发送消息给客户端失败，原因：");
+            e.printStackTrace();
             this.release();
         }
     }
@@ -268,6 +269,7 @@ public class Channel implements Runnable{
                     String handleMessage = process.Processing(msg);
                     //发给好友，我已经下线
                     sendMsgToFriend(handleMessage);
+                    Server.all.remove(this);
                 }else if(msg.startsWith("EN_MSG")){
                     //处理响应按钮 发送的消息
                     String result = process.Processing(msg);
